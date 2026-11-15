@@ -9,7 +9,6 @@ import { requireUser } from "@/lib/session";
 import { setNewsletter } from "./actions";
 
 export const metadata: Metadata = { title: "Your account", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 const STATUS_TEXT: Record<NewsletterStatus, string> = {
   confirmed: "You receive the newsletter, about four times a year.",
@@ -17,6 +16,8 @@ const STATUS_TEXT: Record<NewsletterStatus, string> = {
   unsubscribed: "You do not receive the newsletter.",
   none: "You do not receive the newsletter.",
 };
+
+export const instant = false;
 
 export default async function AccountPage(props: { searchParams: Promise<{ email?: string; error?: string }> }) {
   const { user } = await requireUser();

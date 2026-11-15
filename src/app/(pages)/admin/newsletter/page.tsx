@@ -28,6 +28,8 @@ const STATUS_STYLE: Record<string, string> = {
   unsubscribed: "text-muted line-through",
 };
 
+export const instant = false;
+
 export default async function AdminNewsletter() {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

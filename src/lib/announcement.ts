@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from "next/cache";
 import sql from "@/lib/db";
 import { getLatestNews } from "@/lib/news";
 
@@ -40,7 +41,15 @@ export function isValidAnnouncementLink(link: string): boolean {
   return /^https?:\/\/[^\s]+$/i.test(link);
 }
 
+/**
+ * The bar sits in the root layout, so this runs on every page view. The answer is cached; admin edits to the news or
+ * the announcement call `updateTag()` for the tags below, so they show up immediately.
+ */
 export async function getAnnouncement(): Promise<Announcement | null> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("announcement", "news");
+
   const settings = await getAnnouncementSettings();
   if (settings.mode === "off") return null;
   if (settings.mode === "custom") {

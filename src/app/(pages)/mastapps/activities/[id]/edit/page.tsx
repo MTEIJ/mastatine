@@ -8,7 +8,8 @@ import ActivityForm from "../../ActivityForm";
 import { activityToValues } from "../../formValues";
 
 export const metadata: Metadata = { title: "Edit activity", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function EditActivityPage(props: { params: Promise<{ id: string }> }) {
   const { user } = await requireUser();

@@ -6,7 +6,8 @@ import { requireUser } from "@/lib/session";
 import DisplayNameForm from "./DisplayNameForm";
 
 export const metadata: Metadata = { title: "Choose a display name", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function DisplayNamePage(props: { searchParams: Promise<{ next?: string; change?: string }> }) {
   const { user } = await requireUser({ allowUnnamed: true });

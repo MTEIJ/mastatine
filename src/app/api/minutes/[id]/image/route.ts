@@ -9,7 +9,6 @@ import { isSameOrigin } from "@/lib/request";
 import { getSession } from "@/lib/session";
 import { UPLOAD_DIR, encodeWebp, sniffImageExt } from "@/lib/uploads";
 
-export const dynamic = "force-dynamic";
 
 const MAX_SIZE = 20 * 1024 * 1024;
 const imageLimiter = createRateLimiter(40, 60 * 60 * 1000);

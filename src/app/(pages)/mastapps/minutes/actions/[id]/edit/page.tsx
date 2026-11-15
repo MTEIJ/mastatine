@@ -9,7 +9,8 @@ import AssigneePicker from "../../../AssigneePicker";
 import { updateAction } from "../../../actions";
 
 export const metadata: Metadata = { title: "Edit action point", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function EditActionPage(props: { params: Promise<{ id: string }> }) {
   const { user } = await requireUser();

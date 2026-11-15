@@ -3,7 +3,6 @@ import sql from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { accountVoterId } from "@/lib/voter-account";
 
-export const dynamic = "force-dynamic";
 
 /** GDPR art. 15/20: everything we can link to the signed-in account, as a JSON download. */
 export async function GET() {

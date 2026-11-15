@@ -5,7 +5,6 @@ import PageHeader from "@/components/ui/PageHeader";
 import { confirmSubscription } from "@/lib/newsletter";
 
 export const metadata: Metadata = { title: "Confirm subscription", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 // Confirming is a POST behind a button: email security scanners open links automatically,
 // and they must not be able to subscribe someone on their behalf.
@@ -14,6 +13,8 @@ async function confirm(formData: FormData) {
   const ok = await confirmSubscription(String(formData.get("token") ?? ""));
   redirect(`/newsletter/confirm?status=${ok ? "done" : "invalid"}`);
 }
+
+export const instant = false;
 
 export default async function ConfirmPage(props: { searchParams: Promise<{ token?: string; status?: string }> }) {
   const { token, status } = await props.searchParams;

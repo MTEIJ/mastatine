@@ -10,7 +10,6 @@ import { getPreviousAgendas } from "@/lib/meetings";
 import MeetingFields from "../MeetingFields";
 
 export const metadata: Metadata = { title: "New meeting", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 const DEFAULT_AGENDA: AgendaDraftItem[] = [
   { level: 0, title: "Opening" },
@@ -21,6 +20,8 @@ const DEFAULT_AGENDA: AgendaDraftItem[] = [
   { level: 0, title: "Any other business" },
   { level: 0, title: "Closing" },
 ];
+
+export const instant = false;
 
 export default async function NewMeetingPage() {
   const { user } = await requireUser();

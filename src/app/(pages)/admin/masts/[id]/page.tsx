@@ -7,6 +7,8 @@ import type { Tower } from "@/lib/types";
 import { updateMast } from "../../actions";
 import { requireAdmin } from "@/lib/session";
 
+export const instant = false;
+
 export default async function EditMastPage(props: { params: Promise<{ id: string }> }) {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

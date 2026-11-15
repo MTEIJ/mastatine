@@ -7,7 +7,6 @@ import { requireUser } from "@/lib/session";
 import { answerNewsletterPrompt } from "./actions";
 
 export const metadata: Metadata = { title: "Welcome", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 const PROMISES = ["About four emails a year, never more than one a month.", "One-click unsubscribe in every email.", "You can change your mind any time on your account page."];
 
@@ -15,6 +14,8 @@ const PROMISES = ["About four emails a year, never more than one a month.", "One
  * Shown right after signing in, but only until the newsletter question has been answered (yes, no, or "not now").
  * Anyone who already has a subscription record has answered before and passes straight through.
  */
+export const instant = false;
+
 export default async function WelcomePage(props: { searchParams: Promise<{ next?: string }> }) {
   const { user } = await requireUser({ allowUnnamed: true });
   const next = safeNextPath((await props.searchParams).next, "/account");

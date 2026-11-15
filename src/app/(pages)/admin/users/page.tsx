@@ -31,6 +31,8 @@ const DECISION_LABEL: Record<MemberStatus, string> = { approved: "Approved", dec
 
 const date = (value: Date) => new Date(value).toLocaleDateString("en-GB");
 
+export const instant = false;
+
 export default async function AdminUsers(props: { searchParams: Promise<{ q?: string; filter?: string; sort?: string; dir?: string }> }) {
   const { user: me } = await requireAdmin();
   const params = await props.searchParams;

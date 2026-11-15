@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from "next/cache";
 import sql from "@/lib/db";
 
 export interface NewsPost {
@@ -24,7 +25,11 @@ export async function getNews(limit = 100): Promise<NewsPost[]> {
   }
 }
 
+/** Read on the homepage and by the announcement bar, so it is cached until the news is edited (see `updateTag("news")`). */
 export async function getLatestNews(): Promise<NewsPost | null> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("news");
   return (await getNews(1))[0] ?? null;
 }
 

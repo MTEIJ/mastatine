@@ -7,7 +7,8 @@ import MinutesEditor from "../../../MinutesEditor";
 import { loadEditableMeeting } from "../access";
 
 export const metadata: Metadata = { title: "Edit minutes", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function EditMinutesPage(props: { params: Promise<{ id: string }> }) {
   const { user, meeting } = await loadEditableMeeting(props.params);

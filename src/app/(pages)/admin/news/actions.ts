@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 import sql from "@/lib/db";
 import { isValidAnnouncementLink } from "@/lib/announcement";
@@ -19,6 +19,8 @@ const newsSchema = z.object({
 
 function refresh() {
   // The bar, the homepage card and /news all read the news.
+  updateTag("news");
+  updateTag("announcement");
   revalidatePath("/", "layout");
 }
 

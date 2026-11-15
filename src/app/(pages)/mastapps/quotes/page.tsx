@@ -10,12 +10,13 @@ export const metadata: Metadata = {
   title: "Quotes",
   description: "Things members said, graded from 1 to 10.",
 };
-export const dynamic = "force-dynamic";
 
 const SORTS: { value: QuoteSort; label: string }[] = [
   { value: "rating", label: "Rating" },
   { value: "date", label: "Date" },
 ];
+
+export const instant = false;
 
 export default async function QuotesPage(props: { searchParams: Promise<{ sort?: string }> }) {
   const gate = await membersOnlyGate("Quotes", "/mastapps/quotes");

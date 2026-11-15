@@ -8,7 +8,6 @@ import ActionList from "./ActionList";
 import MeetingRow from "./MeetingRow";
 
 export const metadata: Metadata = { title: "Minutes", description: "Agendas, minutes and action points.", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 function Section({ title, meetings, empty }: { title: string; meetings: Meeting[]; empty?: string }) {
   return (
@@ -28,6 +27,8 @@ function groupByCommittee(actions: ActionPoint[]): [string, ActionPoint[]][] {
   for (const a of actions) groups.set(a.committee_name, [...(groups.get(a.committee_name) ?? []), a]);
   return [...groups];
 }
+
+export const instant = false;
 
 export default async function MinutesDashboard(props: { searchParams: Promise<{ actions?: string }> }) {
   const { user } = await requireUser();

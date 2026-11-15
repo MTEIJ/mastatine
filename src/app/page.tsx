@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cacheLife } from "next/cache";
 import sql from "@/lib/db";
 import { MastSlide } from "@/lib/types";
 import { describeDbError } from "@/lib/db";
@@ -20,25 +21,37 @@ async function getFirstPage(q: string): Promise<TowerPage> {
 }
 
 
+/**
+ * Cached for a minute: it scans a month of votes. It throws on failure so an error is never cached;
+ * `getMastsOfMonth` below turns that into an empty list.
+ */
+async function loadMastsOfMonth(): Promise<MastSlide[]> {
+  "use cache";
+  cacheLife("minutes");
+  const rows = await sql<MastSlide[]>`
+    SELECT
+      t.id, t.title, t.image_url, t.submitter_name, t.vote_count,
+      (SELECT COUNT(*)::int FROM votes WHERE votes.tower_id = t.id) AS total_votes,
+      t.description, t.height, t.created_at,
+      COALESCE(
+        SUM(CASE WHEN v.direction = 'up' THEN 1 WHEN v.direction = 'down' THEN -1 ELSE 0 END),
+        0
+      )::int AS monthly_votes
+    FROM towers t
+    LEFT JOIN votes v
+      ON v.tower_id = t.id
+      AND v.created_at >= DATE_TRUNC('month', NOW())
+      AND v.created_at < DATE_TRUNC('month', NOW()) + INTERVAL '1 month'
+    GROUP BY t.id
+    ORDER BY monthly_votes DESC, t.vote_count DESC
+    LIMIT 1
+  `;
+  return Array.from(rows);
+}
+
 async function getMastsOfMonth(): Promise<MastSlide[]> {
   try {
-    return await sql<MastSlide[]>`
-      SELECT
-        t.id, t.title, t.image_url, t.submitter_name, t.vote_count,
-        (SELECT COUNT(*)::int FROM votes WHERE votes.tower_id = t.id) AS total_votes,
-        t.description, t.height, t.created_at,
-        COALESCE(
-          SUM(CASE WHEN v.direction = 'up' THEN 1 WHEN v.direction = 'down' THEN -1 ELSE 0 END),
-          0
-        )::int AS monthly_votes
-      FROM towers t
-      LEFT JOIN votes v
-        ON v.tower_id = t.id
-        AND DATE_TRUNC('month', v.created_at) = DATE_TRUNC('month', NOW())
-      GROUP BY t.id
-      ORDER BY monthly_votes DESC, t.vote_count DESC
-      LIMIT 1
-    `;
+    return await loadMastsOfMonth();
   } catch (error) {
     console.error(`Failed to load mast of the month: ${describeDbError(error)}`);
     return [];
@@ -46,7 +59,8 @@ async function getMastsOfMonth(): Promise<MastSlide[]> {
 }
 
 // Rendered per request: the database is local, and the build has no DB to prerender from.
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function HomePage(
   props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }

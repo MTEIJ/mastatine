@@ -10,7 +10,8 @@ export const metadata: Metadata = {
   description: "Membership of S.A. Mastatine is free and optional. Here is what you get.",
 };
 
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function MembershipPage() {
   const membership = await getMembership();

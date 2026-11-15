@@ -15,6 +15,8 @@ const PROMISES = [
   "We never share or sell your address.",
 ];
 
+export const instant = false;
+
 export default function NewsletterPage() {
   return (
     <>

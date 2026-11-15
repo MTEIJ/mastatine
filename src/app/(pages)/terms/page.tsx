@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 };
 
 // Reads the contact address at request time so it can change without a rebuild.
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default function TermsPage() {
   const { email } = getLegalIdentity();

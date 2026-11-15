@@ -1,13 +1,13 @@
 import Link from "next/link";
 import ActivityCountdown from "@/components/ActivityCountdown";
-import { getUpcomingActivities } from "@/lib/activities";
+import { getCachedUpcomingActivities } from "@/lib/activities-cached";
 import { getMembership } from "@/lib/membership";
 import { formatDateTime } from "@/lib/datetime";
 
 /** Compact chip for the next activity with a live countdown, meant to float over the hero image. Name and time only; members-only activities appear for members. */
 export default async function UpcomingActivities() {
   const { isMember } = await getMembership();
-  const [next] = await getUpcomingActivities(1, isMember).catch((error) => {
+  const [next] = await getCachedUpcomingActivities(1, isMember).catch((error) => {
     console.error("Failed to load upcoming activities:", (error as Error).message);
     return [];
   });

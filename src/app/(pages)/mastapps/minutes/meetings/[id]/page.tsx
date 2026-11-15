@@ -13,7 +13,8 @@ import MeetingStatusBar from "../../MeetingStatusBar";
 import { loadMeeting } from "./access";
 
 export const metadata: Metadata = { title: "Meeting", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function MeetingPage(props: { params: Promise<{ id: string }> }) {
   const { user, meeting } = await loadMeeting(props.params);

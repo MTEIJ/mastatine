@@ -6,7 +6,8 @@ import AgendaEditor from "../../../AgendaEditor";
 import { loadEditableMeeting } from "../access";
 
 export const metadata: Metadata = { title: "Edit agenda", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function EditAgendaPage(props: { params: Promise<{ id: string }> }) {
   const { meeting } = await loadEditableMeeting(props.params);

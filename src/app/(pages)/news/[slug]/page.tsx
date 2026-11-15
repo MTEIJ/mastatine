@@ -7,12 +7,13 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await findNews((await params).slug);
   return post ? { title: post.title, description: post.summary } : {};
 }
+
+export const instant = false;
 
 export default async function NewsPostPage({ params }: Props) {
   const post = await findNews((await params).slug);

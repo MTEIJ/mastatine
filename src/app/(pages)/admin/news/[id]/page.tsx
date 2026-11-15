@@ -8,6 +8,8 @@ import { requireAdmin } from "@/lib/session";
 import { deleteNews, saveNews } from "../actions";
 import NewsForm from "../NewsForm";
 
+export const instant = false;
+
 export default async function EditNewsPage(props: { params: Promise<{ id: string }> }) {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

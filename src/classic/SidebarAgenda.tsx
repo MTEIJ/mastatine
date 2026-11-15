@@ -1,6 +1,6 @@
 import Link from "next/link";
 import CalendarSubscribe from "@/components/CalendarSubscribe";
-import { getUpcomingActivities } from "@/lib/activities";
+import { getCachedUpcomingActivities } from "@/lib/activities-cached";
 import { getMembership } from "@/lib/membership";
 import { formatDayNumber, formatMonthShort, formatTime } from "@/lib/datetime";
 
@@ -9,7 +9,7 @@ const AGENDA_ITEMS = 4;
 /** Next few activities for the desktop sidebar: name, time and place only. Members also see members-only ones. */
 export default async function SidebarAgenda() {
   const { isMember } = await getMembership();
-  const upcoming = await getUpcomingActivities(AGENDA_ITEMS, isMember).catch((error) => {
+  const upcoming = await getCachedUpcomingActivities(AGENDA_ITEMS, isMember).catch((error) => {
     console.error("Failed to load the sidebar agenda:", (error as Error).message);
     return [];
   });

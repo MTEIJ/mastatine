@@ -7,7 +7,8 @@ import ActivityForm from "../ActivityForm";
 import { emptyActivityValues } from "../formValues";
 
 export const metadata: Metadata = { title: "New activity", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function NewActivityPage() {
   const { user } = await requireUser();

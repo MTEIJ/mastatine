@@ -8,7 +8,8 @@ import { requireUser } from "@/lib/session";
 import { deleteActivity } from "../actions";
 
 export const metadata: Metadata = { title: "Your activities", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function MyActivitiesPage() {
   const { user } = await requireUser();

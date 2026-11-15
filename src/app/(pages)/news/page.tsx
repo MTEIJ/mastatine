@@ -8,7 +8,8 @@ export const metadata: Metadata = {
   description: "News and announcements from S.A. Mastatine.",
 };
 
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function NewsPage() {
   const news = await getNews();

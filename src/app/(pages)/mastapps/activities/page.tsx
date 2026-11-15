@@ -11,7 +11,6 @@ import { parseSignupGroups, priceLabel } from "@/lib/signup-options";
 import { CheckIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = { title: "Activities", description: "Everything the committees organise." };
-export const dynamic = "force-dynamic";
 
 /** Show "n left" once the activity is nearly full. */
 const FEW_SPOTS = 5;
@@ -51,6 +50,8 @@ function CueBadge({ cue }: { cue: JoinCue }) {
     </span>
   );
 }
+
+export const instant = false;
 
 export default async function ActivitiesPage() {
   const session = await getSession();

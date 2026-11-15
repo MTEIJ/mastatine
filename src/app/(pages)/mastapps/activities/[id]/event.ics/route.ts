@@ -3,7 +3,6 @@ import { SITE_NAME, siteUrl } from "@/lib/env";
 import { getMembership } from "@/lib/membership";
 import { buildCalendar } from "@/lib/ical";
 
-export const dynamic = "force-dynamic";
 
 /** One activity as a calendar file ("add this event"). It shares its UID with the feed, so subscribers get no duplicate. */
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {

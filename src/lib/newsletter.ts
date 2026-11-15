@@ -229,5 +229,3 @@ export async function sendIssue(issueId: string): Promise<void> {
     running.delete(issueId);
   }
 }
-
-export const isSending = (issueId: string) => running.has(issueId);

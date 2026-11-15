@@ -7,7 +7,8 @@ import MeetingFields from "../../MeetingFields";
 import { loadEditableMeeting } from "../access";
 
 export const metadata: Metadata = { title: "Meeting details", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function EditMeetingPage(props: { params: Promise<{ id: string }> }) {
   const { meeting } = await loadEditableMeeting(props.params);

@@ -17,6 +17,8 @@ interface Stats {
   member_requests: number;
 }
 
+export const instant = false;
+
 export default async function AdminOverview() {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

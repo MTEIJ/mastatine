@@ -21,6 +21,8 @@ interface Row {
 
 const SORT_COLUMNS = ["added", "title", "submitter", "votes"] as const;
 
+export const instant = false;
+
 export default async function AdminMasts(props: { searchParams: Promise<{ q?: string; page?: string; sort?: string; dir?: string }> }) {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

@@ -129,6 +129,8 @@ export default function AgendaEditor({ initialItems, name = "agenda" }: AgendaEd
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
+                    // Enter confirms an IME candidate (keyCode 229 covers Safari); don't add a row then.
+                    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
                     addAfter(index, row.level);
                   } else if (e.key === "Backspace" && row.title === "" && rows.length > 1) {
                     e.preventDefault();

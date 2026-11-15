@@ -8,7 +8,6 @@ export const metadata: Metadata = {
 };
 
 // Reads CONTACT_EMAIL at request time so the address can change without a rebuild.
-export const dynamic = "force-dynamic";
 
 const TOPICS = [
   { title: "Remove a photo or submission", text: "If something shows you, or should not be public, tell us which mast and we will take it down." },
@@ -16,6 +15,8 @@ const TOPICS = [
   { title: "Concerns about this site", text: "If you represent another organisation and think this parody goes too far, write to us. We respond promptly and in good faith." },
   { title: "Everything else", text: "Mast tips, ideas for committees, or press." },
 ];
+
+export const instant = false;
 
 export default function ContactPage() {
   const legal = getLegalIdentity();

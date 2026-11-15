@@ -22,6 +22,8 @@ interface MemberRow {
   is_chair: boolean;
 }
 
+export const instant = false;
+
 export default async function AdminCommittees() {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

@@ -3,6 +3,8 @@ import { requireAdmin } from "@/lib/session";
 import { createNews } from "../actions";
 import NewsForm from "../NewsForm";
 
+export const instant = false;
+
 export default async function NewNewsPage() {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

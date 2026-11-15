@@ -5,12 +5,13 @@ import { safeNextPath } from "@/lib/safe-redirect";
 import { getSession } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Sign in", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 const ERRORS: Record<string, string> = {
   INVALID_TOKEN: "That sign-in link has expired or was already used. Request a new one below.",
   EXPIRED_TOKEN: "That sign-in link has expired. Request a new one below.",
 };
+
+export const instant = false;
 
 export default async function LoginPage(props: { searchParams: Promise<{ next?: string; error?: string }> }) {
   const { next, error } = await props.searchParams;

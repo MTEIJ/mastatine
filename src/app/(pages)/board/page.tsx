@@ -29,6 +29,8 @@ function Silhouette() {
   );
 }
 
+export const instant = false;
+
 export default function BoardPage() {
   return (
     <>

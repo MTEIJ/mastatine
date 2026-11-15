@@ -3,6 +3,8 @@ import { createIssue } from "../../actions";
 import AudienceField from "@/components/admin/AudienceField";
 import { requireAdmin } from "@/lib/session";
 
+export const instant = false;
+
 export default async function NewIssuePage() {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

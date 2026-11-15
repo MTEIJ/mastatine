@@ -8,7 +8,6 @@ import { accountVoterId, claimBrowserVotes } from "@/lib/voter-account";
 
 const readLimiter = createRateLimiter(120, 60 * 1000);
 
-export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   if (!readLimiter.allow(clientIp(req))) return NextResponse.json({ error: "Slow down a little." }, { status: 429 });

@@ -6,7 +6,6 @@ import { formatDateTime } from "@/lib/datetime";
 import { requireUser } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Activity statistics", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 const percent = (share: number | null) => (share === null ? "–" : `${Math.round(share * 100)}%`);
 
@@ -52,6 +51,8 @@ function StatsTable({ title, rows }: { title: string; rows: ActivityStat[] }) {
     </section>
   );
 }
+
+export const instant = false;
 
 export default async function ActivityStatsPage() {
   const { user } = await requireUser();

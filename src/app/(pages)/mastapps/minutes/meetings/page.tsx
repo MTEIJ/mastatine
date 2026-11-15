@@ -7,13 +7,14 @@ import { requireUser } from "@/lib/session";
 import MeetingRow from "../MeetingRow";
 
 export const metadata: Metadata = { title: "Meetings", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 const PAGE = "/mastapps/minutes/meetings";
 const MAX_RESULTS = 200;
 
 /** Filters beyond the search box: when any is set, the panel starts open so it is clear why the list is short. */
 const hasAdvanced = (f: MeetingFilters): boolean => Boolean(f.committeeId || f.status || f.from || f.to || f.when || f.openActions || f.sort !== "newest");
+
+export const instant = false;
 
 export default async function MeetingsPage(props: { searchParams: Promise<Record<string, string | undefined>> }) {
   const { user } = await requireUser();

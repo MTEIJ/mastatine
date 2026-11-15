@@ -2,7 +2,6 @@ import { getCalendarActivities } from "@/lib/activities";
 import { SITE_NAME, siteUrl } from "@/lib/env";
 import { buildCalendar } from "@/lib/ical";
 
-export const dynamic = "force-dynamic";
 
 /** Public calendar feed that members can subscribe to from Apple, Google or Outlook Calendar. */
 export async function GET() {

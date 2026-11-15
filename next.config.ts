@@ -33,7 +33,10 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  reactCompiler: true,
+  // Production only: the compiler makes every dev compile noticeably slower.
+  reactCompiler: isProd,
+  cacheComponents: true,
+  partialPrefetching: true,
   poweredByHeader: false,
   // Extra hosts allowed to reach the dev server (e.g. a LAN/Tailscale IP), comma-separated.
   allowedDevOrigins: process.env.DEV_ALLOWED_ORIGINS?.split(",").filter(Boolean),

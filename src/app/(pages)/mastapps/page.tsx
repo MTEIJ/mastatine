@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Small apps for mast enthusiasts.",
 };
 
+export const instant = false;
+
 export default function MastAppsPage() {
   const apps = getApps(getShopUrl());
 

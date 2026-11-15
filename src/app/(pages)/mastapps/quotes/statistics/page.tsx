@@ -4,7 +4,8 @@ import { membersOnlyGate } from "@/components/MembersOnly";
 import { formatGrade, formatQuoteDate, getAuthorStats, getQuoteStats, getTopQuotes, NO_VOTER } from "@/lib/quotes";
 
 export const metadata: Metadata = { title: "Quote statistics" };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function QuoteStatisticsPage() {
   const gate = await membersOnlyGate("Quote statistics", "/mastapps/quotes/statistics");

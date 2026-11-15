@@ -73,12 +73,10 @@ export default function NotesField({ id, meetingId, value, readOnly, onChange, o
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
-  // Grow with the text, and put the cursor back after a toolbar edit.
+  // Put the cursor back after a toolbar edit (the field grows with its text via CSS field-sizing).
   useLayoutEffect(() => {
     const el = area.current;
     if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
     if (pendingSelection.current) {
       el.setSelectionRange(pendingSelection.current.start, pendingSelection.current.end);
       pendingSelection.current = null;
@@ -205,7 +203,7 @@ export default function NotesField({ id, meetingId, value, readOnly, onChange, o
       <textarea
         ref={area}
         id={id}
-        className="input min-h-16 resize-none overflow-hidden !py-2 text-sm"
+        className="input min-h-16 resize-none field-sizing-content !py-2 text-sm"
         maxLength={10000}
         hidden={preview}
         value={value}

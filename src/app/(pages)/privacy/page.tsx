@@ -9,7 +9,8 @@ export const metadata: Metadata = {
 };
 
 // Reads the controller details at request time so they can change without a rebuild.
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default function PrivacyPage() {
   const legal = getLegalIdentity();

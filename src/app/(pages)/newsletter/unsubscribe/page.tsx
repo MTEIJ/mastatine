@@ -5,7 +5,6 @@ import PageHeader from "@/components/ui/PageHeader";
 import { unsubscribeSubscriber, verifyUnsubscribeToken } from "@/lib/newsletter";
 
 export const metadata: Metadata = { title: "Unsubscribe", robots: { index: false } };
-export const dynamic = "force-dynamic";
 
 async function unsubscribe(formData: FormData) {
   "use server";
@@ -13,6 +12,8 @@ async function unsubscribe(formData: FormData) {
   if (id) await unsubscribeSubscriber(id);
   redirect(`/newsletter/unsubscribe?status=${id ? "done" : "invalid"}`);
 }
+
+export const instant = false;
 
 export default async function UnsubscribePage(props: { searchParams: Promise<{ t?: string; status?: string }> }) {
   const { t, status } = await props.searchParams;

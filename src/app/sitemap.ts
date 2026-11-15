@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { getNews } from "@/lib/news";
 import { siteUrl } from "@/lib/env";
 
-export const dynamic = "force-dynamic";
 
 const PAGES = ["/", "/about", "/board", "/committees", "/history", "/membership", "/news", "/mastapps", "/mastapps/activities", "/mastapps/quotes", "/newsletter", "/contact", "/privacy", "/terms"];
 

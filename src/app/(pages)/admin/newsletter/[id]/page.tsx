@@ -28,6 +28,8 @@ const NOTICES: Record<string, { text: string; tone: "ok" | "bad" }> = {
   "no-recipients": { text: "There is nobody to send this to.", tone: "bad" },
 };
 
+export const instant = false;
+
 export default async function IssuePage(props: { params: Promise<{ id: string }>; searchParams: Promise<{ notice?: string }> }) {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();

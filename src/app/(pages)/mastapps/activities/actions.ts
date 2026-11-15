@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { after } from "next/server";
 import { z } from "zod";
 import sql from "@/lib/db";
@@ -29,6 +29,7 @@ const subscribeLimiter = createRateLimiter(60, 60 * 1000);
 const requireSignedIn = () => requireNamedSession(BASE);
 
 function refresh(id?: string) {
+  updateTag("activities");
   revalidatePath(BASE);
   revalidatePath(`${BASE}/mine`);
   if (id) revalidatePath(`${BASE}/${id}`);

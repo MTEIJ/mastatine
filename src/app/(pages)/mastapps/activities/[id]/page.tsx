@@ -19,7 +19,6 @@ import MessageParticipantsForm from "../MessageParticipantsForm";
 import SubscribeForm from "../SubscribeForm";
 
 export const metadata: Metadata = { title: "Activity" };
-export const dynamic = "force-dynamic";
 
 const NOT_SUBSCRIBABLE: Record<string, string> = {
   full: "This activity is full",
@@ -28,6 +27,8 @@ const NOT_SUBSCRIBABLE: Record<string, string> = {
 };
 
 const CHIP = "rounded-full bg-soft px-3 py-1 text-sm font-bold";
+
+export const instant = false;
 
 export default async function ActivityPage(props: { params: Promise<{ id: string }> }) {
   // Public: anyone can read an activity, only subscribing (and the member list) needs an account.

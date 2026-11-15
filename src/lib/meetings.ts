@@ -245,11 +245,6 @@ export function getCommitteeActions(user: Viewer, includeDone: boolean) {
 
 export { itemLabels } from "@/lib/minutes-live";
 
-/** One agenda line per item; a leading "-" makes it a sub-item. */
-export function agendaToText(items: Pick<MeetingItem, "level" | "title">[]): string {
-  return items.map((i) => (i.level === 1 ? `- ${i.title}` : i.title)).join("\n");
-}
-
 export function parseAgenda(text: string): { level: 0 | 1; title: string }[] {
   return text
     .split(/\r?\n/)

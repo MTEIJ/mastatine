@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "What S.A. Mastatine is, and what it is not: a parody, not affiliated with S.A. Astatine or the University of Twente.",
 };
 
+export const instant = false;
+
 export default function AboutPage() {
   return (
     <>

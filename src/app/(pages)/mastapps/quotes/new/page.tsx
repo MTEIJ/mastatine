@@ -4,7 +4,8 @@ import { membersOnlyGate } from "@/components/MembersOnly";
 import QuoteForm from "../QuoteForm";
 
 export const metadata: Metadata = { title: "New quote", robots: { index: false } };
-export const dynamic = "force-dynamic";
+
+export const instant = false;
 
 export default async function NewQuotePage() {
   const gate = await membersOnlyGate("New quote", "/mastapps/quotes/new");

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import sql from "@/lib/db";
 import { getSession } from "@/lib/session";
 
-export const dynamic = "force-dynamic";
 
 const LIMIT = 8;
 const UUID = /^[0-9a-f-]{36}$/i;

@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "A short and slightly embellished history of S.A. Mastatine.",
 };
 
+export const instant = false;
+
 export default function HistoryPage() {
   return (
     <>

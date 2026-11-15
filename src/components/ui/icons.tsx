@@ -16,11 +16,6 @@ export const TrashIcon = () => (
     <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />
   </svg>
 );
-export const ArrowLeftIcon = () => (
-  <svg {...base}>
-    <path d="M19 12H5M11 6l-6 6 6 6" />
-  </svg>
-);
 export const CheckIcon = () => (
   <svg {...base}>
     <path d="m5 12 5 5 9-10" />

@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 };
 
 // Committees and their members are managed in the admin, so this page is rendered per request.
-export const dynamic = "force-dynamic";
 
 async function loadCommittees(): Promise<PublicCommittee[]> {
   try {
@@ -19,6 +18,8 @@ async function loadCommittees(): Promise<PublicCommittee[]> {
     return [];
   }
 }
+
+export const instant = false;
 
 export default async function CommitteesPage() {
   const committees = await loadCommittees();

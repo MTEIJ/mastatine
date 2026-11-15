@@ -39,7 +39,8 @@ function createAuth() {
     secret: requireEnv("BETTER_AUTH_SECRET"),
     trustedOrigins: [siteUrl()],
     database: pool,
-    session: { expiresIn: 60 * 60 * 24 * 30, updateAge: 60 * 60 * 24 },
+    // The signed cookie cache saves a session + user lookup on most requests; a ban or role change can take up to a minute to apply.
+    session: { expiresIn: 60 * 60 * 24 * 30, updateAge: 60 * 60 * 24, cookieCache: { enabled: true, maxAge: 60 } },
     emailVerification: {
       expiresIn: CHANGE_EMAIL_TTL_SECONDS,
       // Only used by the email change: sign-in links already prove an address, so accounts start verified.

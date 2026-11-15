@@ -18,6 +18,8 @@ const MODES = [
   { value: "off", label: "Off" },
 ] as const;
 
+export const instant = false;
+
 export default async function AdminNews(props: { searchParams: Promise<{ notice?: string }> }) {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();
