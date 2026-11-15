@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
+import { useAccountState } from "@/components/AccountState";
 
 const icon = { viewBox: "0 0 24 24", width: 18, height: 18, fill: "none", stroke: "currentColor", strokeWidth: 1.9, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true } as const;
 const UserIcon = () => (
@@ -11,13 +11,11 @@ const UserIcon = () => (
   </svg>
 );
 
-/** Sign-in state is read on the client so every page can stay statically rendered. */
+/** Sign-in state comes from the root layout (see AccountState), so no auth client is loaded for it. */
 export default function SidebarAccount() {
-  const { data: session, isPending } = authClient.useSession();
+  const { signedIn } = useAccountState();
 
-  if (isPending) return <span style={{ minHeight: "2.4rem" }} aria-hidden />;
-
-  if (!session) {
+  if (!signedIn) {
     return (
       <Link href="/login" aria-label="Sign in" className="keep-label">
         <UserIcon />

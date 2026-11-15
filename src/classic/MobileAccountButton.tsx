@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
+import { useAccountState } from "@/components/AccountState";
 
 /** Always-visible sign-in / account shortcut for small screens, where the full menu is tucked behind the hamburger. */
 export default function MobileAccountButton() {
-  const { data: session, isPending } = authClient.useSession();
-  if (isPending) return null;
+  const { signedIn } = useAccountState();
 
-  const label = session ? "Your account" : "Sign in";
+  const label = signedIn ? "Your account" : "Sign in";
   return (
     <Link
-      href={session ? "/account" : "/login"}
+      href={signedIn ? "/account" : "/login"}
       className="mobile-account lg:hidden"
       aria-label={label}
     >
@@ -19,7 +18,7 @@ export default function MobileAccountButton() {
         <circle cx="12" cy="8" r="4" />
         <path d="M4 21a8 8 0 0 1 16 0" />
       </svg>
-      <span>{session ? "Account" : "Sign in"}</span>
+      <span>{signedIn ? "Account" : "Sign in"}</span>
     </Link>
   );
 }

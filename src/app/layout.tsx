@@ -8,9 +8,11 @@ import SidebarAgenda from "@/classic/SidebarAgenda";
 import Colophon from "@/classic/Colophon";
 import AppShell from "@/classic/AppShell";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import { AccountStateProvider } from "@/components/AccountState";
 import { getAnnouncement } from "@/lib/announcement";
 import { siteUrl } from "@/lib/env";
 import { getShopUrl } from "@/lib/shop";
+import { getSession } from "@/lib/session";
 
 const lato = Lato({
   subsets: ["latin"],
@@ -56,8 +58,20 @@ async function AnnouncementSlot() {
 // The shop link comes from a runtime environment variable, so the layout is rendered per request.
 export const instant = false;
 
+/** Who is signed in, for the sidebar and the app shell. A broken auth setup shows the signed-out site rather than no site. */
+async function readAccountState() {
+  try {
+    const session = await getSession();
+    return { signedIn: Boolean(session), isAdmin: session?.user.role === "admin" };
+  } catch (error) {
+    console.error("Failed to read the session:", (error as Error).message);
+    return { signedIn: false, isAdmin: false };
+  }
+}
+
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   await connection();
+  const account = await readAccountState();
   return (
     <html lang="en" className={lato.className} suppressHydrationWarning>
       <body className="verbosa-landing-page verbosa-magazine-two verbosa-magazine-layout verbosa-no-sidebar-back">
@@ -67,9 +81,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         >
           Skip to content
         </a>
+        <AccountStateProvider {...account}>
         <AppShell shopUrl={getShopUrl()} sidebar={<Sidebar shopUrl={getShopUrl()} agenda={<Suspense fallback={<AgendaSkeleton />}><SidebarAgenda /></Suspense>} />} colophon={<Colophon />} announcement={<Suspense fallback={null}><AnnouncementSlot /></Suspense>}>
           {children}
         </AppShell>
+        </AccountStateProvider>
       </body>
     </html>
   );
