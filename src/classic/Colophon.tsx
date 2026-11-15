@@ -38,6 +38,9 @@ export default function Colophon() {
             <p style={{ fontSize: "0.95em", color: "var(--text-mid)", marginTop: "0.4em" }}>
               Not affiliated with S.A. Astatine or the University of Twente.
             </p>
+            <p style={{ fontSize: "0.85em", color: "var(--text-mid)", marginTop: "0.4em" }}>
+              Stickers and merch are set in the Astatine typeface, made for S.A. Astatine and used with their permission.
+            </p>
           </div>
         </section>
 

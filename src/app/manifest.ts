@@ -10,13 +10,15 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#ffffff",
+    background_color: "#fff4e2",
     theme_color: "#f57f20",
     categories: ["social", "lifestyle"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
       { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      // Android 13+ themed icons recolour this silhouette to match the user's wallpaper.
+      { src: "/icons/monochrome-512.png", sizes: "512x512", type: "image/png", purpose: "monochrome" },
     ],
     shortcuts: [
       { name: "Activities", url: "/mastapps/activities", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
