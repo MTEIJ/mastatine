@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ChartIcon, CheckIcon, ListIcon, PlusIcon } from "@/components/ui/icons";
+import type { ShapeName, Tone } from "@/components/ui/ShapeIcon";
 
 /** One entry per MastApp. The dashboard rail and the hub tiles both render from this list. */
 export interface MastApp {
@@ -14,6 +15,9 @@ export interface MastApp {
   nav?: { label: string; href: string; icon: ReactNode; /** Only shown to signed-in visitors. */ needsLogin?: boolean }[];
   /** Who can use it, when not everyone: shown as a badge on the hub tile. */
   access?: string;
+  /** Material 3 Expressive look: the shape behind the icon and the colour role of the tile. */
+  shape: ShapeName;
+  tone: Tone;
 }
 
 const svg = { viewBox: "0 0 24 24", width: 22, height: 22, fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true } as const;
@@ -68,6 +72,8 @@ export const ADMIN_APP: MastApp = {
   description: "Users, masts, committees, news and the newsletter.",
   href: "/admin",
   icon: Icons.admin,
+  shape: "cookie6",
+  tone: "neutral",
   access: "Admins",
 };
 
@@ -79,6 +85,8 @@ export function getApps(shopUrl: string | null, isAdmin = false): MastApp[] {
       description: "Find activities and subscribe, or organise your own.",
       href: "/mastapps/activities",
       icon: Icons.activities,
+      shape: "cookie9",
+      tone: "primary",
       nav: [
         { label: "Activities", href: "/mastapps/activities", icon: <ListIcon /> },
         { label: "New activity", href: "/mastapps/activities/new", icon: <PlusIcon />, needsLogin: true },
@@ -91,6 +99,8 @@ export function getApps(shopUrl: string | null, isAdmin = false): MastApp[] {
       description: "Agendas, minutes and action points for committees.",
       href: "/mastapps/minutes",
       icon: Icons.minutes,
+      shape: "cookie4",
+      tone: "tertiary",
       access: "Committees",
       nav: [
         { label: "Dashboard", href: "/mastapps/minutes", icon: Icons.dashboard },
@@ -103,6 +113,8 @@ export function getApps(shopUrl: string | null, isAdmin = false): MastApp[] {
       description: "Things members said, graded from 1 to 10.",
       href: "/mastapps/quotes",
       icon: Icons.quotes,
+      shape: "clover4",
+      tone: "secondary",
       access: "Members",
       nav: [
         { label: "All quotes", href: "/mastapps/quotes", icon: <ListIcon /> },
@@ -110,9 +122,7 @@ export function getApps(shopUrl: string | null, isAdmin = false): MastApp[] {
         { label: "New quote", href: "/mastapps/quotes/new", icon: <PlusIcon />, needsLogin: true },
       ],
     },
-    ...(shopUrl
-      ? [{ slug: "merch", name: "Merch", description: "Wear the tallest opinions in the room.", href: shopUrl, external: true, icon: Icons.merch }]
-      : []),
+    { slug: "merch", name: "Merch", description: "Wear the tallest opinions in the room.", href: "/shop", icon: Icons.merch, shape: "flower", tone: "primary" },
     ...(isAdmin ? [ADMIN_APP] : []),
   ];
 }

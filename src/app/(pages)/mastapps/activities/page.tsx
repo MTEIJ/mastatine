@@ -3,8 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import AppFrame from "@/components/ui/AppFrame";
 import CalendarSubscribe from "@/components/CalendarSubscribe";
-import { formatParticipants, getActivities, subscribeState, type Activity } from "@/lib/activities";
-import { formatDateTime, formatDayMonth, formatDayNumber, formatMonthShort, formatTime } from "@/lib/datetime";
+import {
+  formatParticipants, getActivities, getCommitteeOptions, getPastActivities, hasActivityFilters, parseActivityFilters, subscribeState, type Activity,
+} from "@/lib/activities";
+import { formatDayMonth, formatDayNumber, formatMonthShort, formatTime } from "@/lib/datetime";
 import { getMembership } from "@/lib/membership";
 import { getSession } from "@/lib/session";
 import { parseSignupGroups, priceLabel } from "@/lib/signup-options";
@@ -51,30 +53,93 @@ function CueBadge({ cue }: { cue: JoinCue }) {
   );
 }
 
+const icon = { viewBox: "0 0 24 24", width: 22, height: 22, fill: "none", stroke: "currentColor", strokeWidth: 2.2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true } as const;
+const SearchIcon = () => (
+  <svg {...icon}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.5-3.5" />
+  </svg>
+);
+const ClearIcon = () => (
+  <svg {...icon}>
+    <path d="M6 6l12 12M18 6 6 18" />
+  </svg>
+);
+
+const PAGE = "/mastapps/activities";
+/** A search shows more history than the default list, which only teases the latest. */
+const SEARCH_PAST_LIMIT = 200;
+
 export const instant = false;
 
-export default async function ActivitiesPage() {
+export default async function ActivitiesPage(props: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const filters = parseActivityFilters(await props.searchParams);
+  const filtered = hasActivityFilters(filters);
   const session = await getSession();
   const { isMember } = await getMembership();
-  const activities = await getActivities(session?.user.id ?? null, isMember);
+  const userId = session?.user.id ?? null;
+  const [activities, past, committees] = await Promise.all([
+    filters.when === "past" ? Promise.resolve([]) : getActivities(userId, isMember, filters),
+    filters.when === "upcoming" ? Promise.resolve([]) : getPastActivities(userId, isMember, filters, filtered ? SEARCH_PAST_LIMIT : undefined),
+    getCommitteeOptions(),
+  ]);
 
   return (
     <AppFrame
       title="Activities"
       hideTitle
-      actions={
-        <>
-          {!session && (
-            <p className="text-sm text-muted">
-              <Link href="/login?next=%2Fmastapps%2Factivities" className="font-bold text-accent-text underline underline-offset-2">Sign in</Link> to join activities.
-            </p>
-          )}
-          <span className="ml-auto"><CalendarSubscribe className="cal-btn--inline" /></span>
-        </>
-      }
     >
-      {activities.length === 0 ? (
-        <p className="card p-8 text-center text-muted">No activities planned yet. Check back soon.</p>
+      {/* A full-width M3 search bar (Enter or the magnifier searches); the filters unfold below while it is in use, or whenever a filter is active. */}
+      <form action={PAGE} role="search" className="group mb-3">
+        <div className="search-bar">
+          <button type="submit" className="search-bar__icon" aria-label="Search">
+            <SearchIcon />
+          </button>
+          <label className="sr-only" htmlFor="activity-q">Search activities</label>
+          <input id="activity-q" name="q" type="search" enterKeyHint="search" defaultValue={filters.q} placeholder="Search activities" className="search-bar__input" />
+          {filtered && (
+            <Link href={PAGE} className="search-bar__icon" aria-label="Clear the search and filters">
+              <ClearIcon />
+            </Link>
+          )}
+        </div>
+        <div className={`mt-2 flex-wrap items-center gap-2 ${filtered ? "flex" : "hidden group-focus-within:flex"}`}>
+          <label className="sr-only" htmlFor="activity-committee">Committee</label>
+          <select id="activity-committee" name="committee" defaultValue={filters.committeeId} className="input filter-select">
+            <option value="">All committees</option>
+            {committees.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+          <label className="sr-only" htmlFor="activity-when">When</label>
+          <select id="activity-when" name="when" defaultValue={filters.when} className="input filter-select">
+            <option value="">Upcoming and past</option>
+            <option value="upcoming">Upcoming only</option>
+            <option value="past">Past only</option>
+          </select>
+          {session && (
+            <label className="flex items-center gap-2 text-sm font-semibold">
+              <input type="checkbox" name="mine" value="1" defaultChecked={filters.mine} />
+              Only mine
+            </label>
+          )}
+        </div>
+      </form>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        {!session && (
+          <p className="text-sm text-muted">
+            <Link href="/login?next=%2Fmastapps%2Factivities" className="font-bold text-accent-text underline underline-offset-2">Sign in</Link> to join activities.
+          </p>
+        )}
+        <span className="ml-auto"><CalendarSubscribe className="cal-btn--inline" /></span>
+      </div>
+
+      {filtered && activities.length + past.length === 0 && (
+        <p className="card p-8 text-center text-muted" role="status">
+          No activities found. <Link href={PAGE} className="font-bold text-accent-text underline">Clear the filters</Link>
+        </p>
+      )}
+
+      {filters.when === "past" ? null : activities.length === 0 ? (
+        filtered ? null : <p className="py-2 text-muted">No upcoming activities planned yet. Check back soon.</p>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
           {activities.map((a) => {
@@ -104,35 +169,73 @@ export default async function ActivitiesPage() {
                     </div>
                   </div>
 
-                  {/* Larger screens: the poster card. */}
-                  <div className="hidden sm:block">
-                    <div className="flex items-center justify-center gap-2 border-b border-line bg-soft px-4 py-3 text-center text-lg font-bold text-accent-text">
-                      {a.name}
-                      {a.members_only && <MembersBadge />}
-                      {a.subscribed && <span className="text-ink" title="You are subscribed"><CheckIcon /><span className="sr-only">You are subscribed</span></span>}
+                  {/* Larger screens: poster first, then the essentials and the call to action. */}
+                  <div className="hidden h-full flex-col sm:flex">
+                    <div className="relative">
+                      {a.poster_url ? (
+                        <Image
+                          src={a.poster_url}
+                          alt={`Poster for ${a.name}`}
+                          width={800}
+                          height={1000}
+                          sizes="(max-width: 1280px) 50vw, 400px"
+                          className="aspect-[4/5] w-full object-cover object-top"
+                        />
+                      ) : (
+                        <div className="flex aspect-[4/5] w-full items-center justify-center bg-soft text-accent-text">
+                          <span className="text-center font-extrabold leading-none">
+                            <span className="block text-7xl">{formatDayNumber(a.starts_at)}</span>
+                            <span className="block text-2xl uppercase">{formatMonthShort(a.starts_at)}</span>
+                          </span>
+                        </div>
+                      )}
+                      {a.subscribed && (
+                        <span className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-success text-white shadow" title="You are subscribed">
+                          <CheckIcon /><span className="sr-only">You are subscribed</span>
+                        </span>
+                      )}
+                      {a.poster_url && (
+                        <time dateTime={a.starts_at.toISOString()} className="absolute left-3 top-3 rounded-xl bg-white/95 px-2.5 py-1 text-center font-extrabold leading-tight text-ink shadow">
+                          <span className="block text-xl">{formatDayNumber(a.starts_at)}</span>
+                          <span className="block text-xs uppercase text-accent-text">{formatMonthShort(a.starts_at)}</span>
+                        </time>
+                      )}
                     </div>
-                    <dl className="divide-y divide-line text-center text-sm">
-                      <div className="px-4 py-2 text-muted">{formatDateTime(a.starts_at)}</div>
-                      <div className="px-4 py-2">{price}</div>
-                      <div className="px-4 py-2">Participants: {formatParticipants(a)}</div>
-                      <div className="px-4 py-3"><CueBadge cue={cue} /></div>
-                    </dl>
-                    {a.poster_url && (
-                      <Image
-                        src={a.poster_url}
-                        alt={`Poster for ${a.name}`}
-                        width={800}
-                        height={1000}
-                        sizes="(max-width: 1280px) 50vw, 400px"
-                        className="h-auto max-h-[28rem] w-full object-cover object-top"
-                      />
-                    )}
+                    <div className="flex flex-1 flex-col gap-1 p-4">
+                      <h2 className="text-lg font-extrabold leading-tight">{a.name}{a.members_only && <MembersBadge />}</h2>
+                      <p className="text-sm font-bold text-accent-text">{formatDayMonth(a.starts_at)} · {formatTime(a.starts_at)}</p>
+                      <p className="text-sm text-muted">{price}{a.location ? ` · ${a.location}` : ""}</p>
+                      <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+                        <CueBadge cue={cue} />
+                        <span className="text-xs text-muted">{formatParticipants(a)} going</span>
+                      </div>
+                    </div>
                   </div>
                 </Link>
               </li>
             );
           })}
         </ul>
+      )}
+
+      {past.length > 0 && (
+        <section className="mt-8" aria-labelledby="past-activities">
+          <h2 id="past-activities" className="mb-2 text-sm font-extrabold uppercase tracking-wide text-muted">Past activities</h2>
+          <ul className="card divide-y divide-line overflow-hidden">
+            {past.map((a) => (
+              <li key={a.id}>
+                <Link href={`/mastapps/activities/${a.id}`} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-soft hover:text-ink">
+                  <time dateTime={a.starts_at.toISOString()} className="w-28 shrink-0 whitespace-nowrap text-sm text-muted">
+                    {formatDayMonth(a.starts_at)} {a.starts_at.getFullYear()}
+                  </time>
+                  <span className="min-w-0 flex-1 truncate font-semibold">{a.name}{a.members_only && <MembersBadge />}</span>
+                  <span className="hidden shrink-0 text-sm text-muted sm:inline">{a.committee_name}</span>
+                  {a.subscribed && <span className="shrink-0 text-success" title="You went"><CheckIcon /><span className="sr-only">You went</span></span>}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </AppFrame>
   );

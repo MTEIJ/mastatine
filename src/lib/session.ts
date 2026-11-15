@@ -10,7 +10,11 @@ export const NAME_SETUP_PATH = "/account/name";
 const nameSetupUrl = (next: string) => `${NAME_SETUP_PATH}?next=${encodeURIComponent(next)}`;
 
 /** Current session (or null), deduplicated per request. */
-export const getSession = cache(async () => getAuth().api.getSession({ headers: await headers() }));
+export const getSession = cache(async () => {
+  // Read headers first: during `next build` this opts the route out of prerendering before getAuth() demands DATABASE_URL.
+  const requestHeaders = await headers();
+  return getAuth().api.getSession({ headers: requestHeaders });
+});
 
 interface RequireUserOptions {
   /** Only the account and name pages themselves may skip the display name requirement. */

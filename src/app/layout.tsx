@@ -1,13 +1,16 @@
 import { Suspense } from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { connection } from "next/server";
 import { Lato } from "next/font/google";
 import "./globals.css";
+import "./navigation.css";
+import "./m3.css";
 import Sidebar from "@/classic/Sidebar";
 import SidebarAgenda from "@/classic/SidebarAgenda";
 import Colophon from "@/classic/Colophon";
 import AppShell from "@/classic/AppShell";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import PwaBoot from "@/components/PwaBoot";
 import { AccountStateProvider } from "@/components/AccountState";
 import { getAnnouncement } from "@/lib/announcement";
 import { siteUrl } from "@/lib/env";
@@ -29,7 +32,9 @@ export const metadata: Metadata = {
   description:
     "M.A. Mastatine is the mast association for Advanced Mast Technology. Submit your favourite mast and vote on the most impressive electromagnetic structures in the Netherlands.",
   applicationName: "M.A. Mastatine",
-  icons: { icon: "/favicon.svg" },
+  icons: { icon: "/favicon.svg", apple: "/icons/apple-touch-icon.png" },
+  // Installed on iOS: open full screen, under a short name.
+  appleWebApp: { capable: true, title: "Mastatine", statusBarStyle: "default" },
   openGraph: {
     title: "M.A. Mastatine",
     description: "Submit a mast and vote on the finest transmission towers.",
@@ -39,6 +44,8 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
 };
+
+export const viewport: Viewport = { themeColor: "#f57f20" };
 
 /** Shown while the agenda loads, so the rest of the page is not held back by its queries. */
 function AgendaSkeleton() {
@@ -81,6 +88,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         >
           Skip to content
         </a>
+        <PwaBoot />
         <AccountStateProvider {...account}>
         <AppShell shopUrl={getShopUrl()} sidebar={<Sidebar shopUrl={getShopUrl()} agenda={<Suspense fallback={<AgendaSkeleton />}><SidebarAgenda /></Suspense>} />} colophon={<Colophon />} announcement={<Suspense fallback={null}><AnnouncementSlot /></Suspense>}>
           {children}

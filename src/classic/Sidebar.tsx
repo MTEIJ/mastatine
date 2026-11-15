@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MastatineLogo from "./MastatineLogo";
 import SidebarAccount from "./SidebarAccount";
-import MobileAccountButton from "./MobileAccountButton";
+import { useAccountState } from "@/components/AccountState";
 
 interface NavItem {
   label: string;
@@ -14,7 +14,7 @@ interface NavItem {
   children?: NavItem[];
 }
 
-function buildNav(shopUrl: string | null): NavItem[] {
+function buildNav(): NavItem[] {
   return [
   { label: "Home", href: "/" },
   {
@@ -30,7 +30,7 @@ function buildNav(shopUrl: string | null): NavItem[] {
   },
   { label: "Activities", href: "/mastapps/activities" },
   { label: "MastApps", href: "/mastapps" },
-  ...(shopUrl ? [{ label: "Merch shop", href: shopUrl, external: true }] : []),
+  { label: "Merch", href: "/shop" },
   ];
 }
 
@@ -172,6 +172,7 @@ function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate: () => vo
 
 export default function Sidebar({ shopUrl, agenda }: { shopUrl: string | null; /** Upcoming activities, rendered on the server. */ agenda?: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { signedIn } = useAccountState();
   const sidebarRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -217,18 +218,27 @@ export default function Sidebar({ shopUrl, agenda }: { shopUrl: string | null; /
 
   return (
     <>
-      {/* Mobile hamburger */}
-      {!mobileOpen && <button
-        className="lg:hidden fixed top-3 left-3 z-50 flex h-11 w-11 items-center justify-center bg-white text-xl leading-none"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open menu"
-        id="nav-toggle"
-        style={{ color: "#0a0a0a" }}
-      >
-        ☰
-      </button>}
-
-      {!mobileOpen && <MobileAccountButton />}
+      {/* Phones and tablets: a plain website header. Who we are on the left; sign in (visitors) and the menu on the right. */}
+      <div className="mobile-bar lg:hidden">
+        <Link href="/" className="mobile-bar__brand" aria-label="M.A. Mastatine, home">
+          <MastatineLogo size={32} />
+          <span>M.A. Mastatine</span>
+        </Link>
+        {!signedIn && <Link href="/login" className="mobile-bar__signin">Sign in</Link>}
+        <button
+          type="button"
+          className="mobile-bar__menu"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open menu"
+          aria-expanded={mobileOpen}
+          aria-controls="sidebar"
+          id="nav-toggle"
+        >
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+      </div>
 
       {/* Mobile overlay */}
       {mobileOpen && (
@@ -248,7 +258,7 @@ export default function Sidebar({ shopUrl, agenda }: { shopUrl: string | null; /
         className={[
           "flex flex-col",
           mobileOpen
-            ? "mobile-drawer fixed inset-y-0 left-0 z-50 overflow-y-auto overscroll-contain"
+            ? "mobile-drawer fixed inset-y-0 right-0 z-50 overflow-y-auto overscroll-contain"
             : "hidden lg:flex",
         ].join(" ")}
       >
@@ -295,7 +305,7 @@ export default function Sidebar({ shopUrl, agenda }: { shopUrl: string | null; /
                 <span>Menu</span>
               </h3>
               <div>
-                <NavList items={buildNav(shopUrl)} onNavigate={() => setMobileOpen(false)} />
+                <NavList items={buildNav()} onNavigate={() => setMobileOpen(false)} />
               </div>
             </nav>
 

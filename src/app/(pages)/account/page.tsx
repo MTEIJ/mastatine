@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AccountPanel from "@/components/AccountPanel";
+import AppSettings from "@/components/AppSettings";
 import MembershipRequest from "@/components/MembershipRequest";
 import SignOutButton from "@/components/SignOutButton";
 import { getMembership } from "@/lib/membership";
 import { getNewsletterStatus, type NewsletterStatus } from "@/lib/newsletter";
+import { vapidPublicKey } from "@/lib/push";
 import { requireUser } from "@/lib/session";
 import { setNewsletter } from "./actions";
 
@@ -25,7 +27,7 @@ export default async function AccountPage(props: { searchParams: Promise<{ email
   const [newsletter, membership] = await Promise.all([getNewsletterStatus(user.email), getMembership()]);
 
   return (
-    <div className="container-prose pb-10 pt-20 sm:py-16">
+    <div className="container-prose pb-10 pt-8 sm:py-16">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <h1 className="text-4xl font-extrabold sm:text-5xl">Hello{user.name ? `, ${user.name}` : ""}</h1>
         <SignOutButton />
@@ -45,6 +47,8 @@ export default async function AccountPage(props: { searchParams: Promise<{ email
         <span>Open MastApps</span>
         <span aria-hidden>&rarr;</span>
       </Link>
+
+      <AppSettings vapidPublicKey={vapidPublicKey()} />
 
       <section aria-labelledby="newsletter-title" className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-4">
         <div className="min-w-0">

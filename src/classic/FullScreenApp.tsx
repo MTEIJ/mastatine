@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SidebarAccount from "./SidebarAccount";
+import MobileTabBar from "./MobileTabBar";
 import { useAccountState } from "@/components/AccountState";
 import { getApps } from "@/content/apps";
 import { ADMIN_NAV, isAdminTabCurrent } from "@/content/admin-nav";
@@ -15,6 +16,7 @@ export default function FullScreenApp({ shopUrl, children }: { shopUrl: string |
   const slug = appSlug(pathname);
   const app = getApps(shopUrl).find((a) => a.slug === slug);
   const admin = isAdminPath(pathname);
+  const appNav = app?.nav?.filter((item) => signedIn || !item.needsLogin) ?? [];
 
   return (
     <div className={admin ? "dash dash--admin" : "dash"}>
@@ -39,9 +41,10 @@ export default function FullScreenApp({ shopUrl, children }: { shopUrl: string |
           </nav>
         )}
 
-        {app?.nav && (
+        {/* A single page needs no tabs (signed-out visitors of Activities only have the list). */}
+        {app && appNav.length > 1 && (
           <nav className="dash-nav" aria-label={`${app.name} pages`}>
-            {app.nav.filter((item) => signedIn || !item.needsLogin).map((item) => (
+            {appNav.map((item) => (
               <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined}>
                 {item.icon}
                 <span>{item.label}</span>
@@ -50,7 +53,7 @@ export default function FullScreenApp({ shopUrl, children }: { shopUrl: string |
           </nav>
         )}
 
-        <div className="dash-foot">
+        <div className={admin ? "dash-foot" : "dash-foot dash-foot--desktop"}>
           <SidebarAccount />
         </div>
       </header>
@@ -58,6 +61,9 @@ export default function FullScreenApp({ shopUrl, children }: { shopUrl: string |
       <main id="main" className="dash-main">
         {children}
       </main>
+
+      {/* The admin area keeps its dense tab row; everywhere else phones get the same tab bar as the site. */}
+      {!admin && <MobileTabBar />}
     </div>
   );
 }

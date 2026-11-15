@@ -914,7 +914,7 @@ blockquote::before, blockquote::after { content: ""; content: none; }
   --accent-hover: #d96810;
   --accent-fg: #ffffff;
   --accent-soft: #fff3e8;
-  --accent-text: var(--accent-text); /* orange that stays readable on white */
+  --accent-text: #c2570c; /* orange that stays readable on white */
   --navy: #0f2254;
   --success: #15803d;
   --danger: #b91c1c;
@@ -1200,18 +1200,7 @@ blockquote::before, blockquote::after { content: ""; content: none; }
   .tm-backdrop { backdrop-filter: blur(4px); }
   .tm-box { overflow: hidden; border-radius: 18px; box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.5); }
 
-  /* MastApps tiles: icon, name, one line. Nothing else. */
-  /* Horizontal row: icon, then name and description, with the arrow at the far end. */
-  .app-tile { display: flex; height: 100%; align-items: center; gap: 1rem; padding: 1.1rem 1.25rem; color: var(--ink); background: #fff; border: 2px solid #d5d9e0; border-radius: var(--radius); transition: border-color 0.2s, box-shadow 0.2s; }
-  .app-tile:hover { border-color: var(--accent); box-shadow: var(--shadow-sm); color: var(--ink); }
-  .app-tile__icon { display: grid; width: 3rem; height: 3rem; flex-shrink: 0; place-items: center; border-radius: 14px; background: var(--accent-soft); color: var(--accent-text); transition: background-color 0.2s, color 0.2s; }
-  .app-tile:hover .app-tile__icon { background: var(--accent); color: #fff; }
-  .app-tile__body { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 0.15rem; }
-  .app-tile__head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.6rem; }
-  .app-tile__name { font-size: 1.2rem; font-weight: 800; line-height: 1.2; }
-  .app-tile__text { color: var(--muted); font-size: 0.95rem; line-height: 1.4; }
-  .app-tile__arrow { flex-shrink: 0; width: 20px; height: 20px; color: var(--muted); transition: color 0.2s, transform 0.2s; }
-  .app-tile:hover .app-tile__arrow { color: var(--accent-text); transform: translateX(3px); }
+  /* MastApps launcher tiles: see m3.css. */
   /* "Stay in the loop" band above the footer */
   .loop-band { background: linear-gradient(160deg, #fff5ea 0%, #ffe4c8 100%); border-top: 1px solid var(--border); }
   .loop-band__inside { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem 1.5rem; max-width: 1460px; margin: 0 auto; padding: 1.5rem 1.5rem; }
@@ -1236,7 +1225,10 @@ blockquote::before, blockquote::after { content: ""; content: none; }
   .verbosa-magazine-two #content-masonry article.hentry.news-card,
   .verbosa-magazine-two .content-masonry article.hentry.news-card { height: auto; align-self: stretch; }
   .news-card__top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
-  .news-card .entry-content { overflow-y: auto; overscroll-behavior: contain; padding-right: 0.25rem; }
+  /* Desktop: the card matches the mast card beside it, so long news scrolls inside it and then hands the scroll on to the
+     page. Phones: one column, the card grows to fit, and an inner scroller would only trap swipes. */
+  .news-card .entry-content { overflow-y: auto; padding-right: 0.25rem; }
+  @media (max-width: 650px) { .news-card .entry-content { overflow: visible; } }
   .news-card .continue-reading-link { flex-shrink: 0; width: 100%; }
   .news-card__label { color: var(--navy); font-size: 1rem; font-weight: 800; }
   .news-card__all { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--accent-text); font-size: 1rem; font-weight: 800; transition: gap 0.15s; }
@@ -1323,12 +1315,6 @@ blockquote::before, blockquote::after { content: ""; content: none; }
   .cal-dialog__list a:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
 
   /* ── Small screens ── */
-  .mobile-account { position: fixed; top: 0.75rem; right: 0.75rem; z-index: 45; display: flex; height: 2.75rem; align-items: center; gap: 0.45rem; padding: 0 1rem 0 0.8rem; border-radius: 999px; background: #fff; box-shadow: var(--shadow-md); color: var(--ink); font-size: 0.95rem; font-weight: 800; }
-  .mobile-account:hover { color: var(--accent-text); }
-  /* Floating buttons sit over white cards: an orange ring and a firmer shadow keep them visible. */
-  #nav-toggle, .mobile-account { box-shadow: 0 0 0 1.5px rgb(245 127 32 / 0.55), 0 4px 12px rgb(15 34 84 / 0.22); }
-  #nav-toggle { color: var(--accent-text) !important; font-weight: 800; border-radius: 12px; }
-  .mobile-account { color: var(--accent-text); }
   @media (max-width: 1023px) {
     /* The off-canvas menu must fit narrow phones (it was a fixed 380px). */
     #sidebar { width: min(380px, 88vw); min-width: 0; padding: 2.5rem 1.5rem 2rem; }
@@ -1356,15 +1342,11 @@ blockquote::before, blockquote::after { content: ""; content: none; }
     .lp-slider-overlay { margin-bottom: 1rem; }
     #lp-posts { padding-bottom: 1rem; }
     #content-masonry, .content-masonry { gap: 1rem; }
-    .lp-text-inside { padding: 3.25rem 1.1rem 0.75rem; }
+    .lp-text-inside { padding: 0.75rem 1.1rem; }
     .lp-text-content { margin-top: 0; }
     .lp-text-content h5 { font-size: 0.95rem; line-height: 1.55; }
     .lp-more { display: none; }
     .lp-text-content p { margin: 0.4rem 0 0; font-size: 0.95rem; }
-  }
-  @media (max-width: 400px) {
-    .mobile-account span { display: none; }
-    .mobile-account { width: 2.75rem; padding: 0; justify-content: center; }
   }
 
   /* ── Buttons: a clear shape, a comfortable size, and visible hover / pressed / selected states ── */
@@ -1452,6 +1434,10 @@ blockquote::before, blockquote::after { content: ""; content: none; }
 @media (max-width: 800px) { .announce__summary, .announce__more { display: none; } }
 /* Phones and tablets: no announcement bar (the news is on the homepage and /news). */
 @media (max-width: 1023px) { .announce { display: none; } }
+
+/* Ghost buttons stay plain text: the global button[type="submit"] pill style is unlayered and would otherwise paint them orange. */
+button.btn-ghost[type="submit"] { border: 0; background-color: transparent; color: var(--ink); }
+button.btn-ghost[type="submit"]:hover { background-color: var(--soft); color: var(--ink); }
 
 /* Tick box for action points. Outside any layer and more specific than the global button[type="submit"] pill style. */
 button.check[type="submit"] {

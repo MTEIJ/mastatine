@@ -49,13 +49,74 @@ const columns = (userId: string | null) => sql`
 /** Members-only activities are left out unless the viewer is a member. */
 const audience = (isMember: boolean) => (isMember ? sql`TRUE` : sql`NOT a.members_only`);
 
-/** Upcoming (and the last week of) visible activities, soonest first. */
-export function getActivities(userId: string | null, isMember: boolean) {
+// Fragments are built per call: sql`` must not run at import time (`next build` has no DATABASE_URL).
+/** An activity counts as over once it has ended (or, without an end time, 3 hours after it started). */
+const endsAt = () => sql`COALESCE(a.ends_at, a.starts_at + INTERVAL '3 hours')`;
+
+export interface ActivityFilters {
+  q: string;
+  committeeId: string;
+  when: "upcoming" | "past" | "";
+  /** Only activities the viewer is subscribed to. */
+  mine: boolean;
+}
+
+// The exact UUID shape: a looser pattern lets junk like 36 dashes through, and Postgres then rejects it with a 500.
+const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Reads filter fields from a query string; anything unrecognised falls back to "no filter". A repeated field (?q=a&q=b) arrives as an array: the first value wins. */
+export function parseActivityFilters(params: Record<string, string | string[] | undefined>): ActivityFilters {
+  const one = (name: string) => {
+    const value = params[name];
+    return (Array.isArray(value) ? value[0] : value) ?? "";
+  };
+  const committee = one("committee");
+  const when = one("when");
+  return {
+    q: one("q").trim().slice(0, 100),
+    committeeId: ID.test(committee) ? committee : "",
+    when: when === "upcoming" || when === "past" ? when : "",
+    mine: one("mine") === "1",
+  };
+}
+
+export const hasActivityFilters = (f: ActivityFilters): boolean => Boolean(f.q || f.committeeId || f.when || f.mine);
+
+/** Conditions shared by the upcoming and past lists: the search text, the committee and "only mine". */
+function filterConditions(userId: string | null, f: ActivityFilters) {
+  const pattern = `%${f.q.replace(/[\\%_]/g, "\\$&")}%`;
+  return [
+    ...(f.q ? [sql`(a.name ILIKE ${pattern} OR a.description ILIKE ${pattern} OR a.location ILIKE ${pattern} OR c.name ILIKE ${pattern})`] : []),
+    ...(f.committeeId ? [sql`a.committee_id = ${f.committeeId}`] : []),
+    ...(f.mine && userId ? [sql`EXISTS (SELECT 1 FROM activity_subscriptions s WHERE s.activity_id = a.id AND s.user_id = ${userId})`] : []),
+  ];
+}
+
+const NO_FILTERS: ActivityFilters = { q: "", committeeId: "", when: "", mine: false };
+
+/** Visible activities that have not ended yet, soonest first. */
+export function getActivities(userId: string | null, isMember: boolean, filters: ActivityFilters = NO_FILTERS) {
+  const where = [sql`a.is_visible`, audience(isMember), sql`${endsAt()} > NOW()`, ...filterConditions(userId, filters)]
+    .reduce((all, condition) => sql`${all} AND ${condition}`);
   return sql<Activity[]>`
     SELECT ${columns(userId)} FROM activities a JOIN committees c ON c.id = a.committee_id
-    WHERE a.is_visible AND ${audience(isMember)} AND a.starts_at > NOW() - INTERVAL '7 days'
-    ORDER BY a.starts_at LIMIT 200
+    WHERE ${where} ORDER BY a.starts_at LIMIT 200
   `;
+}
+
+/** Visible activities that are over, most recent first. */
+export function getPastActivities(userId: string | null, isMember: boolean, filters: ActivityFilters = NO_FILTERS, limit = 50) {
+  const where = [sql`a.is_visible`, audience(isMember), sql`${endsAt()} <= NOW()`, ...filterConditions(userId, filters)]
+    .reduce((all, condition) => sql`${all} AND ${condition}`);
+  return sql<Activity[]>`
+    SELECT ${columns(userId)} FROM activities a JOIN committees c ON c.id = a.committee_id
+    WHERE ${where} ORDER BY a.starts_at DESC LIMIT ${limit}
+  `;
+}
+
+/** Committees that organise activities, for the filter dropdown. */
+export function getCommitteeOptions() {
+  return sql<{ id: string; name: string }[]>`SELECT id, name FROM committees ORDER BY name`;
 }
 
 export interface UpcomingActivity {
@@ -75,6 +136,31 @@ export function getUpcomingActivities(limit: number, isMember: boolean) {
     WHERE a.is_visible AND ${audience(isMember)} AND COALESCE(a.ends_at, a.starts_at + INTERVAL '3 hours') > NOW()
     ORDER BY a.starts_at LIMIT ${limit}
   `;
+}
+
+/** An upcoming activity with what a homepage card needs on top of the agenda fields. */
+export interface UpcomingActivityCard extends UpcomingActivity {
+  poster_url: string | null;
+  members_only: boolean;
+}
+
+/** The next visible activities that have not ended yet, with their posters, for the homepage cards. */
+export function getUpcomingActivityCards(limit: number, isMember: boolean) {
+  return sql<UpcomingActivityCard[]>`
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name, a.poster_url, a.members_only
+    FROM activities a JOIN committees c ON c.id = a.committee_id
+    WHERE a.is_visible AND ${audience(isMember)} AND COALESCE(a.ends_at, a.starts_at + INTERVAL '3 hours') > NOW()
+    ORDER BY a.starts_at LIMIT ${limit}
+  `;
+}
+
+/** Which of the given activities the user is subscribed to. */
+export async function getSubscribedIds(userId: string, activityIds: string[]): Promise<Set<string>> {
+  if (activityIds.length === 0) return new Set();
+  const rows = await sql<{ activity_id: string }[]>`
+    SELECT activity_id FROM activity_subscriptions WHERE user_id = ${userId} AND activity_id IN ${sql(activityIds)}
+  `;
+  return new Set(rows.map((r) => r.activity_id));
 }
 
 /** Public activities from the last 60 days onwards, for the public calendar feed (never members-only ones). */

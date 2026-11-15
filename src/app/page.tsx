@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { cacheLife } from "next/cache";
 import sql from "@/lib/db";
@@ -10,6 +11,8 @@ import SubmitModal from "@/classic/SubmitModal";
 import { formatDate, getLatestNews, newsParagraphs } from "@/lib/news";
 import MinecraftBar from "@/components/MinecraftBar";
 import UpcomingActivities from "@/components/UpcomingActivities";
+import HomeHub from "@/components/HomeHub";
+import { getSession } from "@/lib/session";
 
 async function getFirstPage(q: string): Promise<TowerPage> {
   try {
@@ -58,6 +61,16 @@ async function getMastsOfMonth(): Promise<MastSlide[]> {
   }
 }
 
+/** Whether someone is signed in; a broken auth setup shows the visitor homepage rather than an error. */
+async function isSignedIn(): Promise<boolean> {
+  try {
+    return Boolean(await getSession());
+  } catch (error) {
+    console.error("Failed to read the session:", (error as Error).message);
+    return false;
+  }
+}
+
 // Rendered per request: the database is local, and the build has no DB to prerender from.
 
 export const instant = false;
@@ -66,16 +79,24 @@ export default async function HomePage(
   props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }
 ) {
   const q = parseQuery((await props.searchParams)?.s);
-  const [firstPage, mastsOfMonth, latest] = await Promise.all([
+  const [firstPage, mastsOfMonth, latest, signedIn] = await Promise.all([
     getFirstPage(q),
     getMastsOfMonth(),
     getLatestNews(),
+    isSignedIn(),
   ]);
 
   return (
     <>
-      {/* ── lp-text: intro paragraph ── */}
-      <section className="lp-text" id="lp-text-one">
+      {/* Signed in: who we are is known, so their own hub (apps and what's on) leads the page instead of the intro. */}
+      {signedIn && (
+        <Suspense fallback={null}>
+          <HomeHub top />
+        </Suspense>
+      )}
+
+      {/* ── lp-text: intro paragraph (visitors only) ── */}
+      {!signedIn && <section className="lp-text" id="lp-text-one">
         <div className="lp-text-inside">
           <h2 className="lp-text-title">Home</h2>
           <div className="lp-text-content">
@@ -94,7 +115,7 @@ export default async function HomePage(
             <p className="has-text-align-center text-center">Feel free to mast around!</p>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ── lp-slider: image carousel ── */}
       <section className="lp-slider-overlay" id="home">
@@ -102,6 +123,13 @@ export default async function HomePage(
           <HeroCarousel masts={mastsOfMonth} overlay={<MinecraftBar />} highlight={<UpcomingActivities />} />
         </div>
       </section>
+
+      {/* ── What's on, and (signed in) the MastApps: streamed so the masts below are not held back ── */}
+      {!signedIn && (
+        <Suspense fallback={null}>
+          <HomeHub />
+        </Suspense>
+      )}
 
       {/* ── lp-posts: news & tower grid merged ── */}
       <div id="towers" style={{ scrollMarginTop: "2rem" }} />

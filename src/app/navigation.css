@@ -1,0 +1,115 @@
+/*
+ * Getting around: the phone header, the bottom tab bar, the homepage "Coming up" hub and the compact phone footer.
+ * Plain CSS in the same `components` layer as globals.css (whose layer order this file joins), so utilities still win.
+ * Colours, shapes and springs come from the Material 3 tokens in m3.css.
+ */
+@layer components {
+  /* ── Phone / tablet header: a plain website header. Brand on the left; sign in (visitors) and the menu on the right ── */
+  .mobile-bar { position: sticky; top: 0; z-index: 30; display: flex; flex: 0 0 100%; align-items: center; gap: 0.25rem; height: 3.75rem; padding: 0 0.4rem 0 1rem; background: #fff; color: var(--md-on-surface); }
+  .mobile-bar__brand { display: flex; min-width: 0; flex: 1; align-items: center; gap: 0.6rem; color: var(--md-on-surface); font-size: 1.1rem; font-weight: 900; letter-spacing: -0.01em; white-space: nowrap; }
+  .mobile-bar__brand span { overflow: hidden; text-overflow: ellipsis; }
+  .mobile-bar__brand:hover { color: var(--md-on-surface); }
+  .mobile-bar__signin { display: inline-flex; height: 2.5rem; flex: none; align-items: center; padding: 0 0.9rem; border-radius: var(--shape-full); color: var(--md-primary); font-size: 0.95rem; font-weight: 800; transition: background-color 0.2s var(--ease-emphasized); }
+  .mobile-bar__signin:hover { background: color-mix(in srgb, var(--md-primary) 8%, transparent); color: var(--md-primary); }
+  .mobile-bar__menu { display: grid; width: 3rem; height: 3rem; flex: none; place-items: center; border: 0; border-radius: var(--shape-full); background: transparent; color: var(--md-on-surface); cursor: pointer; transition: background-color 0.2s var(--ease-emphasized); }
+  .mobile-bar__menu:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
+  /* Scrolled: a hairline appears under the header (decorative, so only where scroll-driven animations exist). */
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    .mobile-bar { animation: app-bar-lift linear both; animation-timeline: scroll(block root); animation-range: 0 3rem; }
+  }
+  @media (max-width: 1023px) {
+    /* The header takes a full row above the page. */
+    #container.two-columns-left { flex-wrap: wrap; }
+    /* With a 0 basis the page would squeeze in beside the header at zero width. */
+    #container.two-columns-left .main { flex-basis: 100%; }
+    /* Keyboard focus never lands under the sticky bar (WCAG 2.4.11). */
+    html { scroll-padding-top: 4.5rem; }
+  }
+
+  /* ── Navigation bar (M3 Expressive flexible bar): icon in a pill indicator, label below; side by side on tablets ── */
+  .tabbar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 35; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 0.4rem 0.25rem calc(0.4rem + env(safe-area-inset-bottom)); background: var(--md-surface-container); box-shadow: 0 -1px 3px rgb(34 26 21 / 0.08); }
+  .tabbar__tab { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.15rem 0; color: var(--md-on-surface-variant); font-size: 0.75rem; font-weight: 800; line-height: 1.15; }
+  .tabbar__icon { position: relative; display: grid; width: 3.5rem; height: 2rem; place-items: center; }
+  .tabbar__icon::before { content: ""; position: absolute; inset: 0; border-radius: var(--shape-full); background: var(--md-secondary-container); opacity: 0; scale: 0.4 1; transition: scale var(--spring-fast-ms) var(--spring-fast), opacity 0.15s var(--ease-emphasized); }
+  .tabbar__icon svg { position: relative; width: 24px; height: 24px; transition: scale var(--spring-fast-ms) var(--spring-fast); }
+  .tabbar__label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tabbar__tab:hover .tabbar__icon::before { opacity: 0.55; scale: 1; }
+  .tabbar__tab:active .tabbar__icon svg { scale: 0.88; }
+  .tabbar__tab[aria-current="page"] { color: var(--md-on-surface); }
+  .tabbar__tab[aria-current="page"] .tabbar__icon { color: var(--md-on-secondary-container); }
+  .tabbar__tab[aria-current="page"] .tabbar__icon::before { opacity: 1; scale: 1; }
+  /* Active icons fill in, like M3's filled icon variants. */
+  .tabbar__tab[aria-current="page"] .tabbar__icon svg { fill: currentColor; fill-opacity: 0.22; }
+  @media (min-width: 600px) {
+    /* Wide enough: icon and label share one pill (the expressive horizontal item). */
+    .tabbar { padding-block: 0.6rem calc(0.6rem + env(safe-area-inset-bottom)); }
+    .tabbar__tab { position: relative; flex-direction: row; justify-content: center; gap: 0.4rem; height: 2.5rem; margin-inline: auto; padding: 0 1rem; isolation: isolate; font-size: 0.875rem; }
+    .tabbar__icon { position: static; width: auto; height: auto; }
+    .tabbar__icon::before { z-index: -1; }
+  }
+  /* Inside a full-screen app the bar is the last row of the flex shell, so the save bar of long forms sits above it. */
+  .dash .tabbar { position: static; flex: none; }
+  @media (max-width: 1023px) {
+    /* Only when the navigation bar is there (app mode): room for it under the footer, and it carries the account link. */
+    body:has(.tabbar) #colophon { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+    .dash:has(.tabbar) .dash-foot--desktop { display: none; }
+  }
+
+  /* ── Homepage hub: app launcher (signed in) and the next activities (everyone) ── */
+  .hub { margin: 2rem 0; padding: 1.75rem 1.75rem 2rem; border-radius: var(--shape-xl); background: var(--md-surface); box-shadow: none; color: var(--md-on-surface); }
+  .hub--top { margin-top: 0; }
+  .hub__apps { margin-bottom: 1.75rem; }
+  .hub-apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+  .hub-app { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 0.75rem 0.25rem 0.65rem; border-radius: var(--shape-lg-plus); color: var(--md-on-surface); font-size: 0.9rem; font-weight: 800; line-height: 1.2; text-align: center; transition: background-color 0.2s var(--ease-emphasized), border-radius var(--spring-fast-ms) var(--spring-fast); }
+  .hub-app:hover { background: color-mix(in srgb, var(--md-on-surface) 6%, transparent); color: var(--md-on-surface); }
+  .hub-app:active { border-radius: var(--shape-md); }
+
+  .hub__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; margin-bottom: 1rem; }
+  .hub__title { margin: 0; font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2; }
+  .hub__all { display: inline-flex; min-height: 2.5rem; align-items: center; gap: 0.35rem; padding: 0 1rem; border-radius: var(--shape-full); background: var(--md-secondary-container); color: var(--md-on-secondary-container); font-size: 0.9rem; font-weight: 800; transition: background-color 0.2s var(--ease-emphasized), border-radius var(--spring-fast-ms) var(--spring-fast); }
+  .hub__all:hover { background: color-mix(in srgb, var(--md-secondary-container) 88%, var(--md-on-secondary-container)); color: var(--md-on-secondary-container); }
+  .hub__all:active { border-radius: var(--shape-md); }
+  .hub__all svg { transition: translate var(--spring-fast-ms) var(--spring-fast); }
+  .hub__all:hover svg { translate: 3px 0; }
+  .hub__empty { margin: 0; color: var(--md-on-surface-variant); }
+
+  .hub-acts { display: grid; gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
+  @media (min-width: 700px) { .hub-acts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .hub-act { display: flex; height: 100%; gap: 0.9rem; padding: 0.65rem; border-radius: var(--shape-lg-plus); background: var(--md-surface-container-low); color: var(--md-on-surface); transition: border-radius var(--spring-default-ms) var(--spring-default), scale var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized); }
+  .hub-act:hover { border-radius: var(--shape-xl); background: var(--md-surface-container); color: var(--md-on-surface); }
+  .hub-act:active { scale: 0.98; }
+  .hub-act.is-going { background: color-mix(in srgb, var(--success) 9%, var(--md-surface-container-low)); }
+  .hub-act__thumb { width: 4rem; height: 5rem; flex: none; border-radius: var(--shape-md); object-fit: cover; }
+  .hub-act__date { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--md-primary-container); color: var(--md-on-primary-container); line-height: 1.1; }
+  .hub-act__date span:first-child { font-size: 1.6rem; font-weight: 900; }
+  .hub-act__date span:last-child { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+  .hub-act__body { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 0.1rem; line-height: 1.3; }
+  .hub-act__name { display: -webkit-box; overflow: hidden; font-size: 1.05rem; font-weight: 900; letter-spacing: -0.01em; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .hub-act__when { color: var(--md-primary); font-size: 0.9rem; font-weight: 800; }
+  .hub-act__where { overflow: hidden; color: var(--md-on-surface-variant); font-size: 0.88rem; text-overflow: ellipsis; white-space: nowrap; }
+  .hub-act__tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: auto; padding-top: 0.35rem; }
+  .hub-tag { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.1rem 0.55rem; border-radius: var(--shape-sm); background: var(--md-surface-container-highest); color: var(--md-on-surface-variant); font-size: 0.75rem; font-weight: 800; }
+  .hub-tag svg { width: 12px; height: 12px; }
+  .hub-tag--going { background: color-mix(in srgb, var(--success) 14%, transparent); color: var(--success); }
+
+  .hub__invite { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1rem; margin-top: 1.1rem; padding: 1rem 1.1rem; border-radius: var(--shape-lg-plus); background: var(--md-primary-container); }
+  .hub__invite p { margin: 0; flex: 1 1 16rem; color: var(--md-on-primary-container); font-size: 0.95rem; line-height: 1.45; }
+  .hub__invite strong { color: var(--md-on-primary-container); }
+
+  @media (max-width: 1023px) {
+    .hub { margin: 0 0 1rem; padding: 1.25rem 1rem 1.4rem; }
+    .hub__title { font-size: 1.3rem; }
+    .hub-apps { grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr)); gap: 0.15rem; }
+    .hub-app { padding: 0.45rem 0.1rem; font-size: 0.78rem; }
+  }
+
+  /* ── Phone footer: the two link lists side by side, the brand underneath, instead of one long column ── */
+  @media (max-width: 800px) {
+    #colophon-inside { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 0; }
+    #colophon .widget-container { width: auto; float: none; padding: 1.5rem 0.75rem 0.5rem; }
+    #colophon .widget-container:nth-child(2) { order: 3; grid-column: 1 / -1; padding: 0.75rem 1rem 1.5rem; }
+    #colophon .widget-container:nth-child(2) svg { width: 52px; height: 52px; }
+    #colophon .widget-title { font-size: 0.95rem; }
+    #colophon li { font-size: 0.95rem; }
+  }
+}

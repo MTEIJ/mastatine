@@ -2,6 +2,7 @@ import sql from "@/lib/db";
 import { formatDateTime } from "@/lib/datetime";
 import { absoluteUrl, activityConfirmationEmail, activityReminderEmail, type ActivityMailDetails, type EmailContent } from "@/lib/email-templates";
 import { sendMail } from "@/lib/mailer";
+import { pushReminder } from "@/lib/activity-push";
 import { formatEuro, type SignupPick } from "@/lib/signup-options";
 
 export interface SubscriptionMail {
@@ -84,6 +85,12 @@ export async function sendDueReminders(): Promise<{ sent: number; failed: number
       console.error("Failed to send an activity reminder:", (error as Error).message);
       await sql`UPDATE activity_subscriptions SET reminder_sent_at = NULL WHERE activity_id = ${row.activity_id} AND user_id = ${row.user_id}`;
     }
+  }
+  // One push per activity to everyone it is due for (claimed above, so overlapping runs never repeat it).
+  const byActivity = new Map<string, SubscriptionMail[]>();
+  for (const row of due) byActivity.set(row.activity_id, [...(byActivity.get(row.activity_id) ?? []), row]);
+  for (const [activityId, rows] of byActivity) {
+    await pushReminder(activityId, rows[0].activity_name, rows[0].starts_at, rows[0].location, rows.map((r) => r.user_id));
   }
   return { sent, failed };
 }

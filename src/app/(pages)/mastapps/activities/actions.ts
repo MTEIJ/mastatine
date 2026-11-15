@@ -12,6 +12,7 @@ import { formatDateTime } from "@/lib/datetime";
 import { MAX_WAITLIST, notifyWaitlist } from "@/lib/waitlist";
 import type { ActivityChange } from "@/lib/email-templates";
 import { notifyInvitedCommittees } from "@/lib/activity-invites";
+import { announceActivity } from "@/lib/activity-push";
 import { getMembership } from "@/lib/membership";
 import { isCommitteeMember } from "@/lib/committees";
 import { fromLocalInput } from "@/lib/datetime";
@@ -106,15 +107,20 @@ export async function saveActivity(_prev: ActivityFormState, formData: FormData)
   let existingPoster: string | null = null;
   let before: ActivitySnapshot | null = null;
   let alreadyInvited = { bar: false, photo: false };
+  let wasVisible = false;
   if (id) {
-    const [existing] = await sql<(ActivitySnapshot & { committee_id: string; poster_url: string | null; invite_boss: boolean; invite_flitcie: boolean })[]>`
-      SELECT committee_id, poster_url, invite_boss, invite_flitcie, name, starts_at, ends_at, location, cost_cents FROM activities WHERE id = ${id}
+    const [existing] = await sql<(ActivitySnapshot & { committee_id: string; poster_url: string | null; invite_boss: boolean; invite_flitcie: boolean; is_visible: boolean })[]>`
+      SELECT committee_id, poster_url, invite_boss, invite_flitcie, is_visible, name, starts_at, ends_at, location, cost_cents FROM activities WHERE id = ${id}
     `;
     if (!existing || !(await isCommitteeMember(session.user, existing.committee_id))) return { error: "You cannot edit this activity." };
     existingPoster = existing.poster_url;
     before = existing;
     alreadyInvited = { bar: existing.invite_boss, photo: existing.invite_flitcie };
+    wasVisible = existing.is_visible;
   }
+  // A push to everyone when an activity first becomes visible (created visible, or a hidden draft published).
+  const announcement = { name: d.name, starts_at: d.starts_at, location: d.location, members_only: d.members_only };
+  const announce = d.is_visible && !wasVisible && d.starts_at > new Date();
 
   let posterUrl = existingPoster;
   const poster = formData.get("poster");
@@ -163,12 +169,14 @@ export async function saveActivity(_prev: ActivityFormState, formData: FormData)
     after(async () => {
       if (d.notify_changes && d.is_visible && (changes.length > 0 || note)) await notifyActivityChanged(id, changes, note, session.user.id);
       await notifyWaitlist(id);
+      if (announce) await announceActivity({ id, ...announcement });
     });
     refresh(id);
     redirect(`${BASE}/${id}`);
   }
   const [created] = await sql<{ id: string }[]>`INSERT INTO activities ${sql({ ...values, created_by: session.user.id })} RETURNING id`;
   await notifyInvitedCommittees({ id: created.id, ...summary }, newInvites);
+  if (announce) after(() => announceActivity({ id: created.id, ...announcement }));
   refresh();
   redirect(`${BASE}/${created.id}`);
 }

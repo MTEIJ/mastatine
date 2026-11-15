@@ -1,10 +1,8 @@
 import MastatineLogo from "./MastatineLogo";
 import Link from "next/link";
 import { siteUrl } from "@/lib/env";
-import { getShopUrl } from "@/lib/shop";
 
 export default function Colophon() {
-  const shopUrl = getShopUrl();
   return (
     <aside id="colophon" className="footer-three cryout" itemScope itemType="http://schema.org/WPSideBar">
       <div id="colophon-inside">
@@ -40,9 +38,6 @@ export default function Colophon() {
             <p style={{ fontSize: "0.95em", color: "var(--text-mid)", marginTop: "0.4em" }}>
               Not affiliated with S.A. Astatine or the University of Twente.
             </p>
-            <p style={{ fontSize: "0.85em", color: "var(--text-mid)", marginTop: "0.4em" }}>
-              Stickers and merch are set in the Astatine typeface, made for S.A. Astatine and used with their permission.
-            </p>
           </div>
         </section>
 
@@ -55,7 +50,7 @@ export default function Colophon() {
                 { label: "Newsletter", href: "/newsletter", external: false },
                 { label: "Calendar", href: `${siteUrl()}/calendar.ics`.replace(/^https?:/, "webcal:"), external: false },
                 { label: "Sign in", href: "/login", external: false },
-                ...(shopUrl ? [{ label: "Merch shop", href: shopUrl, external: true }] : []),
+                { label: "Merch", href: "/shop", external: false },
               ].map(({ label, href, external }) => (
                 <li key={label} style={{ marginBottom: "0.25em" }}>
                   <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>{label}</a>

@@ -10,6 +10,7 @@ import {
   type EmailContent,
 } from "@/lib/email-templates";
 import { sendMail } from "@/lib/mailer";
+import { pushCancellation, pushToParticipants } from "@/lib/activity-push";
 
 const BATCH = 10;
 
@@ -44,6 +45,8 @@ export async function notifyActivityChanged(activityId: string, changes: Activit
   const rows = await subscribersOf(activityId);
   if (rows.length === 0) return 0;
   const sent = await sendEach(rows, (row) => activityChangedEmail(toDetails(row), changes, note), "activity change notice");
+  const what = changes.length > 0 ? `Changed: ${changes.map((c) => c.label.toLowerCase()).join(", ")}.` : "";
+  await pushToParticipants(activityId, rows.map((r) => r.user_id), `Update: ${rows[0].activity_name}`, [what, note].filter(Boolean).join(" ") || "Check the latest details.");
   await logMessage(activityId, sentBy, "update", sent);
   return sent;
 }
@@ -58,7 +61,12 @@ export async function prepareCancellation(activityId: string): Promise<Cancellat
   const first = rows[0];
   if (!first || first.starts_at <= new Date()) return null;
   const email = activityCancelledEmail(first.activity_name, first.committee_name, formatDateTime(first.starts_at));
-  return { send: () => sendEach(rows, () => email, "cancellation notice") };
+  return {
+    send: async () => {
+      await pushCancellation(rows.map((r) => r.user_id), first.activity_name, first.starts_at);
+      return sendEach(rows, () => email, "cancellation notice");
+    },
+  };
 }
 
 export const MESSAGES_PER_DAY = 3;
@@ -92,6 +100,7 @@ export async function sendParticipantMessage(
       }),
     "activity message",
   );
+  await pushToParticipants(activityId, rows.map((r) => r.user_id), `${rows[0].activity_name}: ${message.subject}`, message.body.slice(0, 180));
   await logMessage(activityId, sender.id, "message", sent);
   return sent;
 }

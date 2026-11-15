@@ -1,0 +1,26 @@
+import type { MetadataRoute } from "next";
+
+/** Makes the site installable as an app; the shortcuts appear on a long press of the home-screen icon. */
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    id: "/",
+    name: "M.A. Mastatine",
+    short_name: "Mastatine",
+    description: "Activities, MastApps and the finest masts of M.A. Mastatine.",
+    start_url: "/",
+    scope: "/",
+    display: "standalone",
+    background_color: "#ffffff",
+    theme_color: "#f57f20",
+    categories: ["social", "lifestyle"],
+    icons: [
+      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
+    shortcuts: [
+      { name: "Activities", url: "/mastapps/activities", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+      { name: "MastApps", url: "/mastapps", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+    ],
+  };
+}

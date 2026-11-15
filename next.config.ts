@@ -8,7 +8,7 @@ const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'", // Next.js emits inline bootstrap scripts; no nonce support without dynamic rendering everywhere
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://image.spreadshirtmedia.net", // merch previews are loaded by the visitor's browser
   "font-src 'self' data:",
   "connect-src 'self'",
   "object-src 'none'",
@@ -42,7 +42,18 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: process.env.DEV_ALLOWED_ORIGINS?.split(",").filter(Boolean),
   outputFileTracingRoot: path.resolve(__dirname),
   async headers() {
-    return [{ source: "/:path*", headers: SECURITY_HEADERS }];
+    return [
+      { source: "/:path*", headers: SECURITY_HEADERS },
+      // The service worker must never be served stale, and may only run our own code.
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
+        ],
+      },
+    ];
   },
   async redirects() {
     return [
