@@ -14,7 +14,6 @@ import PwaBoot from "@/components/PwaBoot";
 import { AccountStateProvider } from "@/components/AccountState";
 import { getAnnouncement } from "@/lib/announcement";
 import { siteUrl } from "@/lib/env";
-import { getShopUrl } from "@/lib/shop";
 import { getSession } from "@/lib/session";
 
 const lato = Lato({
@@ -62,7 +61,7 @@ async function AnnouncementSlot() {
   return announcement ? <AnnouncementBar {...announcement} /> : null;
 }
 
-// The shop link comes from a runtime environment variable, so the layout is rendered per request.
+// The layout reads who is signed in, so it is rendered per request.
 export const instant = false;
 
 /** Who is signed in, for the sidebar and the app shell. A broken auth setup shows the signed-out site rather than no site. */
@@ -90,7 +89,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </a>
         <PwaBoot />
         <AccountStateProvider {...account}>
-        <AppShell shopUrl={getShopUrl()} sidebar={<Sidebar shopUrl={getShopUrl()} agenda={<Suspense fallback={<AgendaSkeleton />}><SidebarAgenda /></Suspense>} />} colophon={<Colophon />} announcement={<Suspense fallback={null}><AnnouncementSlot /></Suspense>}>
+        <AppShell sidebar={<Sidebar agenda={<Suspense fallback={<AgendaSkeleton />}><SidebarAgenda /></Suspense>} />} colophon={<Colophon />} announcement={<Suspense fallback={null}><AnnouncementSlot /></Suspense>}>
           {children}
         </AppShell>
         </AccountStateProvider>

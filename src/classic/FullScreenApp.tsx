@@ -10,11 +10,11 @@ import { ADMIN_NAV, isAdminTabCurrent } from "@/content/admin-nav";
 import { appSlug, isAdminPath } from "@/lib/paths";
 
 /** Full-screen shell for a single MastApp or the admin area: a slim header with the pages, and a scrolling canvas. */
-export default function FullScreenApp({ shopUrl, children }: { shopUrl: string | null; children: React.ReactNode }) {
+export default function FullScreenApp({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { signedIn } = useAccountState();
   const slug = appSlug(pathname);
-  const app = getApps(shopUrl).find((a) => a.slug === slug);
+  const app = getApps().find((a) => a.slug === slug);
   const admin = isAdminPath(pathname);
   const appNav = app?.nav?.filter((item) => signedIn || !item.needsLogin) ?? [];
 

@@ -170,7 +170,7 @@ function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate: () => vo
   );
 }
 
-export default function Sidebar({ shopUrl, agenda }: { shopUrl: string | null; /** Upcoming activities, rendered on the server. */ agenda?: React.ReactNode }) {
+export default function Sidebar({ agenda }: { /** Upcoming activities, rendered on the server. */ agenda?: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { signedIn } = useAccountState();
   const sidebarRef = useRef<HTMLElement>(null);

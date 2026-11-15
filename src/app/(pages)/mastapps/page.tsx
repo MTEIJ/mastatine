@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import AdminAppTile from "@/components/AdminAppTile";
 import AppTile from "@/components/AppTile";
 import { getApps } from "@/content/apps";
-import { getShopUrl } from "@/lib/shop";
 import { getCachedUpcomingActivities } from "@/lib/activities-cached";
 import { formatDayMonth, formatTime } from "@/lib/datetime";
 import { getMembership } from "@/lib/membership";
@@ -27,7 +26,7 @@ async function nextActivityLine(): Promise<string | null> {
 }
 
 export default async function MastAppsPage() {
-  const apps = getApps(getShopUrl());
+  const apps = getApps();
   const next = await nextActivityLine();
 
   return (

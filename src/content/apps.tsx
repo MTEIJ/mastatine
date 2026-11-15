@@ -77,7 +77,7 @@ export const ADMIN_APP: MastApp = {
   access: "Admins",
 };
 
-export function getApps(shopUrl: string | null, isAdmin = false): MastApp[] {
+export function getApps(isAdmin = false): MastApp[] {
   return [
     {
       slug: "activities",

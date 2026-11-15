@@ -6,7 +6,6 @@ import { getSubscribedIds, type UpcomingActivityCard } from "@/lib/activities";
 import { formatDayMonth, formatDayNumber, formatMonthShort, formatTime } from "@/lib/datetime";
 import { getMembership } from "@/lib/membership";
 import { getSession } from "@/lib/session";
-import { getShopUrl } from "@/lib/shop";
 import { CheckIcon } from "@/components/ui/icons";
 import ShapeIcon from "@/components/ui/ShapeIcon";
 
@@ -92,7 +91,7 @@ export default async function HomeHub({ top = false }: { /** Leads the page (sig
     <section className={top ? "hub hub--top" : "hub"} aria-labelledby="hub-title">
       {session && (
         <div className="hub__apps">
-          <AppLauncher apps={getApps(getShopUrl(), session.user.role === "admin")} />
+          <AppLauncher apps={getApps(session.user.role === "admin")} />
         </div>
       )}
 

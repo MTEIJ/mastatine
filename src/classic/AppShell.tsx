@@ -8,7 +8,6 @@ import MobileTabBar from "./MobileTabBar";
 import { isFullScreenAppPath, isInformationPath } from "@/lib/paths";
 
 interface AppShellProps {
-  shopUrl: string | null;
   /** The regular site chrome, rendered on the server and passed in. */
   sidebar: ReactNode;
   colophon: ReactNode;
@@ -18,11 +17,11 @@ interface AppShellProps {
 }
 
 /** MastApps open full screen as a dashboard; every other page keeps the site layout (sidebar + footer). */
-export default function AppShell({ shopUrl, sidebar, colophon, announcement, children }: AppShellProps) {
+export default function AppShell({ sidebar, colophon, announcement, children }: AppShellProps) {
   const pathname = usePathname();
 
   if (isFullScreenAppPath(pathname)) {
-    return <FullScreenApp shopUrl={shopUrl}>{children}</FullScreenApp>;
+    return <FullScreenApp>{children}</FullScreenApp>;
   }
 
   return (
