@@ -37,7 +37,10 @@ export default function AboutPage() {
               the University of Twente, or to the University of Twente itself.
             </li>
             <li>We are not a study association. Nothing here grants study credits, discounts or any academic standing.</li>
-            <li>Our name is a pun. Our logo, text and layout are our own and are not taken from anyone else.</li>
+            <li>
+              Our name is a pun. Our logo and layout are our own and are not taken from anyone else. The one thing we borrow is the
+              lettering: our stickers and merch are set in the Astatine typeface, made for S.A. Astatine, which we use with their permission.
+            </li>
             <li>We do not use, copy or display the real association’s data, calendar, logo or content.</li>
             <li>Statements on this site are satire. Please do not mistake them for statements of fact, or of anyone else.</li>
           </ul>
