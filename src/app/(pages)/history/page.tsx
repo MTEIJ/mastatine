@@ -4,7 +4,7 @@ import { HISTORY } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "History",
-  description: "A short and slightly embellished history of S.A. Mastatine.",
+  description: "A short and slightly embellished history of M.A. Mastatine.",
 };
 
 export const instant = false;

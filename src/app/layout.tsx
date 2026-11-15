@@ -21,18 +21,18 @@ const lato = Lato({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "S.A. Mastatine | The study association for mastende engineers",
-    template: "%s · S.A. Mastatine",
+    default: "M.A. Mastatine | The Mast Association for mastende engineers",
+    template: "%s · M.A. Mastatine",
   },
   description:
-    "S.A. Mastatine is the study association for Advanced Mast Technology. Submit your favourite mast and vote on the most impressive electromagnetic structures in the Netherlands.",
-  applicationName: "S.A. Mastatine",
+    "M.A. Mastatine (Mast Association) is the association for Advanced Mast Technology. Submit your favourite mast and vote on the most impressive electromagnetic structures in the Netherlands.",
+  applicationName: "M.A. Mastatine",
   icons: { icon: "/favicon.svg" },
   openGraph: {
-    title: "S.A. Mastatine",
+    title: "M.A. Mastatine",
     description: "Submit a mast and vote on the finest transmission towers.",
     url: siteUrl(),
-    siteName: "S.A. Mastatine",
+    siteName: "M.A. Mastatine",
     type: "website",
   },
   robots: { index: true, follow: true },

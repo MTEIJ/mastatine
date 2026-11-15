@@ -14,7 +14,7 @@ const MUTED = "#5b6676";
 const LINE = "#e6e9ef";
 
 export const PARODY_NOTICE =
-  "S.A. Mastatine is a parody. It is not affiliated with, endorsed by or connected to S.A. Astatine or the University of Twente.";
+  "M.A. Mastatine is a parody. It is not affiliated with, endorsed by or connected to S.A. Astatine or the University of Twente.";
 
 export function escapeHtml(value: string): string {
   return value

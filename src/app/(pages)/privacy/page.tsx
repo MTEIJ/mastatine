@@ -5,7 +5,7 @@ import { getLegalIdentity } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Privacy",
-  description: "What S.A. Mastatine stores about you, why, how long, and how to have it removed.",
+  description: "What M.A. Mastatine stores about you, why, how long, and how to have it removed.",
 };
 
 // Reads the controller details at request time so they can change without a rebuild.
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
       <div className="container-prose prose-lite">
         <h2>Who is responsible</h2>
         <p>
-          {legal.name ? <strong>{legal.name}</strong> : <strong>S.A. Mastatine</strong>}
+          {legal.name ? <strong>{legal.name}</strong> : <strong>M.A. Mastatine</strong>}
           {legal.address ? `, ${legal.address}` : ""}
           {legal.kvk ? ` (KvK ${legal.kvk})` : ""} runs this site and decides what is done with your data (the “controller” under the
           GDPR/AVG).{" "}
@@ -130,7 +130,7 @@ export default function PrivacyPage() {
 
         <h2>This is a parody</h2>
         <p>
-          S.A. Mastatine is a parody and is not affiliated with S.A. Astatine or the University of Twente. See the{" "}
+          M.A. Mastatine is a parody and is not affiliated with S.A. Astatine or the University of Twente. See the{" "}
           <Link href="/about#disclaimer">disclaimer</Link> and our <Link href="/terms">site rules</Link>.
         </p>
       </div>

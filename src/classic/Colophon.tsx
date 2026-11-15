@@ -31,11 +31,11 @@ export default function Colophon() {
         {/* Column 2: Logo + tagline */}
         <section className="widget-container" style={{ alignItems: "center" }}>
           <div className="footer-widget-inside" style={{ textAlign: "center" }}>
-            <Link href="/" title="S.A. Mastatine" style={{ display: "inline-block" }}>
+            <Link href="/" title="M.A. Mastatine" style={{ display: "inline-block" }}>
               <MastatineLogo size={80} />
             </Link>
             <p style={{ marginTop: "0.5em", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", fontSize: "0.85em", color: "var(--text)" }}>
-              S.A. Mastatine
+              M.A. Mastatine
             </p>
             <p style={{ fontSize: "0.95em", color: "var(--text-mid)", marginTop: "0.4em" }}>
               Not affiliated with S.A. Astatine or the University of Twente.

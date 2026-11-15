@@ -1,4 +1,4 @@
-# S.A. Mastatine
+# M.A. Mastatine
 
 Next.js 16 (App Router) + PostgreSQL on [Bun](https://bun.sh), self-hosted with Docker Compose.
 

@@ -81,7 +81,7 @@ export default async function HomePage(
           <div className="lp-text-content">
             <h5 className="wp-block-heading has-text-align-center">
               <strong>
-                S.A. Mastatine is the study association for students of Advanced Mastology
+                M.A. Mastatine is the mast association for students of Advanced Mastology
                 and Nanomastology, and co-association of Mastotics at the University of Maste.{" "}
                 <span className="lp-more">
                   We are an international, non-profit association that supports students (and staff)

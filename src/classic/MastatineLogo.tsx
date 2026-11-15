@@ -27,7 +27,7 @@ export default function MastatineLogo({ size = 64, className = "", mono = false 
       width={size}
       height={size}
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="S.A. Mastatine logo"
+      aria-label="M.A. Mastatine logo"
       className={className}
     >
       {/* Outer orbital ring */}

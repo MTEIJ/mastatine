@@ -5,7 +5,7 @@ import { getLegalIdentity } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Site rules",
-  description: "What you may post on S.A. Mastatine, how we moderate, and how to report content.",
+  description: "What you may post on M.A. Mastatine, how we moderate, and how to report content.",
 };
 
 // Reads the contact address at request time so it can change without a rebuild.
@@ -49,7 +49,7 @@ export default function TermsPage() {
 
         <h2>The site itself</h2>
         <p>
-          S.A. Mastatine is a parody run by volunteers. We do our best to keep it running but give no guarantees. Nothing here is advice. Mandatory
+          M.A. Mastatine is a parody run by volunteers. We do our best to keep it running but give no guarantees. Nothing here is advice. Mandatory
           consumer and privacy rights are not affected; see our <Link href="/privacy">privacy page</Link>. Dutch law applies.
         </p>
       </div>

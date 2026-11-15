@@ -4,7 +4,7 @@ import { getLegalIdentity } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Get in touch with S.A. Mastatine: questions, takedown requests, press, or concerns.",
+  description: "Get in touch with M.A. Mastatine: questions, takedown requests, press, or concerns.",
 };
 
 // Reads CONTACT_EMAIL at request time so the address can change without a rebuild.

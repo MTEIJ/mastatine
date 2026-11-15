@@ -41,7 +41,7 @@ export const MEMBERSHIP_PERKS: { title: string; text: string }[] = [
 ];
 
 export const FAQ: { q: string; a: string }[] = [
-  { q: "Is this the real study association?", a: "No. S.A. Mastatine is a parody. The real association is S.A. Astatine of the University of Twente. We are not connected to them or to the university." },
+  { q: "Is this the real study association?", a: "No. M.A. Mastatine is a parody. The real association is S.A. Astatine of the University of Twente. We are not connected to them or to the university." },
   { q: "Do I get study credits?", a: "No credits, no discounts and no academic standing of any kind. Only the admiration of fellow mast enthusiasts." },
   { q: "Does membership cost anything?", a: "No. Everything on this site is free." },
   { q: "Can I delete my account?", a: "Yes, from your account page, at any time. You can also unsubscribe from the newsletter with one click." },

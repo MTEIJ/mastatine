@@ -28,6 +28,7 @@
     </g>
   </g>
 
-  <text x="600" y="700" text-anchor="middle" font-size="34" font-weight="700" letter-spacing="10" fill="#8a8a8a">S.A.</text>
+  <text x="600" y="700" text-anchor="middle" font-size="34" font-weight="700" letter-spacing="10" fill="#8a8a8a">M.A.</text>
   <text x="600" y="800" text-anchor="middle" font-size="94" font-weight="900" letter-spacing="-1"><tspan fill="#f57f20">MAST</tspan><tspan fill="#0f2254">ATINE</tspan></text>
+  <text x="600" y="862" text-anchor="middle" font-size="30" font-weight="700" letter-spacing="10" fill="#8a8a8a">MAST ASSOCIATION</text>
 </svg>

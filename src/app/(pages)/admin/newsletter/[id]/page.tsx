@@ -115,7 +115,7 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
       <div>
         <p className="text-sm font-semibold text-muted">Preview</p>
         <div className="mt-3 overflow-hidden rounded-2xl border border-line bg-white text-[#0f1b2d]">
-          <div className="bg-[#0f1b2d] px-6 py-4 font-bold text-white">S.A. Mastatine</div>
+          <div className="bg-[#0f1b2d] px-6 py-4 font-bold text-white">M.A. Mastatine</div>
           <div className="space-y-4 p-6">
             <h3 className="text-xl font-bold">{issue.subject}</h3>
             {/* textToHtml escapes all input; only its own paragraph/link markup is emitted. */}

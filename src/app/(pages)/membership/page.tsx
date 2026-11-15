@@ -7,7 +7,7 @@ import { getMembership } from "@/lib/membership";
 
 export const metadata: Metadata = {
   title: "Membership",
-  description: "Membership of S.A. Mastatine is free and optional. Here is what you get.",
+  description: "Membership of M.A. Mastatine is free and optional. Here is what you get.",
 };
 
 
@@ -19,7 +19,7 @@ export default async function MembershipPage() {
     <>
       <PageHeader
         title="Membership"
-        intro="It is free, it is optional, and it is not a real study association membership. Here is what you get."
+        intro="It is free, it is optional, and it is not a study association membership. Here is what you get."
       />
       <div className="container-page">
         <ul className="grid gap-5 sm:grid-cols-2">

@@ -5,7 +5,7 @@ import { formatDate, getNews } from "@/lib/news";
 
 export const metadata: Metadata = {
   title: "News",
-  description: "News and announcements from S.A. Mastatine.",
+  description: "News and announcements from M.A. Mastatine.",
 };
 
 

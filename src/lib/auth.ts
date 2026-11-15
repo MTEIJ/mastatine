@@ -34,7 +34,7 @@ function createAuth() {
   }));
 
   return betterAuth({
-    appName: "S.A. Mastatine",
+    appName: "M.A. Mastatine",
     baseURL: siteUrl(),
     secret: requireEnv("BETTER_AUTH_SECRET"),
     trustedOrigins: [siteUrl()],

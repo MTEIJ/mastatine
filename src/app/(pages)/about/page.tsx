@@ -5,7 +5,7 @@ import { ASTATINE_URL } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "About & disclaimer",
-  description: "What S.A. Mastatine is, and what it is not: a parody, not affiliated with S.A. Astatine or the University of Twente.",
+  description: "What M.A. Mastatine is, and what it is not: a parody, not affiliated with S.A. Astatine or the University of Twente.",
 };
 
 export const instant = false;
@@ -14,7 +14,7 @@ export default function AboutPage() {
   return (
     <>
       <PageHeader
-        title="A study association for things that are tall"
+        title="An association for things that are tall"
         intro="Mastatine is a joke that got out of hand. We collect masts, towers and pylons, and we let people vote on them."
       />
 
@@ -33,10 +33,10 @@ export default function AboutPage() {
           </h2>
           <ul className="mt-4 list-disc space-y-2.5 pl-5 text-base">
             <li>
-              <strong>S.A. Mastatine is not affiliated with, endorsed by or connected to S.A. Astatine</strong>, the study association of
+              <strong>M.A. Mastatine is not affiliated with, endorsed by or connected to S.A. Astatine</strong>, the study association of
               the University of Twente, or to the University of Twente itself.
             </li>
-            <li>We are not a real study association. Nothing here grants study credits, discounts or any academic standing.</li>
+            <li>We are not a study association. Nothing here grants study credits, discounts or any academic standing.</li>
             <li>Our name is a pun. Our logo, text and layout are our own and are not taken from anyone else.</li>
             <li>We do not use, copy or display the real association’s data, calendar, logo or content.</li>
             <li>Statements on this site are satire. Please do not mistake them for statements of fact, or of anyone else.</li>

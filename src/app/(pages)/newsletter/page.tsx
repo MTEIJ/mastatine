@@ -5,7 +5,7 @@ import PageHeader from "@/components/ui/PageHeader";
 
 export const metadata: Metadata = {
   title: "Newsletter",
-  description: "The S.A. Mastatine newsletter: about four emails a year, with one-click unsubscribe.",
+  description: "The M.A. Mastatine newsletter: about four emails a year, with one-click unsubscribe.",
 };
 
 const PROMISES = [

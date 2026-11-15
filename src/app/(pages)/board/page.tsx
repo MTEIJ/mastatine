@@ -5,7 +5,7 @@ import { BOARD } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "The Board",
-  description: "The 22nd board of S.A. Mastatine. Four people. Files classified.",
+  description: "The 22nd board of M.A. Mastatine. Four people. Files classified.",
 };
 
 /** Widths of the blacked-out lines, varied per file so no two dossiers look copied. */
@@ -34,7 +34,7 @@ export const instant = false;
 export default function BoardPage() {
   return (
     <>
-      <PageHeader title="The Board" intro="The 22nd board of S.A. Mastatine. Four files. All classified. We cannot confirm they exist." />
+      <PageHeader title="The Board" intro="The 22nd board of M.A. Mastatine. Four files. All classified. We cannot confirm they exist." />
       <div className="container-page">
         <ul className="grid gap-8 pt-4 sm:grid-cols-2 lg:grid-cols-4">
           {BOARD.map((role, i) => (

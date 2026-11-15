@@ -268,19 +268,19 @@ export default function Sidebar({ shopUrl, agenda }: { shopUrl: string | null; /
           {/* ── BRANDING ── */}
           <div id="branding" role="banner">
             <div className="identity hidden lg:block">
-              <Link id="logo" href="/" title="S.A. Mastatine" rel="home">
+              <Link id="logo" href="/" title="M.A. Mastatine" rel="home">
                 <MastatineLogo size={80} />
               </Link>
             </div>
             <h1 id="site-title" itemProp="headline">
               <span>
-                <Link href="/" title="The study association for mastende engineers" rel="home">
-                  S.A. Mastatine
+                <Link href="/" title="The Mast Association for mastende engineers" rel="home">
+                  M.A. Mastatine
                 </Link>
               </span>
             </h1>
             <span id="site-description" itemProp="description">
-              The study association for mastende engineers
+              The Mast Association for mastende engineers
             </span>
             <div className="branding-spacer" />
 

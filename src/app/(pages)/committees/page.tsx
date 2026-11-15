@@ -5,7 +5,7 @@ import { getPublicCommittees, type PublicCommittee } from "@/lib/committees";
 
 export const metadata: Metadata = {
   title: "Committees",
-  description: "The committees that keep S.A. Mastatine running.",
+  description: "The committees that keep M.A. Mastatine running.",
 };
 
 // Committees and their members are managed in the admin, so this page is rendered per request.

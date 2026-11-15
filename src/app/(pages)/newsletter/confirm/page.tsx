@@ -43,7 +43,7 @@ export default async function ConfirmPage(props: { searchParams: Promise<{ token
 
   return (
     <>
-      <PageHeader title="Confirm your subscription" intro="One last click to start receiving the S.A. Mastatine newsletter, about four times a year." />
+      <PageHeader title="Confirm your subscription" intro="One last click to start receiving the M.A. Mastatine newsletter, about four times a year." />
       <div className="container-prose">
         <form action={confirm}>
           <input type="hidden" name="token" value={token} />

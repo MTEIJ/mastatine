@@ -42,7 +42,7 @@ export default async function UnsubscribePage(props: { searchParams: Promise<{ t
 
   return (
     <>
-      <PageHeader title="Unsubscribe" intro="Press the button to stop receiving the S.A. Mastatine newsletter." />
+      <PageHeader title="Unsubscribe" intro="Press the button to stop receiving the M.A. Mastatine newsletter." />
       <div className="container-prose">
         <form action={unsubscribe}>
           <input type="hidden" name="token" value={t} />

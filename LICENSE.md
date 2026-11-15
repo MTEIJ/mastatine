@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2026 S.A. Mastatine contributors
+Copyright (c) 2026 M.A. Mastatine contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@ SOFTWARE.
 
 ---
 
-The license covers the source code. The "S.A. Mastatine" name, logo and the
+The license covers the source code. The "M.A. Mastatine" name, logo and the
 site's editorial text are a parody and are not licensed for use in a way that
 suggests affiliation with the original author, S.A. Astatine or the University
 of Twente.
