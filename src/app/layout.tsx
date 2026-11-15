@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s · M.A. Mastatine",
   },
   description:
-    "M.A. Mastatine (Mast Association) is the association for Advanced Mast Technology. Submit your favourite mast and vote on the most impressive electromagnetic structures in the Netherlands.",
+    "M.A. Mastatine is the mast association for Advanced Mast Technology. Submit your favourite mast and vote on the most impressive electromagnetic structures in the Netherlands.",
   applicationName: "M.A. Mastatine",
   icons: { icon: "/favicon.svg" },
   openGraph: {
