@@ -37,7 +37,7 @@
   }
 
   /* ── Navigation bar (M3 Expressive flexible bar): icon in a pill indicator, label below; side by side on tablets ── */
-  .tabbar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 35; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 0.4rem 0.25rem calc(0.4rem + env(safe-area-inset-bottom)); background: var(--md-surface-container); box-shadow: 0 -1px 3px rgb(34 26 21 / 0.08); }
+  .tabbar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 35; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 0.4rem 0.25rem calc(0.4rem + env(safe-area-inset-bottom)); background: var(--md-surface-container); box-shadow: 0 -1px 3px rgb(34 26 21 / 0.08); }
   .tabbar__tab { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.15rem 0; color: var(--md-on-surface-variant); font-size: 0.75rem; font-weight: 800; line-height: 1.15; }
   .tabbar__icon { position: relative; display: grid; width: 3.5rem; height: 2rem; place-items: center; }
   .tabbar__icon::before { content: ""; position: absolute; inset: 0; border-radius: var(--shape-full); background: var(--md-secondary-container); opacity: 0; scale: 0.4 1; transition: scale var(--spring-fast-ms) var(--spring-fast), opacity 0.15s var(--ease-emphasized); }

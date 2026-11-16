@@ -1,4 +1,4 @@
-# M.A. Mastatine (Mast Association) brand files
+# M.A. Mastatine (Master Association) brand files
 
 All stickers are 85 x 55 mm, square corners, text converted to outlines (no fonts needed).
 `*-print.svg` has 2 mm bleed on every side (89 x 59 mm file, trim at 85 x 55 mm). `*-preview.*` is the finished

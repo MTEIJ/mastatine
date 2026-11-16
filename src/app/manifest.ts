@@ -23,6 +23,7 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       { name: "Activities", url: "/mastapps/activities", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+      { name: "Masts", url: "/masts", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
       { name: "MastApps", url: "/mastapps", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
     ],
   };

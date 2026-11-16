@@ -28,11 +28,11 @@ const lato = Lato({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "M.A. Mastatine | The Mast Association for mastende engineers",
+    default: "M.A. Mastatine | Master Association in Maastricht",
     template: "%s · M.A. Mastatine",
   },
   description:
-    "M.A. Mastatine is the mast association for Advanced Mast Technology. Submit your favourite mast and vote on the most impressive electromagnetic structures in the Netherlands.",
+    "M.A. Mastatine is the Master Association in Maastricht for masts, towers and pylons. Submit your favourite mast, vote on the most impressive structures in the Netherlands and join our activities.",
   applicationName: "M.A. Mastatine",
   icons: { icon: "/favicon.svg", apple: "/icons/apple-touch-icon.png" },
   // Installed on iOS: open full screen, under a short name.

@@ -19,10 +19,10 @@ upload). Lettering is the Astatine typeface converted to outlines, so the SVGs n
   - `mono-logo-*` the logo in one colour (ink, white or orange): good for embroidery, tote bags and caps.
   - `tower-*` only the tower, for a pocket, sleeve or cap print.
   - `wordmark-*` a single line of MASTATINE, for a sleeve, hem or back-yoke print.
-  - `tower-wordmark-*` the tower over MASTATINE and "Mast Association", a small stacked mark.
-  - `neck-label-*` small logo with "M.A. Mastatine / Mast Association", for the inside of the neck.
+  - `tower-wordmark-*` the tower over MASTATINE and "Master Association", a small stacked mark.
+  - `neck-label-*` small logo with "M.A. Mastatine / Master Association", for the inside of the neck.
 
-Lettering: big words are Astatine outlines; small text (taglines, "Mast Association", numbers) is Barlow Condensed
+Lettering: big words are Astatine outlines; small text (taglines, "Master Association", numbers) is Barlow Condensed
 SemiBold outlines, see `../brand/GUIDE.md`.
 
 ## Regenerating PNGs

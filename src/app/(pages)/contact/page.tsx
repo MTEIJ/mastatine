@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const TOPICS = [
   { title: "Remove a photo or submission", text: "If something shows you, or should not be public, tell us which mast and we will take it down." },
   { title: "Delete your data", text: "Ask us to delete your account, newsletter subscription or anything else we hold about you." },
-  { title: "Concerns about this site", text: "If you represent another organisation and think this parody goes too far, write to us. We respond promptly and in good faith." },
+  { title: "Concerns about this site", text: "If you represent another organisation and have a concern about this site, write to us. We respond promptly and in good faith." },
   { title: "Everything else", text: "Mast tips, ideas for committees, or press." },
 ];
 

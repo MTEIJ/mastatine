@@ -31,6 +31,12 @@ const YouIcon = (
   </svg>
 );
 
+const MastsIcon = (
+  <svg {...iconProps}>
+    <path d="M12 2v20M8 22h8M9 7h6M8 12h8M7 17h10" />
+  </svg>
+);
+
 interface Tab {
   label: string;
   href: string;
@@ -41,6 +47,7 @@ interface Tab {
 const TABS: Tab[] = [
   { label: "Today", href: TODAY_HREF, icon: TodayIcon, isCurrent: (p) => p === "/" || p === "/app" },
   { label: "Activities", href: "/mastapps/activities", icon: Icons.activities, isCurrent: (p) => under(p, "/mastapps/activities") },
+  { label: "Masts", href: "/masts", icon: MastsIcon, isCurrent: (p) => under(p, "/masts") },
   { label: "Apps", href: "/mastapps", icon: Icons.dashboard, isCurrent: (p) => (under(p, "/mastapps") && !under(p, "/mastapps/activities")) || under(p, "/admin") },
   { label: "You", href: "/account", icon: YouIcon, isCurrent: (p) => under(p, "/account") },
 ];
@@ -52,12 +59,13 @@ const SECTION_TITLES: [string, string][] = [
   ["/terms", "Site rules"], ["/newsletter", "Newsletter"], ["/login", "Sign in"], ["/welcome", "Welcome"],
 ];
 
-const ROOTS = new Set(["/", "/app", "/mastapps", "/mastapps/activities", "/account"]);
+const ROOTS = new Set(["/", "/app", "/masts", "/mastapps", "/mastapps/activities", "/account"]);
 
 /** The section the current page belongs to: the name in the top bar. Signed out, Today is just the way in. */
 function titleFor(pathname: string, signedIn: boolean): string {
   if (pathname === "/" || pathname === "/app") return signedIn ? "Today" : "M.A. Mastatine";
   if (under(pathname, "/mastapps/activities")) return "Activities";
+  if (under(pathname, "/masts")) return "Masts";
   if (pathname === "/mastapps") return "Apps";
   if (under(pathname, "/admin")) return "Admin";
   if (under(pathname, "/account")) return "You";
@@ -107,7 +115,7 @@ export function AppTopBar() {
   );
 }
 
-/** Bottom navigation bar: Today, Activities, Apps, You. Only for people who are signed in (the others have nothing to navigate). */
+/** Bottom navigation bar: Today, Activities, Masts, Apps, You. Only for people who are signed in (the others have nothing to navigate). */
 export function AppTabBar() {
   const pathname = usePathname();
   const { signedIn } = useAccountState();

@@ -20,7 +20,7 @@ export const instant = false;
 export default function NewsletterPage() {
   return (
     <>
-      <PageHeader title="The quarterly Mast" intro="The best masts, the news, and the occasional bad pun. Four times a year." />
+      <PageHeader title="The quarterly Mast" intro="The best masts, the news and what is coming up. Four times a year." />
       <div className="container-prose">
         <div className="card p-6 sm:p-8">
           <NewsletterForm layout="stacked" />

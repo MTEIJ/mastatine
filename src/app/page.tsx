@@ -94,17 +94,16 @@ export default async function HomePage(
           <div className="lp-text-content">
             <h5 className="wp-block-heading has-text-align-center">
               <strong>
-                M.A. Mastatine is the mast association for students of Advanced Mastology
-                and Nanomastology, and co-association of Mastotics at the University of Maste.{" "}
+                M.A. Mastatine is the Master Association in Maastricht for students interested in masts, towers
+                and the infrastructure behind modern communication.{" "}
                 <span className="lp-more">
-                  We are an international, non-profit association that supports students (and staff)
-                  of Advanced Mastology, Nanomastology and Mastotics in building a community,
-                  creating personal development opportunities, and evaluating the curriculum. We do
-                  this through masting.
+                  We are an international, non-profit student association, founded in Wyck in 2006. We
+                  help students build a community, grow personally and professionally, and get to know
+                  the landscape around them, from the Sint Pietersberg to the Maas, one mast at a time.
                 </span>
               </strong>
             </h5>
-            <p className="has-text-align-center text-center">Feel free to mast around!</p>
+            <p className="has-text-align-center text-center">Welcome. Have a look around.</p>
           </div>
         </div>
       </section>}

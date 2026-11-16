@@ -5,7 +5,7 @@ import { ASTATINE_URL } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "About & disclaimer",
-  description: "What M.A. Mastatine is, and what it is not: a parody, not affiliated with S.A. Astatine or the University of Twente.",
+  description: "About M.A. Mastatine, the Master Association in Maastricht for masts, towers and pylons: who we are, how it works and how to take part.",
 };
 
 export const instant = false;
@@ -15,44 +15,17 @@ export default function AboutPage() {
     <>
       <PageHeader
         title="An association for things that are tall"
-        intro="Mastatine is a joke that got out of hand. We collect masts, towers and pylons, and we let people vote on them."
+        intro="Founded in Maastricht in 2006, M.A. Mastatine brings students together around masts, towers and pylons."
       />
 
       <div className="container-prose prose-lite">
-        <h2>What is Mastatine?</h2>
+        <h2>Who we are</h2>
         <p>
-          The name is a pun: a <em>mast</em> plus an <em>-atine</em> ending, in the style of the chemical elements. That is where the
-          resemblance to any real organisation ends. We have no programme and no curriculum. We have a gallery of masts, a
-          leaderboard, a Mast of the Month, a free (and entirely optional) membership, activities, a newsletter and a Minecraft
-          server. We were released during our 4th lustrum, and our first activity takes place on 12 November.
+          Mastatine started in 2006 in a rented room in Wyck, where a few students could not stop arguing about the transmission mast
+          outside their window. The name combines <em>mast</em> with an <em>-atine</em> ending, in the style of the chemical elements.
+          Twenty years on we keep a register of masts, a leaderboard, a Mast of the Month, activities, a newsletter and a Minecraft
+          server. Membership is free and open to every student in Maastricht. Read the full <Link href="/history">history</Link>.
         </p>
-
-        <section id="disclaimer" className="card not-prose scroll-mt-28 !border-accent/40 p-6 sm:p-8" aria-labelledby="disclaimer-title">
-          <h2 id="disclaimer-title" className="!mt-0 text-2xl font-bold">
-            Disclaimer: we are a parody
-          </h2>
-          <ul className="mt-4 list-disc space-y-2.5 pl-5 text-base">
-            <li>
-              <strong>M.A. Mastatine is not affiliated with, endorsed by or connected to S.A. Astatine</strong>, the study association of
-              the University of Twente, or to the University of Twente itself.
-            </li>
-            <li>We are not a study association. Nothing here grants study credits, discounts or any academic standing.</li>
-            <li>
-              Our name is a pun. Our logo and layout are our own and are not taken from anyone else. The one thing we borrow is the
-              lettering: our stickers and merch are set in the Astatine typeface, made for S.A. Astatine, which we use with their permission.
-            </li>
-            <li>We do not use, copy or display the real association’s data, calendar, logo or content.</li>
-            <li>Statements on this site are satire. Please do not mistake them for statements of fact, or of anyone else.</li>
-          </ul>
-          <p className="mt-5 text-sm text-muted">
-            Looking for the real study association? Visit{" "}
-            <a className="font-semibold text-accent-text underline underline-offset-2" href={ASTATINE_URL} target="_blank" rel="noopener noreferrer">
-              astatine.utwente.nl
-            </a>
-            . If you represent them and have any concern about this site, please <Link className="font-semibold text-accent-text underline underline-offset-2" href="/contact">contact us</Link>{" "}
-            and we will respond promptly.
-          </p>
-        </section>
 
         <h2>How it works</h2>
         <ul>
@@ -82,6 +55,14 @@ export default function AboutPage() {
         <p>
           Submissions are filtered for offensive language, and admins can edit or remove anything. If a photo shows you, or something
           that should not be public, tell us and we will take it down.
+        </p>
+
+        <p id="disclaimer" className="scroll-mt-28 text-xs text-muted">
+          M.A. Mastatine is an independent student initiative and is not affiliated with, endorsed by or connected to Universiteit
+          Maastricht or to S.A. Astatine (University of Twente,{" "}
+          <a className="underline underline-offset-2" href={ASTATINE_URL} target="_blank" rel="noopener noreferrer">astatine.utwente.nl</a>
+          ). Our stickers and merch are set in the Astatine typeface, used with their permission. Some content on this site is
+          humorous and fictional. Concerns? <Link className="underline underline-offset-2" href="/contact">Contact us</Link>.
         </p>
       </div>
     </>

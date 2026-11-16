@@ -284,13 +284,13 @@ export default function Sidebar({ agenda }: { /** Upcoming activities, rendered 
             </div>
             <h1 id="site-title" itemProp="headline">
               <span>
-                <Link href="/" title="The Mast Association for mastende engineers" rel="home">
+                <Link href="/" title="The Master Association" rel="home">
                   M.A. Mastatine
                 </Link>
               </span>
             </h1>
             <span id="site-description" itemProp="description">
-              The Mast Association for mastende engineers
+              The Master Association
             </span>
             <div className="branding-spacer" />
 

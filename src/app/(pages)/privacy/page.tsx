@@ -128,10 +128,9 @@ export default function PrivacyPage() {
           complain to the Dutch Data Protection Authority (Autoriteit Persoonsgegevens).
         </p>
 
-        <h2>This is a parody</h2>
-        <p>
-          M.A. Mastatine is a parody and is not affiliated with S.A. Astatine or the University of Twente. See the{" "}
-          <Link href="/about#disclaimer">disclaimer</Link> and our <Link href="/terms">site rules</Link>.
+        <p className="text-sm text-muted">
+          M.A. Mastatine is an independent student initiative and is not affiliated with Universiteit Maastricht or S.A. Astatine. See the{" "}
+          <Link href="/about#disclaimer">notice</Link> and our <Link href="/terms">site rules</Link>.
         </p>
       </div>
     </>

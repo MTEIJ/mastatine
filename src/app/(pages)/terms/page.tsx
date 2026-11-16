@@ -49,7 +49,7 @@ export default function TermsPage() {
 
         <h2>The site itself</h2>
         <p>
-          M.A. Mastatine is a parody run by volunteers. We do our best to keep it running but give no guarantees. Nothing here is advice. Mandatory
+          M.A. Mastatine is an independent student initiative run by volunteers. We do our best to keep it running but give no guarantees. Nothing here is advice. Mandatory
           consumer and privacy rights are not affected; see our <Link href="/privacy">privacy page</Link>. Dutch law applies.
         </p>
       </div>

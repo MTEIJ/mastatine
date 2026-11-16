@@ -4,8 +4,8 @@ Short reference so every sticker, shirt and page looks like it comes from the sa
 
 ## Name
 
-- **M.A. Mastatine** (short form: *Mastatine*). **M.A.** stands for **Mast Association**.
-- Write "Mast Association" in full where there is room (footers, About, legal pages). Never "S.A.": that is the real
+- **M.A. Mastatine** (short form: *Mastatine*). **M.A.** stands for **Master Association**.
+- Write "Master Association" in full where there is room (footers, About, legal pages). Never "S.A.": that is the real
   S.A. Astatine, which this project parodies.
 
 ## Colour
@@ -39,7 +39,7 @@ Sky gradient on the primary sticker: peach, then orange, then coral at the horiz
   drive and regenerate outlines from there.
 - Astatine is hard to read at small sizes (the S, E, N, C and R are stylised). Use it only for big brand words such as
   MASTATINE, MAST and ENGINEER.
-- Companion typeface for everything small or long (taglines, "Mast Association", numbers, neck labels):
+- Companion typeface for everything small or long (taglines, "Master Association", numbers, neck labels):
   **Barlow Condensed SemiBold** (SIL Open Font License), capitals with wide tracking (about 0.2 to 0.3 em). Like
   Astatine it is converted to outlines in artwork. The font is not stored in this repository.
 - Body text on the website stays Lato.

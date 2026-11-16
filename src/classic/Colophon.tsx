@@ -16,7 +16,7 @@ export default function Colophon() {
                 { label: "Privacy Policy", href: "/privacy" },
                 { label: "Site rules", href: "/terms" },
                 { label: "Contact", href: "/contact" },
-                { label: "About & Disclaimer", href: "/about#disclaimer" },
+                { label: "About", href: "/about" },
               ].map(({ label, href }) => (
                 <li key={label} style={{ marginBottom: "0.2em" }}>
                   <a href={href}>{label}</a>
@@ -36,10 +36,10 @@ export default function Colophon() {
               M.A. Mastatine
             </p>
             <p style={{ fontSize: "0.95em", color: "var(--text-mid)", marginTop: "0.4em" }}>
-              Not affiliated with S.A. Astatine or the University of Twente.
+              Master Association · Maastricht
             </p>
-            <p style={{ fontSize: "0.85em", color: "var(--text-mid)", marginTop: "0.4em" }}>
-              Stickers and merch are set in the Astatine typeface, made for S.A. Astatine and used with their permission.
+            <p style={{ fontSize: "0.7em", color: "var(--text-mid)", opacity: 0.75, marginTop: "0.4em" }}>
+              <Link href="/about#disclaimer" style={{ color: "inherit" }}>Independent initiative, not affiliated with Universiteit Maastricht or S.A. Astatine.</Link>
             </p>
           </div>
         </section>

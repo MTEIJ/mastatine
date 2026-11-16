@@ -4,7 +4,7 @@ import { HISTORY } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "History",
-  description: "A short and slightly embellished history of M.A. Mastatine.",
+  description: "The history of M.A. Mastatine, from a rented room in Wyck in 2006 to our 4th lustrum.",
 };
 
 export const instant = false;
@@ -14,7 +14,7 @@ export default function HistoryPage() {
     <>
       <PageHeader
         title="History"
-        intro="A short, slightly embellished account of how we got here. Historians are welcome to correct us."
+        intro="Twenty years of Mastatine, from a rented room in Wyck to our 4th lustrum."
       />
       <div className="container-prose">
         <ol className="relative space-y-10 border-l border-line pl-8">

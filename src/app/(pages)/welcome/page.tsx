@@ -31,7 +31,7 @@ export default async function WelcomePage(props: { searchParams: Promise<{ next?
     <div className="container-prose flex justify-center pb-10 pt-20 sm:py-24">
       <div className="w-full max-w-md">
         <h1 className="text-4xl font-extrabold sm:text-5xl">You are signed in</h1>
-        <p className="mt-3 text-muted">One question before you go: would you like the newsletter? The best masts, the news, and the occasional bad pun.</p>
+        <p className="mt-3 text-muted">One question before you go: would you like the newsletter? The best masts, the news and what is coming up.</p>
         <form action={answerNewsletterPrompt} className="card mt-8 space-y-3 p-6 sm:p-8">
           <input type="hidden" name="next" value={next} />
           <button type="submit" name="answer" value="yes" className="btn btn-primary w-full py-3">Yes, send me the newsletter</button>
