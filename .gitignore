@@ -42,6 +42,8 @@ next-env.d.ts
 
 # local uploads
 /uploads
+# local finance receipts (private)
+/finance-data
 
 # local dev database
 /.pglite/

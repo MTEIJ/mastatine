@@ -6,6 +6,7 @@ export const ADMIN_NAV = [
   { label: "Committees", href: "/admin/committees" },
   { label: "News", href: "/admin/news" },
   { label: "Newsletter", href: "/admin/newsletter" },
+  { label: "Finance access", href: "/admin/finance-access" },
 ] as const;
 
 /** Overview is only current on /admin itself; every other tab also covers its sub-pages. */

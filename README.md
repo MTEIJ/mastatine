@@ -46,7 +46,7 @@ mastatine.nl {
 
 All settings are runtime environment variables (see `.env.example`), including `SHOP_URL`: change one and run
 `docker compose up -d`, no rebuild needed. Data lives in named volumes: `pgdata` (database), `uploads` (tower photos)
-and `imgcache`. Back up the first two.
+and `imgcache`. Back up the first two, and `finance` (receipts, private) as well.
 
 ### Backups
 
@@ -55,6 +55,7 @@ Back up the database and the uploaded photos regularly, and test a restore once:
 ```bash
 docker compose exec -T db pg_dump -U mastatine mastatine | gzip > mastatine-$(date +%F).sql.gz
 docker run --rm -v mastatine_uploads:/data -v "$PWD":/backup alpine tar czf /backup/uploads-$(date +%F).tgz -C /data .
+docker run --rm -v mastatine_finance:/data -v "$PWD":/backup alpine tar czf /backup/finance-$(date +%F).tgz -C /data .
 ```
 
 (The volume name is prefixed with the compose project name; check `docker volume ls`.) Restore with
@@ -117,3 +118,20 @@ It copies towers and votes and downloads every image into the `uploads` volume. 
 ## License
 
 [MIT](LICENSE.md) for the code. The name, logo and editorial text are a parody; see the notice in the license file.
+
+## Finance (treasurer)
+
+A private MastApp at `/mastapps/finance` for donations, spending and activity budgets. Admins give the **treasurer** (can add
+entries, receipts and budgets) and **auditor** (read only, e.g. the kascommissie) roles under Admin → Finance access. Being an
+admin gives no finance access by itself. Every grant and revoke is written to the append-only `finance_audit` table and shown to
+everyone with finance access. `FINANCE_TREASURER_EMAILS` / `FINANCE_AUDITOR_EMAILS` in `.env` are an optional fixed bootstrap
+list (handy for the very first treasurer) that the UI cannot remove.
+
+- The ledger is append-only: the database refuses updates, deletes and truncates. A mistake is fixed with a reversing entry.
+- Every entry stores the hash of the one before it; the overview re-checks the whole chain on each visit and says if anything
+  was changed behind the app's back. Note the latest fingerprint in the minutes now and then to also catch removed last entries.
+- Receipts live in the private `finance` volume and are only served to people with access, after checking their hash.
+- Budget changes, receipt uploads and CSV exports are written to `finance_audit`.
+- Money is stored as integer cents. `Download CSV` gives the full ledger with hashes for the annual accounts.
+- The app database user can still change its own tables if the server itself is compromised; the hash chain makes that visible
+  but cannot prevent it. Keep dated backups (see Backups).

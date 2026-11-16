@@ -1,0 +1,128 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import sql from "@/lib/db";
+import { CATEGORIES, CATEGORY_VALUES, logAudit } from "@/lib/finance";
+import { requireFinance } from "@/lib/finance-access";
+import { parseEuroToCents } from "@/lib/finance-money";
+
+const HOME = "/mastapps/finance";
+const LEDGER = "/mastapps/finance/ledger";
+
+const id = z.uuid();
+const optionalId = z.preprocess((v) => (v === "" ? undefined : v), z.uuid().optional());
+
+const entrySchema = z.object({
+  direction: z.enum(["in", "out"]),
+  amount: z.string().transform((v, ctx) => {
+    const cents = parseEuroToCents(v);
+    if (cents == null || cents === 0) ctx.addIssue({ code: "custom", message: "amount" });
+    return cents ?? 0;
+  }),
+  occurred_on: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  category: z.enum(CATEGORY_VALUES),
+  counterparty: z.string().trim().max(120),
+  description: z.string().trim().min(1).max(300),
+  activity_id: optionalId,
+});
+
+function fail(notice: string): never {
+  redirect(`${LEDGER}?notice=${notice}`);
+}
+
+/** A date that exists and is not in the far future (typos like 2062 are caught here, not in the books). */
+function isSensibleDate(value: string): boolean {
+  const date = new Date(`${value}T00:00:00Z`);
+  const limit = Date.now() + 7 * 86_400_000;
+  return !Number.isNaN(date.getTime()) && date.toISOString().startsWith(value) && date.getTime() <= limit && date.getUTCFullYear() >= 2020;
+}
+
+export async function addEntry(formData: FormData) {
+  const actor = await requireFinance("write");
+  const parsed = entrySchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success || !isSensibleDate(parsed.data.occurred_on)) fail("invalid");
+  const data = parsed.data;
+
+  // Money in must use an income category and money out a cost category, so a typo cannot flip the books.
+  const category = CATEGORIES.find((c) => c.value === data.category)!;
+  if (category.direction !== "either" && category.direction !== data.direction) fail("category-direction");
+
+  let activityLabel = "";
+  if (data.activity_id) {
+    const [activity] = await sql<{ name: string }[]>`SELECT name FROM activities WHERE id = ${data.activity_id}`;
+    if (!activity) fail("invalid");
+    activityLabel = activity.name;
+  }
+
+  const signed = data.direction === "in" ? data.amount : -data.amount;
+  await sql`
+    INSERT INTO finance_entries (occurred_on, amount_cents, category, counterparty, description, activity_id, activity_label, created_by_id, created_by_name)
+    VALUES (${data.occurred_on}, ${signed}, ${data.category}, ${data.counterparty}, ${data.description}, ${data.activity_id ?? null}, ${activityLabel}, ${actor.userId}, ${actor.name})
+  `;
+  revalidatePath(HOME, "layout");
+  redirect(`${LEDGER}?notice=added`);
+}
+
+/** Entries are never edited or deleted: a mistake is cancelled by an equal and opposite entry, with the reason. */
+export async function reverseEntry(formData: FormData) {
+  const actor = await requireFinance("write");
+  const parsedId = id.safeParse(formData.get("id"));
+  if (!parsedId.success) fail("invalid");
+  const entryId = parsedId.data;
+  const reason = z.string().trim().min(1).max(200).safeParse(formData.get("reason"));
+  if (!reason.success) fail("reason-needed");
+
+  const [original] = await sql<{ amount_cents: number; occurred_on: string; category: string; counterparty: string; activity_id: string | null; activity_label: string; description: string }[]>`
+    SELECT amount_cents::float8, to_char(occurred_on, 'YYYY-MM-DD') AS occurred_on, category, counterparty, activity_id, activity_label, description
+    FROM finance_entries WHERE id = ${entryId} AND reverses_id IS NULL
+  `;
+  if (!original) fail("invalid");
+
+  try {
+    await sql`
+      INSERT INTO finance_entries (occurred_on, amount_cents, category, counterparty, description, activity_id, activity_label, reverses_id, created_by_id, created_by_name)
+      VALUES (${original.occurred_on}, ${-original.amount_cents}, ${original.category}, ${original.counterparty},
+        ${`Reversal: ${reason.data} (was: ${original.description})`.slice(0, 300)}, ${original.activity_id}, ${original.activity_label}, ${entryId}, ${actor.userId}, ${actor.name})
+    `;
+  } catch (error) {
+    // Only the unique index on reverses_id means "already reversed"; anything else is a real failure, not a notice.
+    if ((error as { code?: string }).code === "23505") fail("already-reversed");
+    throw error;
+  }
+  revalidatePath(HOME, "layout");
+  redirect(`${LEDGER}?notice=reversed`);
+}
+
+const budgetSchema = z.object({
+  activity_id: z.uuid(),
+  planned_expense: z.string().transform((v) => parseEuroToCents(v || "0")),
+  planned_income: z.string().transform((v) => parseEuroToCents(v || "0")),
+});
+
+export async function setBudget(formData: FormData) {
+  const actor = await requireFinance("write");
+  const parsed = budgetSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success || parsed.data.planned_expense == null || parsed.data.planned_income == null) redirect(`${HOME}?notice=invalid`);
+  const { activity_id, planned_expense, planned_income } = parsed.data;
+  const [exists] = await sql`SELECT 1 FROM activities WHERE id = ${activity_id}`;
+  if (!exists) redirect(`${HOME}?notice=invalid`);
+
+  const [before] = await sql<{ planned_expense_cents: number; planned_income_cents: number }[]>`
+    SELECT planned_expense_cents::float8, planned_income_cents::float8 FROM activity_budgets WHERE activity_id = ${activity_id}
+  `;
+  await sql`
+    INSERT INTO activity_budgets (activity_id, planned_expense_cents, planned_income_cents, updated_by_id)
+    VALUES (${activity_id}, ${planned_expense}, ${planned_income}, ${actor.userId})
+    ON CONFLICT (activity_id) DO UPDATE SET planned_expense_cents = EXCLUDED.planned_expense_cents,
+      planned_income_cents = EXCLUDED.planned_income_cents, updated_by_id = EXCLUDED.updated_by_id, updated_at = NOW()
+  `;
+  await logAudit(actor, "budget_set", {
+    activity_id,
+    before: before ?? null,
+    after: { planned_expense_cents: planned_expense, planned_income_cents: planned_income },
+  });
+  revalidatePath(HOME, "layout");
+  redirect(`${HOME}?notice=budget-saved`);
+}

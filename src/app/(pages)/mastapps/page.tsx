@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import AdminAppTile from "@/components/AdminAppTile";
 import AppTile from "@/components/AppTile";
+import FinanceAppTile from "@/components/FinanceAppTile";
 import { getApps } from "@/content/apps";
 import { getCachedUpcomingActivities } from "@/lib/activities-cached";
 import { formatDayMonth, formatTime } from "@/lib/datetime";
@@ -43,6 +44,7 @@ export default async function MastAppsPage() {
               <AppTile app={app} detail={app.slug === "activities" ? next : undefined} />
             </li>
           ))}
+          <FinanceAppTile />
           <AdminAppTile />
         </ul>
       </div>

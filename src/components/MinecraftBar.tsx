@@ -1,8 +1,11 @@
+import { connection } from "next/server";
 import CopyButton from "@/components/CopyButton";
 import { MINECRAFT_HOST, MINECRAFT_MAP_URL, getMinecraftStatus } from "@/lib/minecraft";
 
 /** Compact server chip (live player count, address, map link) meant to float over the hero image. */
 export default async function MinecraftBar() {
+  // The status is live and the cache is time-based, so this renders per request, never at prerender time.
+  await connection();
   const status = await getMinecraftStatus();
   const online = status?.online === true;
   const label = status === null ? "Minecraft" : online ? `${status.players} online` : "Offline";

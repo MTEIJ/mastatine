@@ -30,6 +30,9 @@ services:
       SITE_URL: ${SITE_URL:?set SITE_URL in .env (public https origin, no trailing slash)}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET in .env (openssl rand -base64 32)}
       ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      # Finance app: optional fixed bootstrap list. Admins normally grant roles under Admin -> Finance access.
+      FINANCE_TREASURER_EMAILS: ${FINANCE_TREASURER_EMAILS:-}
+      FINANCE_AUDITOR_EMAILS: ${FINANCE_AUDITOR_EMAILS:-}
       SMTP_HOST: ${SMTP_HOST:?set SMTP_HOST in .env}
       SMTP_PORT: ${SMTP_PORT:-465}
       SMTP_USER: ${SMTP_USER:?set SMTP_USER in .env}
@@ -50,6 +53,7 @@ services:
       VAPID_SUBJECT: ${VAPID_SUBJECT:-}
     volumes:
       - uploads:/data/uploads
+      - finance:/data/finance
       - imgcache:/app/.next/cache
     # Loopback only: point your existing reverse proxy at 127.0.0.1:3000.
     ports:
@@ -61,4 +65,5 @@ services:
 volumes:
   pgdata:
   uploads:
+  finance:
   imgcache:

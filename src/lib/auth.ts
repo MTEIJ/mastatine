@@ -38,6 +38,9 @@ function createAuth() {
     baseURL: siteUrl(),
     secret: requireEnv("BETTER_AUTH_SECRET"),
     trustedOrigins: [siteUrl()],
+    // The admin plugin's endpoints that act as, or rewrite, another account are not used by this app. Closed so a stolen admin
+    // session cannot become the treasurer (see also getFinanceAccess).
+    disabledPaths: ["/admin/impersonate-user", "/admin/stop-impersonating", "/admin/create-user", "/admin/update-user", "/admin/set-user-password"],
     database: pool,
     // The signed cookie cache saves a session + user lookup on most requests; a ban or role change can take up to a minute to apply.
     session: { expiresIn: 60 * 60 * 24 * 30, updateAge: 60 * 60 * 24, cookieCache: { enabled: true, maxAge: 60 } },

@@ -14,6 +14,7 @@ import AppShell from "@/classic/AppShell";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import PwaBoot from "@/components/PwaBoot";
 import { AccountStateProvider } from "@/components/AccountState";
+import { getFinanceAccess } from "@/lib/finance-access";
 import { getAnnouncement } from "@/lib/announcement";
 import { siteUrl } from "@/lib/env";
 import { getSession } from "@/lib/session";
@@ -70,10 +71,14 @@ export const instant = false;
 async function readAccountState() {
   try {
     const session = await getSession();
-    return { signedIn: Boolean(session), isAdmin: session?.user.role === "admin" };
+    return {
+      signedIn: Boolean(session),
+      isAdmin: session?.user.role === "admin",
+      isFinance: session ? (await getFinanceAccess()) !== null : false,
+    };
   } catch (error) {
     console.error("Failed to read the session:", (error as Error).message);
-    return { signedIn: false, isAdmin: false };
+    return { signedIn: false, isAdmin: false, isFinance: false };
   }
 }
 

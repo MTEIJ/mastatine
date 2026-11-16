@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "test": "bun test",
     "dev": "next dev",
     "build": "bun --bun next build",
     "lint": "eslint",

@@ -77,6 +77,27 @@ export const ADMIN_APP: MastApp = {
   access: "Admins",
 };
 
+/** Finance is only for the treasurer and auditors (set on the server). It is not in getApps(), so it never shows for anyone else. */
+export const FINANCE_APP: MastApp = {
+  slug: "finance",
+  name: "Finance",
+  description: "Donations, spending and activity budgets.",
+  href: "/mastapps/finance",
+  icon: (
+    <svg {...svg}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M15 9.5c-.6-1-1.700-1.500-3-1.500-1.700 0-3 1-3 2.300 0 3 6 1.500 6 4.400 0 1.300-1.300 2.300-3 2.300-1.300 0-2.400-.5-3-1.500M12 6v2M12 16v2" />
+    </svg>
+  ),
+  shape: "clover4",
+  tone: "tertiary",
+  access: "Treasurer",
+  nav: [
+    { label: "Overview", href: "/mastapps/finance", icon: <ChartIcon /> },
+    { label: "Ledger", href: "/mastapps/finance/ledger", icon: <ListIcon /> },
+  ],
+};
+
 export function getApps(isAdmin = false): MastApp[] {
   return [
     {

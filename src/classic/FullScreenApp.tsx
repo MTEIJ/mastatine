@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import SidebarAccount from "./SidebarAccount";
 import { AppTabBar, AppTopBar } from "./AppChrome";
 import { useAccountState } from "@/components/AccountState";
-import { getApps } from "@/content/apps";
+import { FINANCE_APP, getApps } from "@/content/apps";
 import { ADMIN_NAV, isAdminTabCurrent } from "@/content/admin-nav";
 import { appSlug, isAdminPath } from "@/lib/paths";
 
@@ -14,7 +14,7 @@ export default function FullScreenApp({ children }: { children: React.ReactNode 
   const pathname = usePathname();
   const { signedIn } = useAccountState();
   const slug = appSlug(pathname);
-  const app = getApps().find((a) => a.slug === slug);
+  const app = [...getApps(), FINANCE_APP].find((a) => a.slug === slug);
   const admin = isAdminPath(pathname);
   const appNav = app?.nav?.filter((item) => signedIn || !item.needsLogin) ?? [];
 
