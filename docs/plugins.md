@@ -32,7 +32,7 @@ What a definition provides:
   in a form, validates the result with `configSchema` and stores it.
 - `Manage` (optional): extra tools for organisers beside the settings.
 - `ActivitySection` (optional): a block on the activity page.
-- `PublicPage` (optional): the page at `/p/<token>`. Without it the plugin has no public address.
+- `PublicPage` (optional): the page at `/p/<token>`. Without it the plugin has no public address. The page is standalone: the plugin renders all of it (header, theme, footer) and gets the activity name only when the activity is public.
 - `onEvent` (optional): runs after a subscribe, unsubscribe or waitlist join. `userId` is the person (null when unknown).
 - `onSaved` (optional): runs after an organiser saved the settings, with the previous settings, so a plugin can act on a changed option.
 
@@ -52,14 +52,20 @@ What a definition provides:
 
 ## Scoreboard
 
-Keeps a free-form number of marks per player. Settings: a title and who may add marks:
+A score per player: the start score plus every +1 and -1. Settings:
 
-- **Anyone with the link**: everyone with `/p/<token>` can add or undo marks for anybody.
-- **Only the committee**: the public page is read-only.
-- **Everyone only their own**: every player gets a personal link (`/p/<token>?p=<key>`) that only changes their row.
+- **Theme**: *Clean* (compact, calm, follows light or dark mode, the default) or *Advent* (winter night, snow and gold).
+  A theme is a block of `--sb-*` tokens in `scoreboard.css` plus an entry in `THEMES` in `logic.ts`.
+- **Scores**: a start score, a minimum and an optional maximum. A score never leaves the range; the limits are enforced
+  inside the single SQL statement that records a change. With a maximum the bars show progress towards it.
+- **Who may change scores**:
+  - *Anyone with the link*: everyone with `/p/<token>` can change anybody's score.
+  - *Only the committee*: the public page is read-only.
+  - *Everyone only their own*: every player gets a personal link (`/p/<token>?p=<key>`) that only changes their row.
+- **Add everyone who subscribes**, now and later, by first name. Switching it on imports the current subscribers;
+  someone an organiser removed stays off unless they subscribe again. Subscribers get a fixed player id per board, so
+  adding the same person twice is harmless.
 
-Another option adds everyone who subscribes, now and later, by first name. Switching it on imports the current subscribers; someone an organiser removed stays off unless they subscribe again. Subscribers get a fixed player id per board, so adding the same person twice is harmless.
-
-The look lives in `src/plugins/scoreboard/scoreboard.css` (`.sb-*` classes). The same board markup is themed light on the activity page and dark and festive on the full-screen page.
-
-Every mark is its own row in `plugin_data` with who made it (`link`, `self` or `committee:<user id>`) and when.
+Every change is its own row in `plugin_data` (a tick with a delta of +1 or -1) with who made it (`link`, `self` or
+`committee:<user id>`) and when. The look lives in `src/plugins/scoreboard/scoreboard.css` (`.sb-*` classes): the same
+list markup is light inside the site on the activity page, and takes the chosen theme on the full-screen page.

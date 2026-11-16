@@ -15,12 +15,16 @@ export interface Player {
   editKey: string;
 }
 
-export function getPlayers(instanceId: string): Promise<Player[]> {
+/** Every change is a tick with a delta of +1 or -1 (ticks from before deltas existed count as +1). */
+const DELTA = "COALESCE((value->>'delta')::int, 1)";
+
+/** Players with their score: `start` plus the sum of their ticks. */
+export function getPlayers(instanceId: string, start = 0): Promise<Player[]> {
   return sql<Player[]>`
-    SELECT p.key AS id, p.value->>'name' AS name, p.value->>'editKey' AS "editKey", COALESCE(t.marks, 0)::int AS marks
+    SELECT p.key AS id, p.value->>'name' AS name, p.value->>'editKey' AS "editKey", (${start}::int + COALESCE(t.total, 0))::int AS marks
     FROM plugin_data p
     LEFT JOIN (
-      SELECT value->>'player' AS player, COUNT(*) AS marks FROM plugin_data
+      SELECT value->>'player' AS player, SUM(${sql.unsafe(DELTA)}) AS total FROM plugin_data
       WHERE instance_id = ${instanceId} AND collection = ${TICKS} GROUP BY 1
     ) t ON t.player = p.key
     WHERE p.instance_id = ${instanceId} AND p.collection = ${PLAYERS}
@@ -28,10 +32,10 @@ export function getPlayers(instanceId: string): Promise<Player[]> {
   `;
 }
 
-export async function getPlayer(instanceId: string, playerId: string): Promise<Player | null> {
+export async function getPlayer(instanceId: string, playerId: string, start = 0): Promise<Player | null> {
   const [row] = await sql<Player[]>`
     SELECT p.key AS id, p.value->>'name' AS name, p.value->>'editKey' AS "editKey",
-      (SELECT COUNT(*) FROM plugin_data t WHERE t.instance_id = p.instance_id AND t.collection = ${TICKS} AND t.value->>'player' = p.key)::int AS marks
+      (${start}::int + COALESCE((SELECT SUM(COALESCE((t.value->>'delta')::int, 1)) FROM plugin_data t WHERE t.instance_id = p.instance_id AND t.collection = ${TICKS} AND t.value->>'player' = p.key), 0))::int AS marks
     FROM plugin_data p WHERE p.instance_id = ${instanceId} AND p.collection = ${PLAYERS} AND p.key = ${playerId}
   `;
   return row ?? null;
@@ -67,23 +71,29 @@ export async function removePlayer(instanceId: string, playerId: string): Promis
   await sql`DELETE FROM plugin_data WHERE instance_id = ${instanceId} AND collection = ${PLAYERS} AND key = ${playerId}`;
 }
 
-/** Adds one mark, unless the player already has the maximum. The check and the insert are one statement, so the cap holds up to a handful of simultaneous taps (not strictly under READ COMMITTED, which is harmless). */
-export async function addMark(instanceId: string, playerId: string, createdBy: string): Promise<void> {
-  await sql`
-    INSERT INTO plugin_data (instance_id, collection, key, value, created_by)
-    SELECT ${instanceId}, ${TICKS}, ${randomUUID()}, ${sql.json({ player: playerId })}, ${createdBy}
-    WHERE (SELECT COUNT(*) FROM plugin_data WHERE instance_id = ${instanceId} AND collection = ${TICKS} AND value->>'player' = ${playerId}) < ${MAX_MARKS}
-  `;
+export interface ScoreRules {
+  start: number;
+  min: number;
+  max: number | null;
 }
 
-/** Removes the player's most recent mark. */
-export async function undoMark(instanceId: string, playerId: string): Promise<void> {
+/**
+ * Changes a player's score by +1 or -1, unless that would leave the allowed range (or the player has used up their
+ * changes). The check and the insert are one statement, so the limits hold up to a handful of simultaneous taps (not
+ * strictly under READ COMMITTED, which at worst lets a second tap through at the edge).
+ */
+export async function changeScore(instanceId: string, playerId: string, createdBy: string, delta: 1 | -1, rules: ScoreRules): Promise<void> {
   await sql`
-    DELETE FROM plugin_data
-    WHERE instance_id = ${instanceId} AND collection = ${TICKS} AND key = (
-      SELECT key FROM plugin_data WHERE instance_id = ${instanceId} AND collection = ${TICKS} AND value->>'player' = ${playerId}
-      ORDER BY created_at DESC, key DESC LIMIT 1
+    WITH cur AS (
+      SELECT (${rules.start}::int + COALESCE(SUM(${sql.unsafe(DELTA)}), 0))::int AS score, COUNT(*)::int AS n
+      FROM plugin_data WHERE instance_id = ${instanceId} AND collection = ${TICKS} AND value->>'player' = ${playerId}
     )
+    INSERT INTO plugin_data (instance_id, collection, key, value, created_by)
+    SELECT ${instanceId}, ${TICKS}, ${randomUUID()}, ${sql.json({ player: playerId, delta })}, ${createdBy}
+    FROM cur
+    WHERE cur.score + ${delta}::int >= ${rules.min}::int
+      AND (${rules.max}::int IS NULL OR cur.score + ${delta}::int <= ${rules.max}::int)
+      AND cur.n < ${MAX_MARKS}
   `;
 }
 

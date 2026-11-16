@@ -1,6 +1,8 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { canMark, cleanPlayerName, firstName, gridRows, parseConfig, playerIdForUser, rankPlayers, timingSafeEqual } from "./logic";
+import { barPercent, canMark, canStep, cleanPlayerName, firstName, gridRows, numberField, parseConfig, playerIdForUser, rankPlayers, timingSafeEqual } from "./logic";
+
+const DEFAULTS = { title: "Scoreboard", editMode: "anyone", autoAddSubscribers: false, theme: "clean", startScore: 0, minScore: 0, maxScore: null };
 
 const player = { editKey: "secret-key" };
 const nobody = { isManager: false, playerKey: null };
@@ -35,7 +37,7 @@ describe("timingSafeEqual", () => {
 
 describe("parseConfig", () => {
   it("accepts a valid config", () => {
-    assert.deepEqual(parseConfig({ title: " Advent ", editMode: "self" }), { title: "Advent", editMode: "self", autoAddSubscribers: false });
+    assert.deepEqual(parseConfig({ title: " Advent ", editMode: "self" }), { ...DEFAULTS, title: "Advent", editMode: "self" });
   });
 
   it("reads the auto-add option, and treats it as off for boards saved before it existed", () => {
@@ -43,9 +45,29 @@ describe("parseConfig", () => {
     assert.equal(parseConfig({ title: "A", editMode: "anyone" }).autoAddSubscribers, false);
   });
 
+  it("reads theme and score limits, with the clean theme and no maximum as defaults", () => {
+    const c = parseConfig({ title: "A", editMode: "anyone", theme: "advent", startScore: 5, minScore: 0, maxScore: 24 });
+    assert.deepEqual([c.theme, c.startScore, c.minScore, c.maxScore], ["advent", 5, 0, 24]);
+    assert.deepEqual([parseConfig({ title: "A", editMode: "anyone" }).theme, parseConfig({ title: "A", editMode: "anyone" }).maxScore], ["clean", null]);
+  });
+
+  it("rejects a start score outside the minimum and maximum, an unknown theme and non-whole scores", () => {
+    const base = { title: "A", editMode: "anyone" };
+    for (const bad of [
+      { ...base, startScore: 30, maxScore: 24 },
+      { ...base, startScore: -1, minScore: 0 },
+      { ...base, minScore: 5, startScore: 0 },
+      { ...base, theme: "neon" },
+      { ...base, startScore: 1.5 },
+      { ...base, maxScore: 100000 },
+    ]) {
+      assert.deepEqual(parseConfig(bad), DEFAULTS);
+    }
+  });
+
   it("falls back to the defaults for anything malformed", () => {
     for (const bad of [null, {}, { title: "", editMode: "anyone" }, { title: "x", editMode: "root" }, "nope", { title: "x".repeat(61), editMode: "anyone" }]) {
-      assert.deepEqual(parseConfig(bad), { title: "Scoreboard", editMode: "anyone", autoAddSubscribers: false });
+      assert.deepEqual(parseConfig(bad), DEFAULTS);
     }
   });
 });
@@ -99,5 +121,58 @@ describe("playerIdForUser", () => {
   it("differs between people and between boards", () => {
     assert.notEqual(playerIdForUser("board-1", "user-1"), playerIdForUser("board-1", "user-2"));
     assert.notEqual(playerIdForUser("board-1", "user-1"), playerIdForUser("board-2", "user-1"));
+  });
+});
+
+describe("canStep", () => {
+  const limits = { min: 0, max: 24 };
+
+  it("allows steps inside the range and blocks the edges", () => {
+    assert.equal(canStep(5, 1, limits), true);
+    assert.equal(canStep(5, -1, limits), true);
+    assert.equal(canStep(24, 1, limits), false);
+    assert.equal(canStep(0, -1, limits), false);
+    assert.equal(canStep(23, 1, limits), true);
+    assert.equal(canStep(1, -1, limits), true);
+  });
+
+  it("has no top without a maximum, and allows negative scores when the minimum is negative", () => {
+    assert.equal(canStep(9999, 1, { min: 0, max: null }), true);
+    assert.equal(canStep(-3, -1, { min: -5, max: null }), true);
+    assert.equal(canStep(-5, -1, { min: -5, max: null }), false);
+  });
+});
+
+describe("barPercent", () => {
+  it("shows progress towards the maximum", () => {
+    assert.equal(barPercent(6, { min: 0, max: 24 }, 8), 25);
+    assert.equal(barPercent(24, { min: 0, max: 24 }, 24), 100);
+    assert.equal(barPercent(0, { min: 0, max: 24 }, 8), 0);
+  });
+
+  it("measures from the minimum", () => {
+    assert.equal(barPercent(0, { min: -10, max: 10 }, 5), 50);
+  });
+
+  it("is relative to the leader without a maximum", () => {
+    assert.equal(barPercent(4, { min: 0, max: null }, 8), 50);
+    assert.equal(barPercent(8, { min: 0, max: null }, 8), 100);
+  });
+
+  it("never leaves 0..100, and is 0 when there is no range", () => {
+    assert.equal(barPercent(50, { min: 0, max: 10 }, 50), 100);
+    assert.equal(barPercent(-5, { min: 0, max: 10 }, 5), 0);
+    assert.equal(barPercent(3, { min: 5, max: 5 }, 3), 0);
+  });
+});
+
+describe("numberField", () => {
+  it("reads numbers, treats blank as not given and keeps junk invalid", () => {
+    assert.equal(numberField("12"), 12);
+    assert.equal(numberField("-3"), -3);
+    assert.equal(numberField(""), undefined);
+    assert.equal(numberField("  "), undefined);
+    assert.equal(numberField(null), undefined);
+    assert.ok(Number.isNaN(numberField("abc")));
   });
 });

@@ -7,7 +7,7 @@ import { getPlayers } from "./store";
 
 /** Player management for organisers: add by name, import the subscribers, remove, and (in 'self' mode) hand out personal links. */
 export default async function Manage({ instance, config }: { instance: PluginInstance; config: ScoreboardConfig }) {
-  const players = await getPlayers(instance.id);
+  const players = await getPlayers(instance.id, config.startScore);
   const origin = siteUrl();
 
   return (

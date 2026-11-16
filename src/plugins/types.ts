@@ -42,8 +42,11 @@ export interface PluginDefinition<Config = unknown> {
   Manage?: (props: { instance: PluginInstance; config: Config }) => ReactNode | Promise<ReactNode>;
   /** A block on the activity page, shown to everyone who can see the activity. */
   ActivitySection?: (props: { instance: PluginInstance; config: Config; viewer: PluginViewer }) => ReactNode | Promise<ReactNode>;
-  /** The no-login page at /p/<token>. Without it the plugin has no public address. */
-  PublicPage?: (props: { instance: PluginInstance; config: Config; viewer: PluginViewer; search: Record<string, string | undefined> }) => ReactNode | Promise<ReactNode>;
+  /**
+   * The no-login page at /p/<token>. Without it the plugin has no public address. The page is standalone: the plugin
+   * renders all of it (header, theme, footer), and gets the activity's name only when that activity is public.
+   */
+  PublicPage?: (props: { instance: PluginInstance; config: Config; viewer: PluginViewer; search: Record<string, string | undefined>; activityName: string | null }) => ReactNode | Promise<ReactNode>;
   /** Called after someone subscribes, unsubscribes or joins the waitlist (`userId` is the person, when known). Failures are logged and never block the person. */
   onEvent?: (props: { instance: PluginInstance; config: Config; event: PluginEvent; userId: string | null }) => Promise<void>;
   /** Called after an organiser saved the settings, with what they were before. Lets a plugin act on a changed option. */

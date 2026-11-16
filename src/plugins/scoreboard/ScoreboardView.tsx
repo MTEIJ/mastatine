@@ -1,7 +1,7 @@
 import type { PluginViewer } from "../types";
-import "./scoreboard.css";
 import { markPlayer } from "./actions";
-import { canMark, gridRows, rankPlayers, timingSafeEqual, type ScoreboardConfig } from "./logic";
+import { barPercent, canMark, canStep, gridRows, rankPlayers, timingSafeEqual, type ScoreboardConfig } from "./logic";
+import "./scoreboard.css";
 import type { Player } from "./store";
 
 const MAX_SHEET_ROWS = 100;
@@ -18,15 +18,17 @@ interface ScoreboardViewProps {
 }
 
 /**
- * The board itself: ranked rows with a bar, +1 / undo where this visitor may change things, plus the sheet view of the
- * old Excel. Styled by the .sb-* classes (scoreboard.css); it re-themes itself inside the full-screen page.
+ * The board itself: one compact ranked list with a bar per player, small − / +1 buttons where this visitor may change
+ * things, and the sheet view of the old Excel. Styled by the .sb-* classes; the theme comes from the page around it.
  */
 export default function ScoreboardView({ token, config, players, viewer, playerKey, interactive }: ScoreboardViewProps) {
   if (players.length === 0) return <p className="sb-board sb-empty">Nobody on the board yet.</p>;
   const ranked = rankPlayers(players);
   const leader = Math.max(1, ranked[0].marks);
-  // A full sheet is up to 1000 rows by 80 players: only draw it while it stays a sensible size.
-  const sheet = players.every((p) => p.marks <= MAX_SHEET_ROWS) ? gridRows(players) : [];
+  const limits = { min: config.minScore, max: config.maxScore };
+  // The sheet shows one x per mark, so it only makes sense when everybody starts from zero. A full sheet is up to
+  // 1000 rows by 80 players: only draw it while it stays a sensible size.
+  const sheet = config.startScore === 0 && players.every((p) => p.marks <= MAX_SHEET_ROWS) ? gridRows(players) : [];
 
   return (
     <div className="sb-board">
@@ -38,30 +40,30 @@ export default function ScoreboardView({ token, config, players, viewer, playerK
           const rank = ranked.findIndex((q) => q.marks === p.marks) + 1;
           return (
             <li key={p.id} className={`sb-row${ownKey ? " sb-row--me" : ""}`} data-rank={p.marks > 0 ? rank : undefined}>
-              <span className="sb-rank" aria-label={`Place ${rank}`}>{rank}</span>
-              <div className="min-w-0">
+              <span className="sb-rank"><span className="sr-only">Place </span>{rank}</span>
+              <div className="sb-main">
                 <p className="sb-name">
                   {p.name}
                   {ownKey && <span className="sb-you">(you)</span>}
                 </p>
                 <div className={`sb-bar${p.marks === 0 ? " sb-bar--empty" : ""}`} aria-hidden>
-                  <span style={{ width: `${Math.round((p.marks / leader) * 100)}%` }} />
+                  <span style={{ width: `${barPercent(p.marks, limits, leader)}%` }} />
                 </div>
               </div>
               <p className="sb-score">
                 {p.marks}
-                <small>{p.marks === 1 ? "mark" : "marks"}</small>
+                {config.maxScore !== null && <span className="sb-of">/ {config.maxScore}</span>}
               </p>
               {editable && (
                 <form action={markPlayer} className="sb-actions">
                   <input type="hidden" name="token" value={token} />
                   <input type="hidden" name="player" value={p.id} />
                   {ownKey && <input type="hidden" name="key" value={ownKey} />}
-                  <button name="op" value="add" className="sb-btn sb-btn--add" type="submit" aria-label={`Add a mark for ${p.name}`}>
-                    +1
+                  <button name="op" value="sub" className="sb-btn" type="submit" disabled={!canStep(p.marks, -1, limits)} aria-label={`Take one point from ${p.name}`}>
+                    &minus;
                   </button>
-                  <button name="op" value="undo" className="sb-btn" type="submit" disabled={p.marks === 0} aria-label={`Undo the last mark for ${p.name}`}>
-                    Undo
+                  <button name="op" value="add" className="sb-btn sb-btn--add" type="submit" disabled={!canStep(p.marks, 1, limits)} aria-label={`Give one point to ${p.name}`}>
+                    +1
                   </button>
                 </form>
               )}

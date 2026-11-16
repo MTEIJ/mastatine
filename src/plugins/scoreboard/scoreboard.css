@@ -1,42 +1,127 @@
 /*
- * Standalone plugin pages (/p/<token>): a full-screen canvas without the site around it.
- * Everything is scoped to .sb-* so it cannot leak into the rest of the site. The scoreboard itself also appears on the
- * activity page (light, inside the site); .sb-page only re-themes the same markup for the dark full-screen look.
+ * Scoreboard styles. Everything is scoped to .sb-* so nothing leaks into the rest of the site.
+ *
+ * - .sb-board is the list itself. On the activity page it sits in the site and uses the site's own tokens.
+ * - .sb-page is the standalone full-screen page. Its data-sb-theme picks a theme: a theme is only a set of --sb-* tokens
+ *   plus (for Advent) some decoration, so adding one means adding one block below and one entry in logic.ts.
  */
+
+/* ───── tokens ───── */
+
 .sb-board {
   --sb-ink: var(--ink, #111);
   --sb-muted: var(--muted, #4a4a4a);
-  --sb-card: var(--surface, #fff);
+  --sb-panel: var(--surface, #fff);
   --sb-line: var(--line, #d4d4d4);
   --sb-accent: var(--accent, #f57f20);
   --sb-accent-fg: var(--accent-fg, #1a0f05);
   --sb-track: var(--soft, #eee);
-  --sb-gold: #b7791f;
-  --sb-silver: #6b7280;
+  --sb-bar: linear-gradient(90deg, #f57f20, #d96810);
+  --sb-gold: #a16207;
+  --sb-silver: #64748b;
   --sb-bronze: #9a5b2b;
 }
+
+/* Theme: Clean. Neutral and calm; follows the visitor's light or dark setting. */
+.sb-page[data-sb-theme="clean"],
+.sb-page[data-sb-theme="clean"] .sb-board {
+  --sb-page-bg: #f4f6f9;
+  --sb-ink: #141a26;
+  --sb-muted: #5a6578;
+  --sb-panel: #fff;
+  --sb-line: #e2e6ee;
+  --sb-accent: #0f2254;
+  --sb-accent-fg: #fff;
+  --sb-track: #e8ecf3;
+  --sb-bar: linear-gradient(90deg, #3b57ad, #0f2254);
+  --sb-gold: #a16207;
+  --sb-silver: #64748b;
+  --sb-bronze: #9a5b2b;
+}
+@media (prefers-color-scheme: dark) {
+  .sb-page[data-sb-theme="clean"],
+  .sb-page[data-sb-theme="clean"] .sb-board {
+    --sb-page-bg: #0e121a;
+    --sb-ink: #eef1f7;
+    --sb-muted: #9aa5b8;
+    --sb-panel: #161b26;
+    --sb-line: #262d3b;
+    --sb-accent: #7aa2ff;
+    --sb-accent-fg: #0b1220;
+    --sb-track: #232a38;
+    --sb-bar: linear-gradient(90deg, #4f78e0, #7aa2ff);
+    --sb-gold: #fbbf24;
+    --sb-silver: #cbd5e1;
+    --sb-bronze: #e0a070;
+  }
+}
+
+/* Theme: Advent. A winter night with snow and gold. */
+.sb-page[data-sb-theme="advent"],
+.sb-page[data-sb-theme="advent"] .sb-board {
+  --sb-page-bg: radial-gradient(60rem 30rem at 50% -8rem, rgb(255 200 87 / 0.18), transparent 70%), linear-gradient(180deg, #0b1736 0%, #14295e 55%, #1c3a7a 100%);
+  --sb-ink: #f4f7ff;
+  --sb-muted: #b7c3e6;
+  --sb-panel: rgb(255 255 255 / 0.07);
+  --sb-line: rgb(255 255 255 / 0.14);
+  --sb-accent: #f57f20;
+  --sb-accent-fg: #1a0f05;
+  --sb-track: rgb(255 255 255 / 0.12);
+  --sb-bar: linear-gradient(90deg, #ffc857, #f57f20);
+  --sb-gold: #ffc857;
+  --sb-silver: #dfe5f2;
+  --sb-bronze: #e8a672;
+}
+
+/* ───── the standalone page ───── */
 
 .sb-page {
   position: fixed;
   inset: 0;
   z-index: 100;
   overflow-y: auto;
-  color: #f4f7ff;
-  background:
-    radial-gradient(60rem 30rem at 50% -8rem, rgb(255 200 87 / 0.18), transparent 70%),
-    linear-gradient(180deg, #0b1736 0%, #14295e 55%, #1c3a7a 100%);
+  color: var(--sb-ink);
+  background: var(--sb-page-bg);
 }
 
-/* Snow and stars: two tiled layers of tiny dots, the second drifting slowly. Decoration only. */
-.sb-page::before,
-.sb-page::after {
+.sb-wrap {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 2rem, 44rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 4vw, 3rem) 0 3rem;
+}
+
+.sb-head { margin-bottom: 1.25rem; }
+.sb-eyebrow { margin: 0; font-size: 0.8rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sb-muted); }
+.sb-title { margin: 0.2rem 0 0; font-size: clamp(1.75rem, 5vw, 2.5rem); font-weight: 900; line-height: 1.1; text-wrap: balance; }
+.sb-summary { margin: 0.4rem 0 0; color: var(--sb-muted); font-variant-numeric: tabular-nums; }
+.sb-foot { margin-top: 1.75rem; font-size: 0.8rem; color: var(--sb-muted); }
+
+/* Advent decoration: centred head, gold title, snow and stars. */
+.sb-page[data-sb-theme="advent"] .sb-head { text-align: center; margin-bottom: 1.75rem; }
+.sb-page[data-sb-theme="advent"] .sb-eyebrow { color: #ffc857; }
+.sb-page[data-sb-theme="advent"] .sb-title { font-size: clamp(2rem, 7vw, 3.25rem); text-shadow: 0 2px 24px rgb(0 0 0 / 0.35); }
+.sb-page[data-sb-theme="advent"] .sb-head::after {
+  content: "";
+  display: block;
+  width: 6rem;
+  height: 4px;
+  margin: 0.9rem auto 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, #ffc857, #f57f20, #ffc857, transparent);
+}
+.sb-page[data-sb-theme="advent"] .sb-foot { text-align: center; }
+
+.sb-page[data-sb-theme="advent"]::before,
+.sb-page[data-sb-theme="advent"]::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   background-repeat: repeat;
 }
-.sb-page::before {
+.sb-page[data-sb-theme="advent"]::before {
   background-image:
     radial-gradient(2px 2px at 20px 30px, #fff 50%, transparent 52%),
     radial-gradient(1.5px 1.5px at 90px 80px, rgb(255 255 255 / 0.8) 50%, transparent 52%),
@@ -44,102 +129,72 @@
     radial-gradient(1px 1px at 55px 130px, rgb(255 255 255 / 0.7) 50%, transparent 52%),
     radial-gradient(2.5px 2.5px at 130px 150px, rgb(255 224 150 / 0.9) 50%, transparent 52%);
   background-size: 200px 200px;
-  opacity: 0.55;
+  opacity: 0.5;
 }
-.sb-page::after {
+.sb-page[data-sb-theme="advent"]::after {
   background-image:
     radial-gradient(3px 3px at 40px 60px, rgb(255 255 255 / 0.9) 50%, transparent 52%),
     radial-gradient(2px 2px at 150px 120px, rgb(255 255 255 / 0.7) 50%, transparent 52%),
     radial-gradient(3px 3px at 100px 10px, rgb(255 255 255 / 0.8) 50%, transparent 52%);
   background-size: 260px 260px;
-  opacity: 0.4;
+  opacity: 0.35;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .sb-page::after { animation: sb-snow 60s linear infinite; }
+  .sb-page[data-sb-theme="advent"]::after { animation: sb-snow 60s linear infinite; }
 }
 @keyframes sb-snow {
   to { background-position: 0 260px; }
 }
 
-.sb-wrap {
-  position: relative;
-  z-index: 1;
-  width: min(100% - 2rem, 52rem);
-  margin-inline: auto;
-  padding: clamp(1.5rem, 5vw, 3.5rem) 0 3rem;
-}
+/* ───── the board: one compact panel, rows separated by thin lines ───── */
 
-.sb-head { text-align: center; margin-bottom: clamp(1.25rem, 4vw, 2.25rem); }
-.sb-eyebrow { font-size: 0.85rem; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase; color: #ffc857; }
-.sb-title { margin: 0.35rem 0 0; font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 900; line-height: 1.05; text-wrap: balance; text-shadow: 0 2px 24px rgb(0 0 0 / 0.35); }
-.sb-rule { width: 6rem; height: 4px; margin: 1rem auto 0; border-radius: 99px; background: linear-gradient(90deg, transparent, #ffc857, #f57f20, #ffc857, transparent); }
-
-.sb-foot { margin-top: 2rem; text-align: center; font-size: 0.85rem; color: #b7c3e6; }
-
-/* Re-theme the board itself for the dark canvas. */
-.sb-page .sb-board {
-  --sb-ink: #f4f7ff;
-  --sb-muted: #b7c3e6;
-  --sb-card: rgb(255 255 255 / 0.08);
-  --sb-line: rgb(255 255 255 / 0.16);
-  --sb-accent: #f57f20;
-  --sb-track: rgb(255 255 255 / 0.12);
-  --sb-gold: #ffc857;
-  --sb-silver: #dfe5f2;
-  --sb-bronze: #e8a672;
+.sb-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  border: 1px solid var(--sb-line);
+  border-radius: 0.9rem;
+  background: var(--sb-panel);
   color: var(--sb-ink);
 }
-
-/* The board */
-.sb-list { display: grid; gap: 0.65rem; margin: 0; padding: 0; list-style: none; }
+.sb-page[data-sb-theme="advent"] .sb-list { backdrop-filter: blur(6px); box-shadow: 0 10px 30px -14px rgb(0 0 0 / 0.55); }
 
 .sb-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: 1.75rem minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 0.25rem 0.9rem;
-  padding: 0.8rem 1rem;
-  border: 1.5px solid var(--sb-line);
-  border-radius: 1rem;
-  background: var(--sb-card);
-  color: var(--sb-ink);
+  gap: 0.75rem;
+  padding: 0.55rem 0.9rem;
 }
-.sb-page .sb-row { backdrop-filter: blur(6px); box-shadow: 0 8px 24px -12px rgb(0 0 0 / 0.5); }
-.sb-row--me { border-color: var(--sb-gold); }
+.sb-row + .sb-row { border-top: 1px solid var(--sb-line); }
+.sb-row--me { box-shadow: inset 3px 0 0 var(--sb-gold); }
 
-.sb-rank {
-  display: grid;
-  place-items: center;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 50%;
-  border: 2px solid var(--sb-line);
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  color: var(--sb-muted);
-}
-.sb-row[data-rank="1"] .sb-rank { border-color: var(--sb-gold); color: var(--sb-gold); background: rgb(255 200 87 / 0.14); }
-.sb-row[data-rank="2"] .sb-rank { border-color: var(--sb-silver); color: var(--sb-silver); }
-.sb-row[data-rank="3"] .sb-rank { border-color: var(--sb-bronze); color: var(--sb-bronze); }
-.sb-row[data-rank="1"] .sb-score { color: var(--sb-gold); }
+.sb-rank { font-weight: 900; font-variant-numeric: tabular-nums; text-align: center; color: var(--sb-muted); }
+.sb-row[data-rank="1"] .sb-rank { color: var(--sb-gold); }
+.sb-row[data-rank="2"] .sb-rank { color: var(--sb-silver); }
+.sb-row[data-rank="3"] .sb-rank { color: var(--sb-bronze); }
 
-.sb-name { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1.15rem; font-weight: 900; }
-.sb-you { margin-left: 0.5rem; font-size: 0.85rem; font-weight: 700; color: var(--sb-gold); }
-.sb-bar { height: 0.5rem; margin-top: 0.4rem; overflow: hidden; border-radius: 99px; background: var(--sb-track); }
-.sb-bar > span { display: block; height: 100%; min-width: 0.5rem; border-radius: inherit; background: linear-gradient(90deg, #ffc857, #f57f20); }
+.sb-main { min-width: 0; }
+.sb-name { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+.sb-you { margin-left: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--sb-muted); }
+.sb-bar { height: 0.35rem; margin-top: 0.3rem; overflow: hidden; border-radius: 99px; background: var(--sb-track); }
+.sb-bar > span { display: block; height: 100%; min-width: 0.35rem; border-radius: inherit; background: var(--sb-bar); }
 .sb-bar--empty > span { min-width: 0; }
 @media (prefers-reduced-motion: no-preference) {
-  .sb-bar > span { transition: width 0.6s ease; }
+  .sb-bar > span { transition: width 0.5s ease; }
 }
 
-.sb-score { margin: 0; font-size: 1.9rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; text-align: right; }
-.sb-score small { display: block; margin-top: 0.15rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sb-muted); }
+.sb-score { margin: 0; min-width: 2ch; font-size: 1.35rem; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; text-align: right; }
+.sb-row[data-rank="1"] .sb-score { color: var(--sb-gold); }
+.sb-of { margin-left: 0.2rem; font-size: 0.8rem; font-weight: 700; color: var(--sb-muted); }
 
-.sb-actions { grid-column: 2 / -1; display: flex; gap: 0.5rem; margin-top: 0.4rem; }
+.sb-actions { display: flex; gap: 0.35rem; margin: 0; }
 .sb-btn {
-  min-height: 2.75rem;
-  padding: 0 1.1rem;
-  border: 1.5px solid var(--sb-line);
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.7rem;
+  border: 1px solid var(--sb-line);
   border-radius: 999px;
   background: transparent;
   color: var(--sb-ink);
@@ -148,24 +203,23 @@
   cursor: pointer;
   touch-action: manipulation;
 }
-.sb-btn:hover:not(:disabled) { border-color: var(--sb-ink); }
-.sb-btn:disabled { opacity: 0.4; cursor: default; }
-.sb-btn--add { min-width: 5rem; border-color: transparent; background: var(--sb-accent); color: var(--sb-accent-fg); font-size: 1.1rem; }
-.sb-btn--add:hover:not(:disabled) { filter: brightness(1.08); border-color: transparent; }
-.sb-btn:focus-visible { outline: 3px solid #ffc857; outline-offset: 2px; }
+.sb-btn:hover:not(:disabled) { border-color: var(--sb-muted); }
+.sb-btn:disabled { opacity: 0.35; cursor: default; }
+.sb-btn--add { border-color: transparent; background: var(--sb-accent); color: var(--sb-accent-fg); }
+.sb-btn--add:hover:not(:disabled) { filter: brightness(1.1); border-color: transparent; }
+.sb-btn:focus-visible { outline: 3px solid var(--sb-gold); outline-offset: 2px; }
 
 .sb-empty { text-align: center; color: var(--sb-muted); }
 
 /* The sheet view: the old Excel look */
-.sb-sheet { margin-top: 1rem; padding: 0.9rem 1rem; border: 1.5px solid var(--sb-line); border-radius: 1rem; background: var(--sb-card); color: var(--sb-ink); }
-.sb-sheet summary { cursor: pointer; font-weight: 900; }
-.sb-sheet-scroll { margin-top: 0.75rem; overflow-x: auto; }
-.sb-sheet table { border-collapse: collapse; min-width: 100%; font-size: 0.9rem; }
-.sb-sheet th, .sb-sheet td { padding: 0.3rem 0.6rem; border: 1px solid var(--sb-line); text-align: center; white-space: nowrap; }
-.sb-sheet th { font-weight: 900; }
+.sb-sheet { margin-top: 0.9rem; padding: 0.7rem 0.9rem; border: 1px solid var(--sb-line); border-radius: 0.9rem; background: var(--sb-panel); color: var(--sb-ink); }
+.sb-sheet summary { cursor: pointer; font-weight: 800; }
+.sb-sheet-scroll { margin-top: 0.6rem; overflow-x: auto; }
+.sb-sheet table { border-collapse: collapse; min-width: 100%; font-size: 0.85rem; }
+.sb-sheet th, .sb-sheet td { padding: 0.25rem 0.55rem; border: 1px solid var(--sb-line); text-align: center; white-space: nowrap; }
+.sb-sheet th { font-weight: 800; }
 
 @media (max-width: 30rem) {
-  .sb-score { font-size: 1.6rem; }
-  .sb-row { padding: 0.7rem 0.8rem; }
-  .sb-actions > .sb-btn { flex: 1; }
+  .sb-row { gap: 0.5rem; padding-inline: 0.65rem; }
+  .sb-score { font-size: 1.2rem; }
 }
