@@ -1,3 +1,4 @@
+import MarkdownEditor from "@/components/MarkdownEditor";
 import type { NewsPost } from "@/lib/news";
 
 interface NewsFormProps {
@@ -27,7 +28,7 @@ export default function NewsForm({ action, post, submitLabel }: NewsFormProps) {
       </div>
       <div>
         <label className="label" htmlFor="body">Message</label>
-        <textarea id="body" name="body" className="input min-h-72" required maxLength={20000} defaultValue={post?.body} />
+        <MarkdownEditor id="body" name="body" required maxLength={20000} heightClass="min-h-72" defaultValue={post?.body} />
       </div>
       <button type="submit" className="btn btn-primary">{submitLabel}</button>
     </form>

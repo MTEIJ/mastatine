@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import Markdown from "@/components/Markdown";
+import { prefixLines, wrap, type Edit } from "@/lib/markdown-edit";
 
 interface NotesFieldProps {
   id: string;
@@ -13,8 +14,6 @@ interface NotesFieldProps {
   onFocus: () => void;
   onBlur: () => void;
 }
-
-type Edit = { text: string; start: number; end: number };
 
 const toolClass = "grid h-7 min-w-7 place-items-center rounded px-1.5 text-sm font-bold text-muted hover:bg-soft hover:text-ink";
 
@@ -32,29 +31,6 @@ function ToolButton({ label, title, onClick, className = "" }: ToolButtonProps) 
       {label}
     </button>
   );
-}
-
-/** Wraps the selection (or a placeholder) in a marker pair, or removes the markers when it is already wrapped. */
-function wrap(text: string, start: number, end: number, marker: string, placeholder: string): Edit {
-  const selected = text.slice(start, end);
-  if (selected.length >= marker.length * 2 && selected.startsWith(marker) && selected.endsWith(marker)) {
-    const inner = selected.slice(marker.length, selected.length - marker.length);
-    return { text: text.slice(0, start) + inner + text.slice(end), start, end: start + inner.length };
-  }
-  const body = selected || placeholder;
-  const next = text.slice(0, start) + marker + body + marker + text.slice(end);
-  return { text: next, start: start + marker.length, end: start + marker.length + body.length };
-}
-
-/** Puts a prefix on every selected line, or takes it off when all of them already have it. */
-function prefixLines(text: string, start: number, end: number, prefix: (index: number) => string, pattern: RegExp): Edit {
-  const from = start === 0 ? 0 : text.lastIndexOf("\n", start - 1) + 1;
-  const lineEnd = text.indexOf("\n", end);
-  const to = lineEnd === -1 ? text.length : lineEnd;
-  const lines = text.slice(from, to).split("\n");
-  const allPrefixed = lines.every((line) => pattern.test(line));
-  const next = lines.map((line, i) => (allPrefixed ? line.replace(pattern, "") : prefix(i) + line.replace(/^(#{1,6} |[-*] |\d+\. )/, ""))).join("\n");
-  return { text: text.slice(0, from) + next + text.slice(to), start: from, end: from + next.length };
 }
 
 const PICTURE = /!\[([^\]]*)\]\((\/uploads\/[a-z0-9-]+\.(?:jpg|png|webp|gif))\)/g;

@@ -1,5 +1,6 @@
 "use client";
 
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { FORMAT_HINT } from "@/lib/email-style";
 import { useActionState } from "react";
 import type { SignupGroup } from "@/lib/signup-options";
@@ -97,7 +98,7 @@ export default function ActivityForm({ values: v, committees }: ActivityFormProp
           </Field>
         </div>
         <Field id="description" label="Description">
-          <textarea id="description" name="description" className="input min-h-32" maxLength={5000} defaultValue={v.description} />
+          <MarkdownEditor id="description" name="description" maxLength={5000} defaultValue={v.description} />
         </Field>
         <Field id="poster" label="Poster">
           {/* eslint-disable-next-line @next/next/no-img-element */}

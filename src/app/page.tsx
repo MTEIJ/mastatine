@@ -8,7 +8,8 @@ import { PAGE_SIZE, listTowers, parseQuery, type TowerPage } from "@/lib/towers"
 import HeroCarousel from "@/classic/HeroCarousel";
 import TowerGrid from "@/classic/TowerGrid";
 import SubmitModal from "@/classic/SubmitModal";
-import { formatDate, getLatestNews, newsParagraphs } from "@/lib/news";
+import Markdown from "@/components/Markdown";
+import { formatDate, getLatestNews } from "@/lib/news";
 import MinecraftBar from "@/components/MinecraftBar";
 import HomeHub from "@/components/HomeHub";
 import { getSession } from "@/lib/session";
@@ -169,9 +170,7 @@ export default async function HomePage(
                   marginBottom: "0.5rem",
                 }}
               >
-                {newsParagraphs(latest.body).map((paragraph, i) => (
-                  <p key={i}>{paragraph}</p>
-                ))}
+                <Markdown>{latest.body}</Markdown>
               </div>
               <SubmitModal />
             </article>}

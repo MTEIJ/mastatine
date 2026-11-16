@@ -1,3 +1,4 @@
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { toLocalInput } from "@/lib/datetime";
 import type { CalendarEvent } from "@/lib/calendar-events";
 
@@ -32,7 +33,7 @@ export default function EventForm({ action, event, submitLabel }: EventFormProps
       </div>
       <div>
         <label className="label" htmlFor="description">Notes (optional)</label>
-        <textarea id="description" name="description" className="input min-h-28" maxLength={2000} defaultValue={event?.description} />
+        <MarkdownEditor id="description" name="description" maxLength={2000} defaultValue={event?.description} />
       </div>
       <label className="choice-row">
         <input type="checkbox" name="is_visible" defaultChecked={event?.is_visible ?? true} className="mt-0" />

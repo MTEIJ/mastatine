@@ -1,3 +1,4 @@
+import Markdown from "@/components/Markdown";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -168,7 +169,7 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
           </section>
 
           {/* 3. About it */}
-          {activity.description && <p className="card whitespace-pre-line p-5 sm:p-6">{activity.description}</p>}
+          {activity.description && <div className="card p-5 sm:p-6"><Markdown large>{activity.description}</Markdown></div>}
 
           {/* The poster sits in the side column on large screens, and inline here on phones */}
           {poster && <div className="lg:hidden">{poster}</div>}

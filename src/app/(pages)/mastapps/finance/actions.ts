@@ -89,12 +89,12 @@ export async function addEntry(formData: FormData) {
   redirect(`${LEDGER}&notice=added`);
 }
 
-const SNAPSHOT_COLUMNS = sql`to_char(occurred_on, 'YYYY-MM-DD') AS occurred_on, amount_cents::float8, category, counterparty, description, activity_label`;
+const snapshotColumns = () => sql`to_char(occurred_on, 'YYYY-MM-DD') AS occurred_on, amount_cents::float8, category, counterparty, description, activity_label`;
 
 /** An entry still inside its edit window (the database enforces this too): not sealed, not a reversal. */
 async function findOpenEntry(entryId: string) {
   const [row] = await sql<ParsedEntry[]>`
-    SELECT ${SNAPSHOT_COLUMNS}, activity_id FROM finance_entries
+    SELECT ${snapshotColumns()}, activity_id FROM finance_entries
     WHERE id = ${entryId} AND seq IS NULL AND reverses_id IS NULL AND created_at > NOW() - finance_edit_window()
   `;
   return row;

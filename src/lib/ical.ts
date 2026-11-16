@@ -1,3 +1,4 @@
+import { stripMarkdown } from "@/lib/markdown-edit";
 import type { UpcomingActivity } from "@/lib/activities";
 import type { CalendarEvent } from "@/lib/calendar-events";
 
@@ -87,7 +88,7 @@ export function buildCalendar(activities: UpcomingActivity[], { name, siteUrl, n
       `DTEND:${utc(end)}`,
       `SUMMARY:${escapeText(e.title)}`,
       ...(e.location ? [`LOCATION:${escapeText(e.location)}`] : []),
-      ...(e.description ? [`DESCRIPTION:${escapeText(e.description)}`] : []),
+      ...(e.description ? [`DESCRIPTION:${escapeText(stripMarkdown(e.description))}`] : []),
       "END:VEVENT",
     );
   }

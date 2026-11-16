@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findNews, formatDate, newsParagraphs } from "@/lib/news";
+import Markdown from "@/components/Markdown";
+import { findNews, formatDate } from "@/lib/news";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -28,11 +29,7 @@ export default async function NewsPostPage({ params }: Props) {
         {formatDate(post.date)}
       </time>
       <h1 className="mt-2 text-4xl font-extrabold sm:text-5xl">{post.title}</h1>
-      <div className="prose-lite mt-8">
-        {newsParagraphs(post.body).map((paragraph, i) => (
-          <p key={i}>{paragraph}</p>
-        ))}
-      </div>
+      <Markdown large className="mt-8 text-lg leading-relaxed">{post.body}</Markdown>
     </article>
   );
 }

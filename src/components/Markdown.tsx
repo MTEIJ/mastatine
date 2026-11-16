@@ -35,11 +35,20 @@ const components: Components = {
   hr: () => <hr className="my-3 border-line" />,
 };
 
-/** Minutes text: a safe subset of Markdown (no raw HTML), with single line breaks kept like the old plain-text notes. */
-export default function Markdown({ children, className = "" }: { children: string; className?: string }) {
+// Descriptions on public pages: headings are real size steps (large, medium, small).
+const largeComponents: Components = {
+  ...components,
+  h1: ({ children }) => <h3 className="mb-2 mt-4 text-2xl font-extrabold">{children}</h3>,
+  h2: ({ children }) => <h4 className="mb-1.5 mt-3 text-xl font-extrabold">{children}</h4>,
+  h3: ({ children }) => <h5 className="mb-1 mt-3 text-lg font-bold">{children}</h5>,
+  p: ({ children }) => <p className="my-2">{children}</p>,
+};
+
+/** A safe subset of Markdown (no raw HTML), with single line breaks kept like the old plain-text notes. `large` uses bigger heading sizes. */
+export default function Markdown({ children, className = "", large = false }: { children: string; className?: string; large?: boolean }) {
   return (
     <div className={`break-words [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 ${className}`}>
-      <ReactMarkdown remarkPlugins={[remarkBreaks]} components={components} urlTransform={safeUrl}>
+      <ReactMarkdown remarkPlugins={[remarkBreaks]} components={large ? largeComponents : components} urlTransform={safeUrl}>
         {children}
       </ReactMarkdown>
     </div>

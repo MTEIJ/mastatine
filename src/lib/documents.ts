@@ -10,7 +10,7 @@ export * from "@/lib/document-folders";
 export const DOCUMENTS_DIR = path.resolve(/* turbopackIgnore: true */ process.env.DOCUMENTS_DIR ?? "./documents-data");
 export const DOCUMENT_FILENAME_RE = /^[a-z0-9-]+\.pdf$/;
 
-const COLUMNS = sql`
+const columns = () => sql`
   id, category, title, description, version_label, to_char(document_date, 'YYYY-MM-DD') AS document_date, visibility,
   size_bytes, original_name, to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS updated_at
 `;
@@ -18,14 +18,14 @@ const COLUMNS = sql`
 /** Documents the viewer may see: everything for a signed-in member, only the public ones otherwise. */
 export function getDocuments(signedIn: boolean): Promise<DocumentRow[]> {
   return sql<DocumentRow[]>`
-    SELECT ${COLUMNS} FROM documents
+    SELECT ${columns()} FROM documents
     WHERE ${signedIn ? sql`TRUE` : sql`visibility = 'public'`}
     ORDER BY document_date DESC, title
   `;
 }
 
 export function getAllDocuments(): Promise<DocumentRow[]> {
-  return sql<DocumentRow[]>`SELECT ${COLUMNS} FROM documents ORDER BY document_date DESC, title`;
+  return sql<DocumentRow[]>`SELECT ${columns()} FROM documents ORDER BY document_date DESC, title`;
 }
 
 export interface StoredDocument {
