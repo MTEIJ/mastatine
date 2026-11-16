@@ -175,3 +175,42 @@ export async function logAudit(actor: Actor, action: string, detail: Record<stri
 export async function listActivityOptions(): Promise<{ id: string; name: string; starts_at: Date }[]> {
   return sql`SELECT id, name, starts_at FROM activities WHERE starts_at > NOW() - INTERVAL '1 year' ORDER BY starts_at DESC LIMIT 200`;
 }
+
+export interface CategoryTotal {
+  category: Category;
+  income_cents: number;
+  expense_cents: number;
+}
+
+export interface MonthTotal {
+  month: number;
+  income_cents: number;
+  expense_cents: number;
+}
+
+/** Income and spending per category for a calendar year, ignoring reversed pairs. */
+export async function getCategoryTotals(year: number): Promise<CategoryTotal[]> {
+  return sql<CategoryTotal[]>`
+    WITH e AS (${withLive()})
+    SELECT category,
+      COALESCE(SUM(amount_cents) FILTER (WHERE amount_cents > 0), 0)::float8 AS income_cents,
+      COALESCE(-SUM(amount_cents) FILTER (WHERE amount_cents < 0), 0)::float8 AS expense_cents
+    FROM e
+    WHERE live AND occurred_on >= make_date(${year}, 1, 1) AND occurred_on < make_date(${year + 1}, 1, 1)
+    GROUP BY category
+  `;
+}
+
+/** Income and spending per month (1 to 12) of a calendar year; months without entries are included as zero. */
+export async function getMonthlyTotals(year: number): Promise<MonthTotal[]> {
+  return sql<MonthTotal[]>`
+    WITH e AS (${withLive()})
+    SELECT m.month::int AS month,
+      COALESCE(SUM(e.amount_cents) FILTER (WHERE e.amount_cents > 0), 0)::float8 AS income_cents,
+      COALESCE(-SUM(e.amount_cents) FILTER (WHERE e.amount_cents < 0), 0)::float8 AS expense_cents
+    FROM generate_series(1, 12) AS m(month)
+    LEFT JOIN e ON e.live AND EXTRACT(MONTH FROM e.occurred_on) = m.month
+      AND e.occurred_on >= make_date(${year}, 1, 1) AND e.occurred_on < make_date(${year + 1}, 1, 1)
+    GROUP BY m.month ORDER BY m.month
+  `;
+}

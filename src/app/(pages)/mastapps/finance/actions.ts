@@ -9,7 +9,8 @@ import { requireFinance } from "@/lib/finance-access";
 import { parseEuroToCents } from "@/lib/finance-money";
 
 const HOME = "/mastapps/finance";
-const LEDGER = "/mastapps/finance/ledger";
+const LEDGER = "/mastapps/finance?view=ledger";
+const BUDGETS = "/mastapps/finance?view=budgets";
 
 const id = z.uuid();
 const optionalId = z.preprocess((v) => (v === "" ? undefined : v), z.uuid().optional());
@@ -29,7 +30,7 @@ const entrySchema = z.object({
 });
 
 function fail(notice: string): never {
-  redirect(`${LEDGER}?notice=${notice}`);
+  redirect(`${LEDGER}&notice=${notice}`);
 }
 
 /** A date that exists and is not in the far future (typos like 2062 are caught here, not in the books). */
@@ -62,7 +63,7 @@ export async function addEntry(formData: FormData) {
     VALUES (${data.occurred_on}, ${signed}, ${data.category}, ${data.counterparty}, ${data.description}, ${data.activity_id ?? null}, ${activityLabel}, ${actor.userId}, ${actor.name})
   `;
   revalidatePath(HOME, "layout");
-  redirect(`${LEDGER}?notice=added`);
+  redirect(`${LEDGER}&notice=added`);
 }
 
 /** Entries are never edited or deleted: a mistake is cancelled by an equal and opposite entry, with the reason. */
@@ -92,7 +93,7 @@ export async function reverseEntry(formData: FormData) {
     throw error;
   }
   revalidatePath(HOME, "layout");
-  redirect(`${LEDGER}?notice=reversed`);
+  redirect(`${LEDGER}&notice=reversed`);
 }
 
 const budgetSchema = z.object({
@@ -104,10 +105,10 @@ const budgetSchema = z.object({
 export async function setBudget(formData: FormData) {
   const actor = await requireFinance("write");
   const parsed = budgetSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success || parsed.data.planned_expense == null || parsed.data.planned_income == null) redirect(`${HOME}?notice=invalid`);
+  if (!parsed.success || parsed.data.planned_expense == null || parsed.data.planned_income == null) redirect(`${BUDGETS}&notice=invalid`);
   const { activity_id, planned_expense, planned_income } = parsed.data;
   const [exists] = await sql`SELECT 1 FROM activities WHERE id = ${activity_id}`;
-  if (!exists) redirect(`${HOME}?notice=invalid`);
+  if (!exists) redirect(`${BUDGETS}&notice=invalid`);
 
   const [before] = await sql<{ planned_expense_cents: number; planned_income_cents: number }[]>`
     SELECT planned_expense_cents::float8, planned_income_cents::float8 FROM activity_budgets WHERE activity_id = ${activity_id}
@@ -124,5 +125,5 @@ export async function setBudget(formData: FormData) {
     after: { planned_expense_cents: planned_expense, planned_income_cents: planned_income },
   });
   revalidatePath(HOME, "layout");
-  redirect(`${HOME}?notice=budget-saved`);
+  redirect(`${BUDGETS}&notice=budget-saved`);
 }

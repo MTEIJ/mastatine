@@ -7,7 +7,7 @@ import { MAX_RECEIPT_BYTES, removeReceiptFile, storeReceipt } from "@/lib/financ
 import { siteUrl } from "@/lib/env";
 import { isSameOrigin } from "@/lib/request";
 
-const back = (notice: string) => NextResponse.redirect(`${siteUrl()}/mastapps/finance/ledger?notice=${notice}`, 303);
+const back = (notice: string) => NextResponse.redirect(`${siteUrl()}/mastapps/finance?view=ledger&notice=${notice}`, 303);
 
 /** Attach a receipt or invoice (photo or PDF) to a ledger entry. Plain form post: multipart is too big for a server action. */
 export async function POST(req: NextRequest) {

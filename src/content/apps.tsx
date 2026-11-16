@@ -92,10 +92,6 @@ export const FINANCE_APP: MastApp = {
   shape: "clover4",
   tone: "tertiary",
   access: "Treasurer",
-  nav: [
-    { label: "Overview", href: "/mastapps/finance", icon: <ChartIcon /> },
-    { label: "Ledger", href: "/mastapps/finance/ledger", icon: <ListIcon /> },
-  ],
 };
 
 export function getApps(isAdmin = false): MastApp[] {
