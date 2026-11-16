@@ -13,6 +13,18 @@ upload). Lettering is the Astatine typeface converted to outlines, so the SVGs n
 - `quotes/` four quote and joke designs on a transparent background so the garment colour shows through:
   Certified Mastende Engineer, Eat. Sleep. Masten. Repeat., I (heart) Masten, World's Okayest Mastatine Member.
 
+- `wear/` quiet, wearable designs on a transparent background (SVG + 2400 x 2400 PNG). Use the `-ink` / `-orange` files
+  on light garments and the `-white` files on dark ones. Meant to be printed small:
+  - `chest-logo-*` the full logo for a left-chest print (about 8 to 10 cm wide).
+  - `mono-logo-*` the logo in one colour (ink, white or orange): good for embroidery, tote bags and caps.
+  - `tower-*` only the tower, for a pocket, sleeve or cap print.
+  - `wordmark-*` a single line of MASTATINE, for a sleeve, hem or back-yoke print.
+  - `tower-wordmark-*` the tower over MASTATINE and "Mast Association", a small stacked mark.
+  - `neck-label-*` small logo with "M.A. Mastatine / Mast Association", for the inside of the neck.
+
+Lettering: big words are Astatine outlines; small text (taglines, "Mast Association", numbers) is Barlow Condensed
+SemiBold outlines, see `../brand/GUIDE.md`.
+
 ## Regenerating PNGs
 
 If an `.svg` changes, re-export its `.png` with any SVG rasterizer at 300 DPI (about 2400 px on a side). This repo has

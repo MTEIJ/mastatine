@@ -37,6 +37,11 @@ Sky gradient on the primary sticker: peach, then orange, then coral at the horiz
   and in the site footer. Keep it there.
 - The TTF is not stored in this repository (its licence is for promo use, not redistribution). Keep it in the shared
   drive and regenerate outlines from there.
+- Astatine is hard to read at small sizes (the S, E, N, C and R are stylised). Use it only for big brand words such as
+  MASTATINE, MAST and ENGINEER.
+- Companion typeface for everything small or long (taglines, "Mast Association", numbers, neck labels):
+  **Barlow Condensed SemiBold** (SIL Open Font License), capitals with wide tracking (about 0.2 to 0.3 em). Like
+  Astatine it is converted to outlines in artwork. The font is not stored in this repository.
 - Body text on the website stays Lato.
 
 ## The lockup
