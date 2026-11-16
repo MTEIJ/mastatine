@@ -9,6 +9,7 @@ import {
   type ActivityChange,
   type EmailContent,
 } from "@/lib/email-templates";
+import { markdownToPlainText } from "@/lib/email-format";
 import { sendMail } from "@/lib/mailer";
 import { pushCancellation, pushToParticipants } from "@/lib/activity-push";
 
@@ -100,7 +101,7 @@ export async function sendParticipantMessage(
       }),
     "activity message",
   );
-  await pushToParticipants(activityId, rows.map((r) => r.user_id), `${rows[0].activity_name}: ${message.subject}`, message.body.slice(0, 180));
+  await pushToParticipants(activityId, rows.map((r) => r.user_id), `${rows[0].activity_name}: ${message.subject}`, markdownToPlainText(message.body).slice(0, 180));
   await logMessage(activityId, sender.id, "message", sent);
   return sent;
 }

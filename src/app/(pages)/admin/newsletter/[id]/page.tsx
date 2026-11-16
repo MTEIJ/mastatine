@@ -5,9 +5,11 @@ import sql from "@/lib/db";
 import AutoRefresh from "@/components/admin/AutoRefresh";
 import AudienceField from "@/components/admin/AudienceField";
 import ConfirmButton from "@/components/admin/ConfirmButton";
-import { PARODY_NOTICE, textToHtml } from "@/lib/email-templates";
-import { AUDIENCE_LABEL, AUDIENCE_REASON, parseAudience } from "@/lib/newsletter-audience";
-import { issueStats } from "@/lib/newsletter";
+import ActivitiesField from "@/components/admin/ActivitiesField";
+import { newsletterEmail } from "@/lib/email-templates";
+import { FORMAT_HINT } from "@/lib/email-style";
+import { AUDIENCE_LABEL, parseAudience } from "@/lib/newsletter-audience";
+import { issueStats, newsletterActivities } from "@/lib/newsletter";
 import { deleteIssue, saveIssue, sendTest, startSending } from "../../actions";
 import { requireAdmin } from "@/lib/session";
 
@@ -17,6 +19,7 @@ interface Issue {
   body: string;
   status: "draft" | "sending" | "sent";
   audience: string;
+  activities_count: number;
   sent_at: Date | null;
 }
 
@@ -36,13 +39,15 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
   const { id } = await props.params;
   const { notice } = await props.searchParams;
   if (!z.string().uuid().safeParse(id).success) notFound();
-  const [issue] = await sql<Issue[]>`SELECT id, subject, body, status, audience, sent_at FROM newsletters WHERE id = ${id}`;
+  const [issue] = await sql<Issue[]>`SELECT id, subject, body, status, audience, activities_count, sent_at FROM newsletters WHERE id = ${id}`;
   if (!issue) notFound();
 
   const stats = await issueStats(id);
   const message = notice ? NOTICES[notice] : undefined;
   const isDraft = issue.status === "draft";
   const audience = parseAudience(issue.audience);
+  // The preview is the real email, so what is shown here is what arrives.
+  const preview = newsletterEmail(issue.subject, issue.body, "https://example.invalid/unsubscribe", audience, await newsletterActivities(issue.activities_count, audience));
 
   return (
     <div className="grid gap-10 @3xl:grid-cols-2">
@@ -79,7 +84,9 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
             <div>
               <label className="label" htmlFor="body">Message</label>
               <textarea id="body" name="body" className="input min-h-64 font-mono" defaultValue={issue.body} required maxLength={20000} />
+              <p className="hint">{FORMAT_HINT}</p>
             </div>
+            <ActivitiesField defaultValue={issue.activities_count} />
             <AudienceField defaultValue={audience} />
             <button type="submit" className="btn btn-secondary">Save draft</button>
           </form>
@@ -114,19 +121,8 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
 
       <div>
         <p className="text-sm font-semibold text-muted">Preview</p>
-        <div className="mt-3 overflow-hidden rounded-2xl border border-line bg-white text-[#0f1b2d]">
-          <div className="bg-[#0f1b2d] px-6 py-4 font-bold text-white">M.A. Mastatine</div>
-          <div className="space-y-4 p-6">
-            <h3 className="text-xl font-bold">{issue.subject}</h3>
-            {/* textToHtml escapes all input; only its own paragraph/link markup is emitted. */}
-            <div dangerouslySetInnerHTML={{ __html: textToHtml(issue.body) }} />
-          </div>
-          <div className="bg-[#f9fafb] px-6 py-4 text-xs text-[#5b6676]">
-            {AUDIENCE_REASON[audience]} <u>Unsubscribe</u>.
-            <br />
-            {PARODY_NOTICE}
-          </div>
-        </div>
+        {/* The sandbox has no scripts or navigation: the email is shown exactly as built, but cannot act. */}
+        <iframe title="Email preview" sandbox="" srcDoc={preview.html} className="mt-3 h-[44rem] w-full rounded-2xl border border-line bg-white" />
       </div>
     </div>
   );

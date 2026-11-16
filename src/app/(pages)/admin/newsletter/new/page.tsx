@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createIssue } from "../../actions";
 import AudienceField from "@/components/admin/AudienceField";
+import ActivitiesField from "@/components/admin/ActivitiesField";
+import { FORMAT_HINT } from "@/lib/email-style";
 import { requireAdmin } from "@/lib/session";
 
 export const instant = false;
@@ -20,8 +22,9 @@ export default async function NewIssuePage() {
         <div>
           <label className="label" htmlFor="body">Message</label>
           <textarea id="body" name="body" className="input min-h-72 font-mono" required maxLength={20000} />
-          <p className="hint">Plain text. Blank lines start a new paragraph and web addresses become links. The unsubscribe link and the parody notice are added automatically.</p>
+          <p className="hint">{FORMAT_HINT} Blank lines start a new paragraph and web addresses become links. The unsubscribe link and the footer notice are added automatically.</p>
         </div>
+        <ActivitiesField />
         <AudienceField />
         <button type="submit" className="btn btn-primary">Save as draft</button>
       </form>

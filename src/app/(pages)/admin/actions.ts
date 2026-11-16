@@ -169,13 +169,14 @@ const issueSchema = z.object({
   subject: z.string().trim().min(1).max(150),
   body: z.string().trim().min(1).max(20000),
   audience: z.enum(AUDIENCES),
+  activities_count: z.coerce.number().int().min(0).max(8).default(0),
 });
 
 export async function createIssue(formData: FormData) {
   const session = await requireAdmin();
   const data = issueSchema.parse(Object.fromEntries(formData));
   const [issue] = await sql<{ id: string }[]>`
-    INSERT INTO newsletters (subject, body, audience, created_by) VALUES (${data.subject}, ${data.body}, ${data.audience}, ${session.user.id}) RETURNING id
+    INSERT INTO newsletters (subject, body, audience, activities_count, created_by) VALUES (${data.subject}, ${data.body}, ${data.audience}, ${data.activities_count}, ${session.user.id}) RETURNING id
   `;
   redirect(`/admin/newsletter/${issue.id}`);
 }
@@ -184,7 +185,7 @@ export async function saveIssue(formData: FormData) {
   await requireAdmin();
   const issueId = id.parse(formData.get("id"));
   const data = issueSchema.parse(Object.fromEntries(formData));
-  await sql`UPDATE newsletters SET subject = ${data.subject}, body = ${data.body}, audience = ${data.audience} WHERE id = ${issueId} AND status = 'draft'`;
+  await sql`UPDATE newsletters SET subject = ${data.subject}, body = ${data.body}, audience = ${data.audience}, activities_count = ${data.activities_count} WHERE id = ${issueId} AND status = 'draft'`;
   redirect(`/admin/newsletter/${issueId}?notice=saved`);
 }
 

@@ -2,7 +2,8 @@ import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypt
 import sql from "@/lib/db";
 import { requireEnv, siteUrl } from "@/lib/env";
 import { sendMail } from "@/lib/mailer";
-import { confirmSubscriptionEmail, newsletterEmail } from "@/lib/email-templates";
+import { absoluteUrl, confirmSubscriptionEmail, newsletterEmail, type NewsletterActivity } from "@/lib/email-templates";
+import { getUpcomingActivityCards } from "@/lib/activities";
 import { countAudience, materialiseAudience, parseAudience, recipientFilter, type Audience } from "@/lib/newsletter-audience";
 
 const CONFIRM_TTL_HOURS = 48;
@@ -155,21 +156,40 @@ function isFatalMailError(error: unknown): boolean {
   return code === "EAUTH" || code === "ECONNECTION" || code === "ESOCKET" || code === "EDNS";
 }
 
+export const MAX_NEWSLETTER_ACTIVITIES = 8;
+
+/** The next activities an issue shows under its message. Members-only activities appear only in issues meant for members. */
+export async function newsletterActivities(count: number, audience: Audience): Promise<NewsletterActivity[]> {
+  if (count <= 0) return [];
+  const rows = await getUpcomingActivityCards(Math.min(count, MAX_NEWSLETTER_ACTIVITIES), audience === "members");
+  return rows.map((r) => ({
+    name: r.name,
+    committeeName: r.committee_name,
+    startsAt: r.starts_at,
+    location: r.location,
+    posterUrl: r.poster_url ? absoluteUrl(r.poster_url) : null,
+    url: absoluteUrl(`/mastapps/activities/${r.id}`),
+  }));
+}
+
+type IssueContent = { subject: string; body: string; audience: Audience; activities: NewsletterActivity[] };
+
 /** Sends one rendered issue to a single address. Used by both the real send and the admin test send. */
-async function deliver(issue: { subject: string; body: string; audience: Audience }, to: string, subscriberId: string | null): Promise<void> {
+async function deliver(issue: IssueContent, to: string, subscriberId: string | null): Promise<void> {
   const pageUrl = subscriberId ? unsubscribePageUrl(subscriberId) : `${siteUrl()}/newsletter`;
   const headers: Record<string, string> = { Precedence: "bulk" };
   if (subscriberId) {
     headers["List-Unsubscribe"] = `<${unsubscribeOneClickUrl(subscriberId)}>`;
     headers["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click";
   }
-  await sendMail({ to, headers, ...newsletterEmail(issue.subject, issue.body, pageUrl, issue.audience) });
+  await sendMail({ to, headers, ...newsletterEmail(issue.subject, issue.body, pageUrl, issue.audience, issue.activities) });
 }
 
 export async function sendTestIssue(issueId: string, to: string): Promise<void> {
-  const [issue] = await sql<{ subject: string; body: string; audience: string }[]>`SELECT subject, body, audience FROM newsletters WHERE id = ${issueId}`;
+  const [issue] = await sql<{ subject: string; body: string; audience: string; activities_count: number }[]>`SELECT subject, body, audience, activities_count FROM newsletters WHERE id = ${issueId}`;
   if (!issue) throw new Error("Issue not found");
-  await deliver({ ...issue, audience: parseAudience(issue.audience), subject: `[TEST] ${issue.subject}` }, to, null);
+  const audience = parseAudience(issue.audience);
+  await deliver({ subject: `[TEST] ${issue.subject}`, body: issue.body, audience, activities: await newsletterActivities(issue.activities_count, audience) }, to, null);
 }
 
 /**
@@ -186,8 +206,10 @@ export async function sendIssue(issueId: string): Promise<void> {
       WHERE id = ${issueId} AND status IN ('draft', 'sending') RETURNING id
     `;
     if (claimed.length === 0) return;
-    const [row] = await sql<{ subject: string; body: string; audience: string }[]>`SELECT subject, body, audience FROM newsletters WHERE id = ${issueId}`;
-    const issue = { ...row, audience: parseAudience(row.audience) };
+    const [row] = await sql<{ subject: string; body: string; audience: string; activities_count: number }[]>`SELECT subject, body, audience, activities_count FROM newsletters WHERE id = ${issueId}`;
+    const audience = parseAudience(row.audience);
+    // Chosen once per send, so everyone gets the same list even when the send takes a while.
+    const issue: IssueContent = { subject: row.subject, body: row.body, audience, activities: await newsletterActivities(row.activities_count, audience) };
     await materialiseAudience(issue.audience);
 
     const failedThisRun: string[] = [];

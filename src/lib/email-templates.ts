@@ -1,5 +1,10 @@
 import { SITE_NAME, siteUrl } from "@/lib/env";
 import { AUDIENCE_REASON, type Audience } from "@/lib/newsletter-audience";
+import { BRAND_ORANGE, CAPS_FONT, CORAL, CREAM, FONT, INK, LINE, LINK, MUTED, PAGE_BG, P_STYLE, escapeHtml } from "@/lib/email-style";
+import { markdownToPlainText, textToHtml } from "@/lib/email-format";
+import { TIME_ZONE, formatDateTime } from "@/lib/datetime";
+
+export { escapeHtml, textToHtml };
 
 export interface EmailContent {
   subject: string;
@@ -7,42 +12,8 @@ export interface EmailContent {
   html: string;
 }
 
-const BRAND_ORANGE = "#f57f20";
-const BRAND_NAVY = "#12263f";
-const INK = "#1a2433";
-const MUTED = "#5b6676";
-const LINE = "#e6e9ef";
-
 export const PARODY_NOTICE =
-  "M.A. Mastatine is a parody. It is not affiliated with, endorsed by or connected to S.A. Astatine or the University of Twente.";
-
-export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-const URL_RE = /https?:\/\/[^\s<>"']+/g;
-const P_STYLE = `margin:0 0 16px;font-size:16px;line-height:1.6;color:${INK}`;
-
-/** Plain text to HTML: escapes everything, keeps paragraphs and line breaks, links bare http(s) URLs. */
-export function textToHtml(text: string): string {
-  return text
-    .replace(/\r\n/g, "\n")
-    .split(/\n{2,}/)
-    .map((paragraph) => {
-      const html = escapeHtml(paragraph.trim()).replace(URL_RE, (url) => {
-        const trailing = url.match(/[.,;:!?)&;]+$/)?.[0] ?? "";
-        const clean = url.slice(0, url.length - trailing.length);
-        return `<a href="${clean}" style="color:${BRAND_ORANGE}">${clean}</a>${trailing}`;
-      });
-      return `<p style="${P_STYLE}">${html.replace(/\n/g, "<br>")}</p>`;
-    })
-    .join("");
-}
+  "M.A. Mastatine is an independent student initiative, not affiliated with Universiteit Maastricht or S.A. Astatine.";
 
 export interface MailDetail {
   label: string;
@@ -57,6 +28,8 @@ interface MessageParts {
   intro?: string;
   /** Free-form content, for the newsletter. Provide both forms. */
   body?: { text: string; html: string };
+  /** A ready-made block after the body, for the newsletter's upcoming activities. Provide both forms. */
+  extra?: { text: string; html: string };
   /** Label and value pairs, shown as a small table. */
   details?: MailDetail[];
   /** The one thing we want the reader to do. */
@@ -71,18 +44,19 @@ interface MessageParts {
 
 function detailsTable(details: MailDetail[]): string {
   const rows = details
-    .map(
-      (d, i) => `<tr>
-        <td style="padding:10px 0;${i < details.length - 1 ? `border-bottom:1px solid ${LINE};` : ""}width:110px;vertical-align:top;font-size:13px;color:${MUTED}">${escapeHtml(d.label)}</td>
-        <td style="padding:10px 0;${i < details.length - 1 ? `border-bottom:1px solid ${LINE};` : ""}vertical-align:top;font-size:15px;font-weight:bold;color:${INK}">${escapeHtml(d.value).replace(/\n/g, "<br>")}</td>
-      </tr>`,
-    )
+    .map((d, i) => {
+      const line = i < details.length - 1 ? `border-bottom:1px solid ${LINE};` : "";
+      return `<tr>
+        <td style="padding:12px 12px 12px 0;${line}width:112px;vertical-align:top;font-family:${CAPS_FONT};font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:${MUTED}">${escapeHtml(d.label)}</td>
+        <td style="padding:12px 0;${line}vertical-align:top;font-size:15px;font-weight:700;color:${INK}">${escapeHtml(d.value).replace(/\n/g, "<br>")}</td>
+      </tr>`;
+    })
     .join("");
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f7f8fa;border-radius:10px"><tr><td style="padding:6px 18px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr></table>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 28px;background:${CREAM};border-radius:16px"><tr><td style="padding:6px 22px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr></table>`;
 }
 
 function button(url: string, label: string): string {
-  return `<p style="margin:8px 0 24px"><a href="${escapeHtml(url)}" style="display:inline-block;background:${BRAND_ORANGE};color:#ffffff;text-decoration:none;font-size:16px;font-weight:bold;padding:13px 26px;border-radius:8px">${escapeHtml(label)}</a></p>`;
+  return `<p style="margin:8px 0 28px"><a href="${escapeHtml(url)}" style="display:inline-block;background:${INK};color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;padding:15px 30px;border-radius:999px">${escapeHtml(label)} <span style="color:${BRAND_ORANGE}">&rarr;</span></a></p>`;
 }
 
 /**
@@ -96,6 +70,7 @@ function compose(subject: string, parts: MessageParts): EmailContent {
     parts.heading.toUpperCase(),
     ...(parts.intro ? [parts.intro] : []),
     ...(parts.body ? [parts.body.text] : []),
+    ...(parts.extra ? [parts.extra.text] : []),
     ...(parts.details?.length ? [parts.details.map((d) => `${d.label}: ${d.value}`).join("\n")] : []),
     ...(parts.action ? [`${parts.action.label}: ${parts.action.url}`] : []),
     ...(parts.links?.length ? [parts.links.map((l) => `${l.label}: ${l.url}`).join("\n")] : []),
@@ -104,22 +79,26 @@ function compose(subject: string, parts: MessageParts): EmailContent {
   ];
 
   const html = `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(subject)}</title></head>
-<body style="margin:0;background:#f1f3f6;font-family:Arial,Helvetica,sans-serif;color:${INK}">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${escapeHtml(subject)}</title></head>
+<body style="margin:0;background:${PAGE_BG};font-family:${FONT};color:${INK};-webkit-font-smoothing:antialiased">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${escapeHtml(parts.preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:28px 12px">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:14px;overflow:hidden">
-    <tr><td style="background:${BRAND_NAVY};padding:20px 32px;color:#ffffff;font-size:18px;font-weight:bold">${SITE_NAME} <span style="color:${BRAND_ORANGE}">&#9650;</span></td></tr>
-    <tr><td style="padding:32px 32px 12px">
-      <h1 style="margin:0 0 18px;font-size:24px;line-height:1.25;color:${INK}">${escapeHtml(parts.heading)}</h1>
-      ${parts.intro ? `<p style="${P_STYLE}">${escapeHtml(parts.intro)}</p>` : ""}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 12px 40px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;background:#ffffff;border-radius:24px;overflow:hidden">
+    <tr><td style="background:${BRAND_ORANGE};padding:30px 36px 38px">
+      <p style="margin:0 0 30px;font-family:${CAPS_FONT};font-size:15px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${INK}">M.A. Mastatine <span style="color:${CREAM};letter-spacing:0.35em">&nbsp;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</span></p>
+      <h1 style="margin:0;font-size:34px;line-height:1.12;font-weight:800;letter-spacing:-0.02em;color:${INK}">${escapeHtml(parts.heading)}</h1>
+    </td></tr>
+    <tr><td style="height:6px;line-height:6px;font-size:0;background:${INK}">&nbsp;</td></tr>
+    <tr><td style="padding:36px 36px 12px">
+      ${parts.intro ? `<p style="${P_STYLE};font-size:18px">${escapeHtml(parts.intro)}</p>` : ""}
       ${parts.body ? parts.body.html : ""}
+      ${parts.extra ? parts.extra.html : ""}
       ${parts.details?.length ? detailsTable(parts.details) : ""}
       ${parts.action ? button(parts.action.url, parts.action.label) : ""}
-      ${(parts.links ?? []).map((l) => `<p style="margin:0 0 10px;font-size:14px"><a href="${escapeHtml(l.url)}" style="color:${BRAND_ORANGE};font-weight:bold">${escapeHtml(l.label)}</a></p>`).join("")}
+      ${(parts.links ?? []).map((l) => `<p style="margin:0 0 10px;font-size:14px"><a href="${escapeHtml(l.url)}" style="color:${LINK};font-weight:700">${escapeHtml(l.label)}</a></p>`).join("")}
       ${(parts.notes ?? []).map((n) => `<p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:${MUTED}">${escapeHtml(n)}</p>`).join("")}
     </td></tr>
-    <tr><td style="padding:20px 32px;background:#f7f8fa;border-top:1px solid ${LINE};font-size:12px;line-height:1.6;color:${MUTED}">${footer.html}</td></tr>
+    <tr><td style="background:${INK};padding:26px 36px;font-size:12px;line-height:1.7;color:#cfc8bb"><strong style="font-family:${CAPS_FONT};font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#ffffff">Mast Association</strong><br>${footer.html}</td></tr>
   </table>
 </td></tr></table></body></html>`;
 
@@ -169,13 +148,71 @@ export function confirmSubscriptionEmail(confirmUrl: string): EmailContent {
   });
 }
 
-export function newsletterEmail(subject: string, body: string, unsubscribeUrl: string, audience: Audience = "subscribers"): EmailContent {
+/** One upcoming activity as the newsletter shows it. */
+export interface NewsletterActivity {
+  name: string;
+  committeeName: string;
+  startsAt: Date;
+  location: string;
+  /** Absolute URL of the poster, or null when the activity has none. */
+  posterUrl: string | null;
+  url: string;
+}
+
+const dayFormat = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, day: "numeric" });
+const monthFormat = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, month: "short" });
+
+/** One activity as a card: poster, a date tile and the details. `wide` is the featured first card. */
+function activityCard(a: NewsletterActivity, wide: boolean): string {
+  const when = [formatDateTime(a.startsAt), a.location].filter(Boolean).join(" · ");
+  const url = escapeHtml(a.url);
+  const poster = a.posterUrl
+    ? `<tr><td style="padding:0 0 14px"><a href="${url}"><img src="${escapeHtml(a.posterUrl)}" alt="Poster of ${escapeHtml(a.name)}" width="100%" style="display:block;width:100%;height:auto;border:0;border-radius:16px"></a></td></tr>`
+    : "";
+  const tile = `<td width="56" valign="top" style="width:56px;padding-right:12px"><table role="presentation" cellpadding="0" cellspacing="0" width="56" style="background:${BRAND_ORANGE};border-radius:12px"><tr><td align="center" style="padding:8px 0 7px;font-size:${wide ? 24 : 22}px;font-weight:800;line-height:1;color:${INK}">${dayFormat.format(a.startsAt)}<br><span style="font-family:${CAPS_FONT};font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase">${monthFormat.format(a.startsAt)}</span></td></tr></table></td>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${poster}<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${tile}<td valign="top">
+    <p style="margin:0 0 3px;font-size:${wide ? 19 : 16}px;font-weight:800;line-height:1.25"><a href="${url}" style="color:${INK};text-decoration:none">${escapeHtml(a.name)}</a></p>
+    <p style="margin:0 0 2px;font-size:13px;line-height:1.5;color:${INK}">${escapeHtml(when)}</p>
+    <p style="margin:0;font-size:12px;line-height:1.5;color:${MUTED}">${escapeHtml(a.committeeName)}</p>
+  </td></tr></table></td></tr></table>`;
+}
+
+/** The "Coming up" block as a small bento grid: the first activity is featured full width, the others sit two by two. */
+function upcomingActivities(activities: NewsletterActivity[]): { text: string; html: string } | undefined {
+  if (activities.length === 0) return undefined;
+  const [featured, ...rest] = activities;
+  const rows: string[] = [];
+  for (let i = 0; i < rest.length; i += 2) {
+    const pair = rest.slice(i, i + 2);
+    const cell = (a?: NewsletterActivity) => `<td width="48%" valign="top" style="width:48%">${a ? activityCard(a, false) : ""}</td>`;
+    rows.push(`<tr>${cell(pair[0])}<td width="4%" style="width:4%">&nbsp;</td>${cell(pair[1])}</tr><tr><td colspan="3" style="height:26px;line-height:26px;font-size:0">&nbsp;</td></tr>`);
+  }
+  const grid = rest.length ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows.join("")}</table>` : "";
+  const html = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0 0;background:${CREAM};border-radius:20px"><tr><td style="padding:26px 24px 8px">
+    <p style="margin:0 0 20px;font-family:${CAPS_FONT};font-size:18px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:${INK}">Coming up <span style="color:${CORAL}">&bull;</span></p>
+    <div style="margin:0 0 26px">${activityCard(featured, true)}</div>${grid}
+  </td></tr></table><div style="height:24px;line-height:24px;font-size:0">&nbsp;</div>`;
+  const text = [
+    "COMING UP",
+    ...activities.map((a) => [a.name, [formatDateTime(a.startsAt), a.location].filter(Boolean).join(" · "), a.url].join("\n")),
+  ].join("\n\n");
+  return { text, html };
+}
+
+export function newsletterEmail(
+  subject: string,
+  body: string,
+  unsubscribeUrl: string,
+  audience: Audience = "subscribers",
+  activities: NewsletterActivity[] = [],
+): EmailContent {
   const contact = process.env.CONTACT_EMAIL ?? "";
   const reason = AUDIENCE_REASON[audience];
   return compose(subject, {
-    preheader: body.replace(/\s+/g, " ").trim().slice(0, 110),
+    preheader: markdownToPlainText(body).replace(/\s+/g, " ").slice(0, 110),
     heading: subject,
-    body: { text: body, html: textToHtml(body) },
+    body: { text: markdownToPlainText(body), html: textToHtml(body) },
+    extra: upcomingActivities(activities),
     footer: {
       text: [reason, `Unsubscribe: ${unsubscribeUrl}`, contact ? `Contact: ${contact}` : "", PARODY_NOTICE].filter(Boolean).join("\n"),
       html: `${escapeHtml(reason)} <a href="${escapeHtml(unsubscribeUrl)}" style="color:${BRAND_ORANGE}">Unsubscribe</a>.${contact ? ` Contact: ${escapeHtml(contact)}.` : ""}<br>${escapeHtml(PARODY_NOTICE)}`,
@@ -242,7 +279,7 @@ export function activityChangedEmail(d: ActivityMailDetails, changes: ActivityCh
     preheader: `${d.activityName} has changed. Please check the new details.`,
     heading: "An activity you joined has changed",
     intro: `${d.committeeName} changed ${d.activityName}. Here is what is different.`,
-    ...(note ? { body: { text: note, html: textToHtml(note) } } : {}),
+    ...(note ? { body: { text: markdownToPlainText(note), html: textToHtml(note) } } : {}),
     details: [
       ...changes.map((c) => ({ label: c.label, value: `${c.from} → ${c.to}` })),
       { label: "When", value: d.startsAt },
@@ -284,10 +321,10 @@ export interface ActivityMessageDetails {
 /** A message from the organisers to everyone who is going. */
 export function activityMessageEmail(d: ActivityMessageDetails): EmailContent {
   return compose(`${d.activityName}: ${d.subject}`, {
-    preheader: d.body.slice(0, 90),
+    preheader: markdownToPlainText(d.body).replace(/\s+/g, " ").slice(0, 90),
     heading: d.subject,
     intro: `A message from ${d.senderName} of ${d.committeeName}, because you are going to ${d.activityName}.`,
-    body: { text: d.body, html: textToHtml(d.body) },
+    body: { text: markdownToPlainText(d.body), html: textToHtml(d.body) },
     action: { url: d.url, label: "View the activity" },
     notes: ["You get this because you are subscribed to the activity. Replies to this email are not read by the organisers; use the contact details on the activity page."],
   });

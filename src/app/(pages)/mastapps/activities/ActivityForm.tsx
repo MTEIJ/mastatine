@@ -1,5 +1,6 @@
 "use client";
 
+import { FORMAT_HINT } from "@/lib/email-style";
 import { useActionState } from "react";
 import type { SignupGroup } from "@/lib/signup-options";
 import { saveActivity, type ActivityFormState } from "./actions";
@@ -175,7 +176,7 @@ export default function ActivityForm({ values: v, committees }: ActivityFormProp
       {v.id && (
         <Section title="Tell the participants">
           <label className="choice-row font-bold"><input type="checkbox" name="notify_changes" /> Email the participants about this change</label>
-          <p className="px-2 text-sm text-muted">Only if the name, time, place or price changed (or you add a note). Leave it off for small edits such as typos.</p>
+          <p className="px-2 text-sm text-muted">Only if the name, time, place or price changed (or you add a note). Leave it off for small edits such as typos. {FORMAT_HINT}</p>
           <textarea name="change_note" aria-label="Note for the participants" className="input min-h-20" maxLength={1000} placeholder="Optional note, e.g. why it moved" />
         </Section>
       )}
