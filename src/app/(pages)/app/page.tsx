@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import ActivityCard from "@/components/ActivityCard";
 import ActivityCountdown from "@/components/ActivityCountdown";
 import MastatineLogo from "@/classic/MastatineLogo";
@@ -60,6 +61,9 @@ function NextForYou({ activity: a }: { activity: UpcomingActivityCard }) {
 }
 
 export default async function TodayPage(props: { searchParams: Promise<{ source?: string }> }) {
+  // Request-time page. First, and outside every catch below: a bail-out Next throws during the build must not be caught.
+  await connection();
+
   // The app is only for the installed app (see APP_HOME): in a browser tab the website is the experience.
   if ((await props.searchParams).source !== "pwa") redirect("/");
 
