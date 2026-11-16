@@ -2,51 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
 import { BOARD } from "@/content/site";
-import { getPublicCommittees, type PublicCommittee } from "@/lib/committees";
 
 export const metadata: Metadata = {
   title: "The Board",
-  description: "The board of M.A. Mastatine: who runs the association day to day and what each role does.",
+  description: "The board roles of M.A. Mastatine and what each one does.",
 };
 
 export const instant = false;
 
-/** Board members are the members of the "Board" committee, managed in the admin. */
-async function loadBoard(): Promise<PublicCommittee | null> {
-  try {
-    const committees = await getPublicCommittees();
-    return committees.find((c) => c.name.trim().toLowerCase() === "board") ?? null;
-  } catch (error) {
-    console.error("Failed to load the board:", (error as Error).message);
-    return null;
-  }
-}
-
-export default async function BoardPage() {
-  const board = await loadBoard();
-  const members = board?.members ?? [];
-
+export default function BoardPage() {
   return (
     <>
       <PageHeader
         title="The Board"
-        intro="The first board of M.A. Mastatine. Four people who run the association day to day and answer to the members."
+        intro="The board has not been decided yet. These are the roles it will fill: the people who run the association day to day and answer to the members."
       />
       <div className="container-page">
-        {members.length > 0 && (
-          <section aria-labelledby="board-members" className="mb-12">
-            <h2 id="board-members" className="text-2xl font-bold">Board members</h2>
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {members.map((member, i) => (
-                <li key={i} className="rounded-full border border-line bg-soft px-4 py-1.5 text-base font-medium">
-                  {member.name}
-                  {member.is_chair && <span className="ml-1.5 font-bold text-accent-text">· chair</span>}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
         <h2 className="text-2xl font-bold">Roles</h2>
         <ul className="mt-5 grid gap-5 sm:grid-cols-2">
           {BOARD.map((role) => (

@@ -1,6 +1,6 @@
 /**
  * Editorial content for the information pages. Edit freely. No real people are named on purpose:
- * board members are managed in the admin (the "Board" committee).
+ * the board is not decided yet, so no board members are listed anywhere on the site.
  */
 
 export const ASTATINE_URL = "https://astatine.utwente.nl";
