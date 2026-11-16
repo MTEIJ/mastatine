@@ -63,19 +63,13 @@
   .dash .tabbar { position: static; flex: none; }
 
   /* ── Homepage hub: app launcher (signed in) and the next activities (everyone) ── */
-  .hub { margin: 2rem 0; padding: 1.75rem 1.75rem 2rem; border-radius: var(--shape-xl); background: var(--md-surface); box-shadow: none; color: var(--md-on-surface); }
+  .hub { margin: 2rem 0; padding: 1.75rem 1.75rem 2rem; border-radius: var(--shape-lg); background: var(--md-surface); box-shadow: none; color: var(--md-on-surface); }
   .hub--top { margin-top: 0; }
-  .hub__apps { margin-bottom: 1.75rem; }
-  .hub-apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
-  .hub-app { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 0.75rem 0.25rem 0.65rem; border-radius: var(--shape-lg-plus); color: var(--md-on-surface); font-size: 0.9rem; font-weight: 800; line-height: 1.2; text-align: center; transition: background-color 0.2s var(--ease-emphasized), border-radius var(--spring-fast-ms) var(--spring-fast); }
-  .hub-app:hover { background: color-mix(in srgb, var(--md-on-surface) 6%, transparent); color: var(--md-on-surface); }
-  .hub-app:active { border-radius: var(--shape-md); }
 
   .hub__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; margin-bottom: 1rem; }
   .hub__title { margin: 0; font-size: 1.5rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2; }
   .hub__all { display: inline-flex; min-height: 2.5rem; align-items: center; gap: 0.35rem; padding: 0 1rem; border-radius: var(--shape-full); background: var(--md-secondary-container); color: var(--md-on-secondary-container); font-size: 0.9rem; font-weight: 800; transition: background-color 0.2s var(--ease-emphasized), border-radius var(--spring-fast-ms) var(--spring-fast); }
   .hub__all:hover { background: color-mix(in srgb, var(--md-secondary-container) 88%, var(--md-on-secondary-container)); color: var(--md-on-secondary-container); }
-  .hub__all:active { border-radius: var(--shape-md); }
   .hub__all svg { transition: translate var(--spring-fast-ms) var(--spring-fast); }
   .hub__all:hover svg { translate: 3px 0; }
   .hub__empty { margin: 0; color: var(--md-on-surface-variant); }
@@ -83,8 +77,7 @@
   .hub-acts { display: grid; gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
   @media (min-width: 700px) { .hub-acts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .hub-act { display: flex; height: 100%; gap: 0.9rem; padding: 0.65rem; border-radius: var(--shape-lg-plus); background: var(--md-surface-container-low); color: var(--md-on-surface); transition: border-radius var(--spring-default-ms) var(--spring-default), scale var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized); }
-  .hub-act:hover { border-radius: var(--shape-xl); background: var(--md-surface-container); color: var(--md-on-surface); }
-  .hub-act:active { scale: 0.98; }
+  .hub-act:hover { background: var(--md-surface-container); color: var(--md-on-surface); }
   .hub-act.is-going { background: color-mix(in srgb, var(--success) 9%, var(--md-surface-container-low)); }
   .hub-act__thumb { width: 4rem; height: 5rem; flex: none; border-radius: var(--shape-md); object-fit: cover; }
   .hub-act__date { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--md-primary-container); color: var(--md-on-primary-container); line-height: 1.1; }
@@ -106,8 +99,18 @@
   @media (max-width: 1023px) {
     .hub { margin: 0 0 1rem; padding: 1.25rem 1rem 1.4rem; }
     .hub__title { font-size: 1.3rem; }
-    .hub-apps { grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr)); gap: 0.15rem; }
-    .hub-app { padding: 0.45rem 0.1rem; font-size: 0.78rem; }
+  }
+
+  /* The homepage's "Coming up" is the list of what is on, so the sidebar's own agenda steps aside there (desktop). */
+  @media (min-width: 1024px) {
+    #container:has(.hub) .agenda { display: none; }
+  }
+
+  /* Installed app only: the activity cards (Today) grow and settle with a spring; the website's do not change shape. */
+  @media (display-mode: standalone) {
+    .hub-act:hover { border-radius: var(--shape-xl); }
+    .hub-act:active { scale: 0.98; }
+    .hub__all:active { border-radius: var(--shape-md); }
   }
 
   /* ── Phone footer: the two link lists side by side, the brand underneath, instead of one long column ── */

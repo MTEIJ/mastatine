@@ -10,7 +10,6 @@ import TowerGrid from "@/classic/TowerGrid";
 import SubmitModal from "@/classic/SubmitModal";
 import { formatDate, getLatestNews, newsParagraphs } from "@/lib/news";
 import MinecraftBar from "@/components/MinecraftBar";
-import UpcomingActivities from "@/components/UpcomingActivities";
 import HomeHub from "@/components/HomeHub";
 import { getSession } from "@/lib/session";
 
@@ -88,14 +87,7 @@ export default async function HomePage(
 
   return (
     <>
-      {/* Signed in: who we are is known, so their own hub (apps and what's on) leads the page instead of the intro. */}
-      {signedIn && (
-        <Suspense fallback={null}>
-          <HomeHub top />
-        </Suspense>
-      )}
-
-      {/* ── lp-text: intro paragraph (visitors only) ── */}
+      {/* ── lp-text: intro paragraph (visitors only: members know who we are) ── */}
       {!signedIn && <section className="lp-text" id="lp-text-one">
         <div className="lp-text-inside">
           <h2 className="lp-text-title">Home</h2>
@@ -117,19 +109,17 @@ export default async function HomePage(
         </div>
       </section>}
 
+      {/* ── What is on: the one place on this page for it. Streamed, so the masts below are not held back. ── */}
+      <Suspense fallback={null}>
+        <HomeHub top={signedIn} />
+      </Suspense>
+
       {/* ── lp-slider: image carousel ── */}
       <section className="lp-slider-overlay" id="home">
         <div className="lp-dynamic-slider">
-          <HeroCarousel masts={mastsOfMonth} overlay={<MinecraftBar />} highlight={<UpcomingActivities />} />
+          <HeroCarousel masts={mastsOfMonth} overlay={<MinecraftBar />} />
         </div>
       </section>
-
-      {/* ── What's on, and (signed in) the MastApps: streamed so the masts below are not held back ── */}
-      {!signedIn && (
-        <Suspense fallback={null}>
-          <HomeHub />
-        </Suspense>
-      )}
 
       {/* ── lp-posts: news & tower grid merged ── */}
       <div id="towers" style={{ scrollMarginTop: "2rem" }} />

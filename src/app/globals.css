@@ -1411,12 +1411,6 @@ blockquote::before, blockquote::after { content: ""; content: none; }
 .mc__map:hover { background: #d96a10; }
 /* Phones: one tidy pill (status, copy, map); the address itself is what "Copy IP" copies. */
 @media (max-width: 650px) { .mc { flex-wrap: nowrap; gap: 0.4rem; padding: 0.3rem; font-size: 0.8rem; } .mc__status { padding-left: 0.5rem; } .mc__ip { display: none; } }
-.nx { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; max-width: 100%; padding: 0.3rem 0.5rem; color: #fff; font-size: 1.15rem; text-decoration: none; text-shadow: 0 1px 3px rgb(0 0 0 / 0.8), 0 2px 14px rgb(0 0 0 / 0.65); transition: transform 0.15s; }
-.nx:hover { transform: translateY(-1px); }
-.nx::before { content: ""; width: 3.5rem; height: 2px; margin-bottom: 0.55rem; background: #f57f20; box-shadow: 0 0 12px rgb(245 127 32 / 0.9); }
-.nx__name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.32em; padding-left: 0.32em; opacity: 0.92; }
-.nx__when { flex: none; margin-top: 0.15rem; font-size: 3.4rem; line-height: 1.05; font-weight: 800; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; color: #fff; white-space: nowrap; text-shadow: 0 0 28px rgb(245 127 32 / 0.75), 0 2px 8px rgb(0 0 0 / 0.7); }
-@media (max-width: 650px) { .nx__name { font-size: 0.72rem; letter-spacing: 0.22em; } .nx__when { font-size: 2.2rem; } }
 
 /* ── Announcement bar (latest news; sticky at the very top of every site page, dismissible) ── */
 .announce { position: sticky; top: 0; z-index: 35; background: linear-gradient(90deg, #f57f20 0%, #ff9a3c 100%); color: #fff; box-shadow: 0 2px 8px rgb(15 34 84 / 0.2); }

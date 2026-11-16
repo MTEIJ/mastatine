@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { getApps, type MastApp } from "@/content/apps";
 import { getCachedUpcomingActivityCards } from "@/lib/activities-cached";
 import { getSubscribedIds, type UpcomingActivityCard } from "@/lib/activities";
 import { getMembership } from "@/lib/membership";
 import { getSession } from "@/lib/session";
 import ActivityCard from "@/components/ActivityCard";
-import ShapeIcon from "@/components/ui/ShapeIcon";
 
 const CARDS = 3;
 const ACTIVITIES = "/mastapps/activities";
@@ -15,25 +13,6 @@ function Arrow() {
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M5 12h14M13 6l6 6-6 6" />
     </svg>
-  );
-}
-
-function AppLauncher({ apps }: { apps: MastApp[] }) {
-  return (
-    <ul className="hub-apps" aria-label="Your MastApps">
-      {apps.map((app) => (
-        <li key={app.slug}>
-          <Link
-            href={app.href}
-            className="hub-app"
-            {...(app.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-          >
-            <ShapeIcon shape={app.shape} tone={app.tone}>{app.icon}</ShapeIcon>
-            <span className="hub-app__name">{app.name}</span>
-          </Link>
-        </li>
-      ))}
-    </ul>
   );
 }
 
@@ -61,12 +40,6 @@ export default async function HomeHub({ top = false }: { /** Leads the page (sig
 
   return (
     <section className={top ? "hub hub--top" : "hub"} aria-labelledby="hub-title">
-      {session && (
-        <div className="hub__apps">
-          <AppLauncher apps={getApps(session.user.role === "admin")} />
-        </div>
-      )}
-
       <div className="hub__head">
         <h2 id="hub-title" className="hub__title">Coming up</h2>
         <Link href={ACTIVITIES} className="hub__all">All activities <Arrow /></Link>

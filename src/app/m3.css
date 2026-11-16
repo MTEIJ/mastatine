@@ -79,7 +79,7 @@
     transition: border-radius var(--spring-fast-ms) var(--spring-fast), scale var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized), color 0.2s var(--ease-emphasized), border-color 0.2s var(--ease-emphasized);
   }
   .btn:hover { box-shadow: none; }
-  .btn:active:not(:disabled) { border-radius: var(--shape-md); scale: 0.97; transform: none; }
+  .btn:active:not(:disabled) { scale: 0.98; transform: none; }
   .btn-sm { min-height: 2.5rem; padding-inline: 1.15rem; }
   .btn-primary:hover { background: color-mix(in srgb, var(--accent) 88%, black); }
   /* Secondary is the M3 tonal button. */
@@ -92,27 +92,35 @@
   .dash--admin .btn-secondary { border: 1.5px solid #c5cbd6; background: #fff; color: var(--ink); }
 
   /* ── Cards, chips, inputs ── */
-  .card { border: 1px solid var(--md-outline-variant); border-radius: var(--shape-lg-plus); background: var(--md-surface-container-lowest); box-shadow: none; }
+  .card { border: 1px solid var(--md-outline-variant); border-radius: var(--shape-lg); background: var(--md-surface-container-lowest); box-shadow: none; }
   .badge { border-radius: var(--shape-sm); background: var(--md-secondary-container); color: var(--md-on-secondary-container); font-weight: 800; }
   .input { border-color: var(--md-outline); border-radius: var(--shape-md); }
   .input:focus { border-color: var(--md-primary); box-shadow: 0 0 0 1px var(--md-primary); }
   .dash--admin .card { border-radius: 6px; }
   .dash--admin .input, .dash--admin .badge { border-radius: 4px; }
 
-  /* ── Shaped icons ── */
-  .shape-icon { position: relative; display: grid; width: 3.5rem; height: 3.5rem; flex: none; place-items: center; color: var(--tone-on); }
+  /* ── Shaped icons: a tonal rounded square on the website, the organic shape in the installed app ── */
+  .shape-icon { position: relative; display: grid; width: 3.5rem; height: 3.5rem; flex: none; place-items: center; }
   .shape-icon--lg { width: 4.5rem; height: 4.5rem; }
-  .shape-icon__bg { position: absolute; inset: 0; background: var(--tone-shape); mask: center / contain no-repeat; transition: rotate var(--spring-default-ms) var(--spring-default), scale var(--spring-fast-ms) var(--spring-fast); }
+  .shape-icon__bg { position: absolute; inset: 0; }
   .shape-icon__glyph { position: relative; display: grid; place-items: center; }
   .shape-icon__glyph svg { width: 26px; height: 26px; }
   .shape-icon--lg .shape-icon__glyph svg { width: 32px; height: 32px; }
-  .shape-icon[data-shape="cookie4"] .shape-icon__bg { mask-image: var(--m3-shape-cookie4); }
-  .shape-icon[data-shape="cookie6"] .shape-icon__bg { mask-image: var(--m3-shape-cookie6); }
-  .shape-icon[data-shape="cookie9"] .shape-icon__bg { mask-image: var(--m3-shape-cookie9); }
-  .shape-icon[data-shape="clover4"] .shape-icon__bg { mask-image: var(--m3-shape-clover4); }
-  .shape-icon[data-shape="flower"] .shape-icon__bg { mask-image: var(--m3-shape-flower); }
-  :is(a, button):hover .shape-icon__bg, :is(a, button):focus-visible .shape-icon__bg { rotate: 45deg; }
-  :is(a, button):active .shape-icon__bg { rotate: 60deg; scale: 0.92; }
+  @media not all and (display-mode: standalone) {
+    .shape-icon { color: var(--tone-on-container); }
+    .shape-icon__bg { background: var(--tone-container); border-radius: var(--shape-md); }
+  }
+  @media (display-mode: standalone) {
+    .shape-icon { color: var(--tone-on); }
+    .shape-icon__bg { background: var(--tone-shape); mask: center / contain no-repeat; transition: rotate var(--spring-default-ms) var(--spring-default), scale var(--spring-fast-ms) var(--spring-fast); }
+    .shape-icon[data-shape="cookie4"] .shape-icon__bg { mask-image: var(--m3-shape-cookie4); }
+    .shape-icon[data-shape="cookie6"] .shape-icon__bg { mask-image: var(--m3-shape-cookie6); }
+    .shape-icon[data-shape="cookie9"] .shape-icon__bg { mask-image: var(--m3-shape-cookie9); }
+    .shape-icon[data-shape="clover4"] .shape-icon__bg { mask-image: var(--m3-shape-clover4); }
+    .shape-icon[data-shape="flower"] .shape-icon__bg { mask-image: var(--m3-shape-flower); }
+    :is(a, button):hover .shape-icon__bg, :is(a, button):focus-visible .shape-icon__bg { rotate: 45deg; }
+    :is(a, button):active .shape-icon__bg { rotate: 60deg; scale: 0.92; }
+  }
 
   /* Colour roles per tone: the container behind a tile, and the stronger shape on it. */
   .tone-primary { --tone-container: var(--md-primary-container); --tone-on-container: var(--md-on-primary-container); --tone-shape: var(--md-brand); --tone-on: #2a1000; }
@@ -122,56 +130,75 @@
   /* Inside a neutral tile the shape sits on its own container colour, so it takes a step darker. */
   .app-tile.tone-neutral .shape-icon { --tone-shape: #e3d0c5; }
 
-  /* ── MastApps launcher: a bento of tonal tiles; Activities is the hero ── */
-  .app-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
-  @media (min-width: 1024px) { .app-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.9rem; } }
-  .app-grid > li:has([data-app="activities"]) { grid-column: 1 / -1; }
-  @media (min-width: 1024px) { .app-grid > li:has([data-app="activities"]) { grid-column: span 2; } }
-  .app-tile {
-    position: relative;
-    display: flex;
-    height: 100%;
-    min-height: 11rem;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.25rem;
-    border: 0;
-    border-radius: var(--shape-xl);
-    background: var(--tone-container);
-    box-shadow: none;
-    color: var(--tone-on-container);
-    transition: border-radius var(--spring-default-ms) var(--spring-default), scale var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized);
+  /* ── MastApps launcher, website: a calm list of apps (icon, name, one line) ── */
+  @media not all and (display-mode: standalone) {
+    .app-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
+    @media (min-width: 640px) { .app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (min-width: 1024px) { .app-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .app-tile { position: relative; display: flex; height: 100%; align-items: center; gap: 1rem; padding: 1rem 3.25rem 1rem 1.1rem; border: 1.5px solid var(--md-outline-variant); border-radius: var(--shape-lg); background: var(--md-surface-container-lowest); color: var(--md-on-surface); transition: border-color 0.15s, box-shadow 0.15s; }
+    .app-tile:hover { border-color: var(--md-primary); box-shadow: var(--shadow-sm); color: var(--md-on-surface); }
+    .app-tile .shape-icon { width: 3rem; height: 3rem; }
+    .app-tile__body { display: flex; min-width: 0; flex-direction: column; gap: 0.15rem; }
+    .app-tile__head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.6rem; }
+    .app-tile__name { margin: 0; font-size: 1.15rem; font-weight: 900; letter-spacing: -0.01em; line-height: 1.2; }
+    .app-tile__text { color: var(--md-on-surface-variant); font-size: 0.92rem; line-height: 1.4; }
+    .app-tile__detail { margin-top: 0.15rem; color: var(--md-primary); font-size: 0.85rem; font-weight: 800; }
+    .app-tile__arrow { position: absolute; top: 50%; right: 1rem; width: 20px; height: 20px; translate: 0 -50%; color: var(--md-on-surface-variant); transition: translate 0.15s, color 0.15s; }
+    .app-tile:hover .app-tile__arrow { translate: 3px -50%; color: var(--md-primary); }
   }
-  .app-tile:hover { border-color: transparent; border-radius: var(--shape-xl-plus); background: color-mix(in srgb, var(--tone-container) 92%, var(--tone-on-container)); box-shadow: none; color: var(--tone-on-container); transform: none; }
-  .app-tile:active { border-radius: var(--shape-lg); scale: 0.98; }
-  .app-tile[data-app="activities"] { min-height: 13rem; padding: 1.5rem; }
-  .app-tile__body { display: flex; min-width: 0; flex-direction: column; gap: 0.3rem; }
-  .app-tile__head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; }
-  .app-tile__name { margin: 0; font-size: 1.35rem; font-weight: 900; letter-spacing: -0.015em; line-height: 1.15; }
-  .app-tile[data-app="activities"] .app-tile__name { font-size: clamp(1.75rem, 5vw, 2.25rem); letter-spacing: -0.025em; }
-  .app-tile__text { color: color-mix(in srgb, var(--tone-on-container) 78%, transparent); font-size: 0.95rem; line-height: 1.4; }
-  /* A chip-like line; it may wrap on narrow phones, so the corners stay "large" rather than fully round. */
-  .app-tile__detail { align-self: flex-start; max-width: 100%; margin-top: 0.5rem; padding: 0.4rem 0.8rem; border-radius: var(--shape-md); background: var(--md-surface-container-lowest); color: var(--md-on-surface); font-size: 0.85rem; font-weight: 800; line-height: 1.35; }
-  .app-tile .badge { background: color-mix(in srgb, var(--md-surface-container-lowest) 70%, transparent); color: var(--tone-on-container); }
-  .app-tile__arrow { position: absolute; top: 1rem; right: 1rem; box-sizing: content-box; width: 20px; height: 20px; padding: 0.55rem; border-radius: var(--shape-full); background: color-mix(in srgb, var(--md-surface-container-lowest) 65%, transparent); color: var(--tone-on-container); transition: translate var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized); }
-  .app-tile:hover .app-tile__arrow { translate: 3px 0; transform: none; background: var(--md-surface-container-lowest); color: var(--tone-on-container); }
-  /* Phones: every app fits on one screen. Compact tiles show icon, name and badge (the description stays for screen
-     readers only), and the hero is shorter, with its icon beside the title. */
-  @media (max-width: 639px) {
-    .app-grid { gap: 0.5rem; }
-    .app-tile { min-height: 0; gap: 0.6rem; padding: 0.9rem; border-radius: var(--shape-lg-plus); }
-    .app-tile:hover { border-radius: var(--shape-xl); }
-    .app-tile__text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    .app-tile__name { font-size: 1.1rem; }
-    .app-tile__arrow { top: 0.6rem; right: 0.6rem; padding: 0.4rem; }
-    .shape-icon { width: 2.75rem; height: 2.75rem; }
-    .shape-icon__glyph svg { width: 22px; height: 22px; }
-    .app-tile[data-app="activities"] { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 0.9rem; min-height: 0; padding: 1rem; }
-    .app-tile[data-app="activities"] .app-tile__name { padding-right: 2.5rem; font-size: 1.6rem; }
-    .app-tile[data-app="activities"] .shape-icon--lg { width: 3.5rem; height: 3.5rem; }
-    .app-tile[data-app="activities"] .app-tile__detail { margin-top: 0.3rem; font-size: 0.8rem; }
+
+  /* ── MastApps launcher, installed app: a bento of tonal tiles; Activities is the hero ── */
+  @media (display-mode: standalone) {
+    .app-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; margin: 0; padding: 0; list-style: none; }
+    @media (min-width: 1024px) { .app-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.9rem; } }
+    .app-grid > li:has([data-app="activities"]) { grid-column: 1 / -1; }
+    @media (min-width: 1024px) { .app-grid > li:has([data-app="activities"]) { grid-column: span 2; } }
+    .app-tile {
+      position: relative;
+      display: flex;
+      height: 100%;
+      min-height: 11rem;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem;
+      border: 0;
+      border-radius: var(--shape-xl);
+      background: var(--tone-container);
+      box-shadow: none;
+      color: var(--tone-on-container);
+      transition: border-radius var(--spring-default-ms) var(--spring-default), scale var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized);
+    }
+    .app-tile:hover { border-color: transparent; border-radius: var(--shape-xl-plus); background: color-mix(in srgb, var(--tone-container) 92%, var(--tone-on-container)); box-shadow: none; color: var(--tone-on-container); transform: none; }
+    .app-tile:active { border-radius: var(--shape-lg); scale: 0.98; }
+    .app-tile[data-app="activities"] { min-height: 13rem; padding: 1.5rem; }
+    .app-tile__body { display: flex; min-width: 0; flex-direction: column; gap: 0.3rem; }
+    .app-tile__head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; }
+    .app-tile__name { margin: 0; font-size: 1.35rem; font-weight: 900; letter-spacing: -0.015em; line-height: 1.15; }
+    .app-tile[data-app="activities"] .app-tile__name { font-size: clamp(1.75rem, 5vw, 2.25rem); letter-spacing: -0.025em; }
+    .app-tile__text { color: color-mix(in srgb, var(--tone-on-container) 78%, transparent); font-size: 0.95rem; line-height: 1.4; }
+    /* A chip-like line; it may wrap on narrow phones, so the corners stay "large" rather than fully round. */
+    .app-tile__detail { align-self: flex-start; max-width: 100%; margin-top: 0.5rem; padding: 0.4rem 0.8rem; border-radius: var(--shape-md); background: var(--md-surface-container-lowest); color: var(--md-on-surface); font-size: 0.85rem; font-weight: 800; line-height: 1.35; }
+    .app-tile .badge { background: color-mix(in srgb, var(--md-surface-container-lowest) 70%, transparent); color: var(--tone-on-container); }
+    .app-tile__arrow { position: absolute; top: 1rem; right: 1rem; box-sizing: content-box; width: 20px; height: 20px; padding: 0.55rem; border-radius: var(--shape-full); background: color-mix(in srgb, var(--md-surface-container-lowest) 65%, transparent); color: var(--tone-on-container); transition: translate var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized); }
+    .app-tile:hover .app-tile__arrow { translate: 3px 0; transform: none; background: var(--md-surface-container-lowest); color: var(--tone-on-container); }
+    /* Phones: every app fits on one screen. Compact tiles show icon, name and badge (the description stays for screen
+       readers only), and the hero is shorter, with its icon beside the title. */
+    @media (max-width: 639px) {
+      .app-grid { gap: 0.5rem; }
+      .app-tile { min-height: 0; gap: 0.6rem; padding: 0.9rem; border-radius: var(--shape-lg-plus); }
+      .app-tile:hover { border-radius: var(--shape-xl); }
+      .app-tile__text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+      .app-tile__name { font-size: 1.1rem; }
+      .app-tile__arrow { top: 0.6rem; right: 0.6rem; padding: 0.4rem; }
+      .shape-icon { width: 2.75rem; height: 2.75rem; }
+      .shape-icon__glyph svg { width: 22px; height: 22px; }
+      .app-tile[data-app="activities"] { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 0.9rem; min-height: 0; padding: 1rem; }
+      .app-tile[data-app="activities"] .app-tile__name { padding-right: 2.5rem; font-size: 1.6rem; }
+      .app-tile[data-app="activities"] .shape-icon--lg { width: 3.5rem; height: 3.5rem; }
+      .app-tile[data-app="activities"] .app-tile__detail { margin-top: 0.3rem; font-size: 0.8rem; }
+    }
   }
 
   /* ── Search bar (M3): a full-width pill; the leading magnifier submits, the trailing ✕ clears ── */
@@ -187,10 +214,10 @@
   .search-bar__input:focus-visible { outline: none; }
   .filter-select { width: auto; min-height: 2.5rem; border-radius: var(--shape-sm); font-size: 0.9rem; }
 
-  /* ── Site panels: the big M3 extra-large corners ── */
-  .page-panel, .lp-text, .hub, .hero-carousel { border-radius: var(--shape-xl); }
+  /* ── Site panels ── */
+  .page-panel, .lp-text, .hub, .hero-carousel { border-radius: var(--shape-lg); }
   @media (max-width: 1023px) {
-    .page-panel, .lp-text { border-radius: 0 0 var(--shape-xl) var(--shape-xl); }
+    .page-panel, .lp-text { border-radius: 0 0 var(--shape-lg) var(--shape-lg); }
   }
 
   /* ── Full-screen app shell (not admin): an M3 top app bar on a warm surface ── */
@@ -198,15 +225,12 @@
   .dash:not(.dash--admin) .dash-bar { border-top: 0; border-bottom: 0; background: var(--md-surface-container-low); box-shadow: none; }
   .dash:not(.dash--admin) .dash-back { border: 0; background: var(--md-secondary-container); color: var(--md-on-secondary-container); transition: border-radius var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized); }
   .dash:not(.dash--admin) .dash-back:hover { background: color-mix(in srgb, var(--md-secondary-container) 88%, var(--md-on-secondary-container)); color: var(--md-on-secondary-container); }
-  .dash:not(.dash--admin) .dash-back:active { border-radius: var(--shape-md); }
   .dash:not(.dash--admin) .dash-nav a { color: var(--md-on-surface-variant); transition: background-color 0.2s var(--ease-emphasized), color 0.2s var(--ease-emphasized), border-radius var(--spring-fast-ms) var(--spring-fast); }
   .dash:not(.dash--admin) .dash-nav a:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); color: var(--md-on-surface); }
   .dash:not(.dash--admin) .dash-nav a[aria-current="page"] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); box-shadow: none; }
-  .dash:not(.dash--admin) .dash-nav a:active { border-radius: var(--shape-md); }
   .dash:not(.dash--admin) .card { border: 0; background: var(--md-surface-container-lowest); box-shadow: 0 1px 2px rgb(34 26 21 / 0.08), 0 1px 3px 1px rgb(34 26 21 / 0.05); }
   .dash:not(.dash--admin) a.card { transition: border-radius var(--spring-default-ms) var(--spring-default), scale var(--spring-fast-ms) var(--spring-fast), box-shadow 0.2s var(--ease-emphasized); }
-  .dash:not(.dash--admin) a.card:hover { border-color: transparent; border-radius: var(--shape-xl); box-shadow: 0 2px 6px 2px rgb(34 26 21 / 0.1), 0 1px 2px rgb(34 26 21 / 0.12); transform: none; }
-  .dash:not(.dash--admin) a.card:active { scale: 0.985; }
+  .dash:not(.dash--admin) a.card:hover { border-color: transparent; box-shadow: 0 2px 6px 2px rgb(34 26 21 / 0.1), 0 1px 2px rgb(34 26 21 / 0.12); transform: none; }
   .dash:not(.dash--admin) .dash-head h1 { font-weight: 900; letter-spacing: -0.025em; }
 
   /* ── Desktop sidebar: the same tonal pill as the navigation bar ── */
@@ -219,6 +243,16 @@
     .mobile-drawer .nav-link { border-radius: var(--shape-full); }
     .mobile-drawer .nav-link[data-active="true"] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
     .mobile-drawer .widget-title span { background: var(--md-surface-container-low); }
+  }
+
+  /* ── Installed app only: the expressive motion. Corners pull in while pressed and grow on hover; the website keeps
+     colour changes and a slight press, nothing that changes shape. ── */
+  @media (display-mode: standalone) {
+    .card { border-radius: var(--shape-lg-plus); }
+    .btn:active:not(:disabled) { border-radius: var(--shape-md); scale: 0.97; }
+    .dash:not(.dash--admin) .dash-back:active, .dash:not(.dash--admin) .dash-nav a:active { border-radius: var(--shape-md); }
+    .dash:not(.dash--admin) a.card:hover { border-radius: var(--shape-xl); }
+    .dash:not(.dash--admin) a.card:active { scale: 0.985; }
   }
 
   @media (prefers-reduced-motion: reduce) {

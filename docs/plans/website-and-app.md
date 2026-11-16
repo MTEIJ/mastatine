@@ -8,6 +8,9 @@ redirect). Deviation: Today's "Coming up" cards show "You're going" / "Members o
 activity, where joining happens); revisit if people ask for joining straight from Today.
 Phase 4 done (account page: profile header, settings list with switches for notifications and newsletter, install card
 hidden in the app, sign out at the bottom in the app; styles in `src/app/screens.css`).
+Phase 5 done (website: "Coming up" is the one place for what is on, above the hero; no hero countdown, no launcher, no
+homepage agenda in the sidebar; the expressive shapes and press/hover morphs are app-only (`display-mode: standalone`
+blocks in `m3.css`); the MastApps page is a plain list in a browser and the bento in the app).
 
 ## The problem
 
