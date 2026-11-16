@@ -4,8 +4,10 @@ export const ADMIN_NAV = [
   { label: "Users", href: "/admin/users" },
   { label: "Masts", href: "/admin/masts" },
   { label: "Committees", href: "/admin/committees" },
+  { label: "Agenda", href: "/admin/agenda" },
   { label: "News", href: "/admin/news" },
   { label: "Newsletter", href: "/admin/newsletter" },
+  { label: "Documents", href: "/admin/documents" },
   { label: "Finance access", href: "/admin/finance-access" },
 ] as const;
 

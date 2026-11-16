@@ -1,4 +1,5 @@
 import type { UpcomingActivity } from "@/lib/activities";
+import type { CalendarEvent } from "@/lib/calendar-events";
 
 /** Events without an end time are shown as lasting this long. */
 const DEFAULT_DURATION_MS = 3 * 60 * 60 * 1000;
@@ -45,7 +46,7 @@ export interface CalendarOptions {
 }
 
 /** Builds a public iCalendar feed: name, time, place and organising committee only, plus a link to the activity. */
-export function buildCalendar(activities: UpcomingActivity[], { name, siteUrl, now = new Date() }: CalendarOptions): string {
+export function buildCalendar(activities: UpcomingActivity[], { name, siteUrl, now = new Date() }: CalendarOptions, events: CalendarEvent[] = []): string {
   const host = new URL(siteUrl).hostname;
   const lines = [
     "BEGIN:VCALENDAR",
@@ -71,6 +72,22 @@ export function buildCalendar(activities: UpcomingActivity[], { name, siteUrl, n
       ...(a.location ? [`LOCATION:${escapeText(a.location)}`] : []),
       `DESCRIPTION:${escapeText(`Organised by ${a.committee_name}.`)}`,
       `URL:${siteUrl}/mastapps/activities/${a.id}`,
+      "END:VEVENT",
+    );
+  }
+
+  // Standalone agenda items: no link, since they have no page of their own.
+  for (const e of events) {
+    const end = e.ends_at ?? new Date(e.starts_at.getTime() + DEFAULT_DURATION_MS);
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:event-${e.id}@${host}`,
+      `DTSTAMP:${utc(now)}`,
+      `DTSTART:${utc(e.starts_at)}`,
+      `DTEND:${utc(end)}`,
+      `SUMMARY:${escapeText(e.title)}`,
+      ...(e.location ? [`LOCATION:${escapeText(e.location)}`] : []),
+      ...(e.description ? [`DESCRIPTION:${escapeText(e.description)}`] : []),
       "END:VEVENT",
     );
   }

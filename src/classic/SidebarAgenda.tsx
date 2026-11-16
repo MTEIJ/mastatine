@@ -1,15 +1,15 @@
 import Link from "next/link";
 import CalendarSubscribe from "@/components/CalendarSubscribe";
-import { getCachedUpcomingActivities } from "@/lib/activities-cached";
+import { getCachedAgenda } from "@/lib/agenda-cached";
 import { getMembership } from "@/lib/membership";
 import { formatDayNumber, formatMonthShort, formatTime } from "@/lib/datetime";
 
 const AGENDA_ITEMS = 4;
 
-/** Next few activities for the desktop sidebar: name, time and place only. Members also see members-only ones. */
+/** Next few activities and agenda items for the desktop sidebar: name, time and place only. Members also see members-only ones. */
 export default async function SidebarAgenda() {
   const { isMember } = await getMembership();
-  const upcoming = await getCachedUpcomingActivities(AGENDA_ITEMS, isMember).catch((error) => {
+  const upcoming = await getCachedAgenda(AGENDA_ITEMS, isMember).catch((error) => {
     console.error("Failed to load the sidebar agenda:", (error as Error).message);
     return [];
   });
@@ -21,9 +21,9 @@ export default async function SidebarAgenda() {
         <p className="agenda__empty">Nothing planned right now.</p>
       ) : (
         <ul className="agenda__list">
-          {upcoming.map((a) => (
-            <li key={a.id}>
-              <Link href={`/mastapps/activities/${a.id}`} className="agenda__item">
+          {upcoming.map((a) => {
+            const content = (
+              <>
                 <time className="agenda__date" dateTime={a.starts_at.toISOString()}>
                   <span className="agenda__day">{formatDayNumber(a.starts_at)}</span>
                   <span className="agenda__month">{formatMonthShort(a.starts_at)}</span>
@@ -32,9 +32,14 @@ export default async function SidebarAgenda() {
                   <span className="agenda__name">{a.name}</span>
                   <span className="agenda__meta">{formatTime(a.starts_at)}{a.location ? ` · ${a.location}` : ""}</span>
                 </span>
-              </Link>
-            </li>
-          ))}
+              </>
+            );
+            return (
+              <li key={a.key}>
+                {a.href ? <Link href={a.href} className="agenda__item">{content}</Link> : <div className="agenda__item">{content}</div>}
+              </li>
+            );
+          })}
         </ul>
       )}
       <Link href="/mastapps/activities" className="agenda__all">All activities &rarr;</Link>

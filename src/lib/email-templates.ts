@@ -105,13 +105,14 @@ function compose(subject: string, parts: MessageParts): EmailContent {
   return { subject, text: textSections.join("\n\n"), html };
 }
 
-export function magicLinkEmail(url: string, minutes: number): EmailContent {
-  return compose(`Your ${SITE_NAME} sign-in link`, {
-    preheader: `Your sign-in link works once and expires in ${minutes} minutes.`,
+export function magicLinkEmail(url: string, minutes: number, code: string): EmailContent {
+  return compose(`Your ${SITE_NAME} sign-in link and code`, {
+    preheader: `Your sign-in code is ${code}. It expires in ${minutes} minutes.`,
     heading: `Sign in to ${SITE_NAME}`,
-    intro: `Use the button below to sign in. The link works once and expires in ${minutes} minutes.`,
+    intro: `Use the button below to sign in, or type the code on the sign-in page if the link opens somewhere else. Both work once and expire in ${minutes} minutes.`,
+    details: [{ label: "Sign-in code", value: code }],
     action: { url, label: "Sign in" },
-    notes: ["If you did not ask for this, you can ignore this email. Nobody can sign in without the link."],
+    notes: ["If you did not ask for this, you can ignore this email. Nobody can sign in without the link or the code."],
   });
 }
 

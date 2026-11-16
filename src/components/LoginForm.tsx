@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { hasDisplayName } from "@/lib/profile";
 
 type Status = "idle" | "sending" | "sent";
 
@@ -19,6 +20,8 @@ export default function LoginForm({ next }: { next: string }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const [code, setCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
 
   // The link often opens in a new tab: once it signs the visitor in, move this tab along too.
   useEffect(() => {
@@ -52,15 +55,50 @@ export default function LoginForm({ next }: { next: string }) {
     setStatus("sent");
   }
 
+  async function handleCode(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError("");
+    setVerifying(true);
+    const { data, error: authError } = await authClient.signIn.emailOtp({ email: email.trim().toLowerCase(), otp: code });
+    if (authError || !data) {
+      setVerifying(false);
+      setError(authError?.status === 429 ? "Too many attempts. Please wait a minute and try again." : "That code is not right or has expired. Check the email, or request a new one.");
+      return;
+    }
+    const target = destinations(next);
+    window.location.assign(hasDisplayName(data.user.name) ? target.existing : target.created);
+  }
+
   if (status === "sent") {
     return (
-      <div role="status" className="space-y-3">
+      <div role="status" className="space-y-4">
         <p className="text-lg font-semibold">Check your inbox</p>
         <p className="text-muted">
-          If <strong className="text-ink">{email}</strong> can sign in, we have sent a link to it. It works once and expires in 10 minutes.
-          Nothing there? Check your spam folder.
+          If <strong className="text-ink">{email}</strong> can sign in, we have sent a link and a six-digit code to it. Use either one: both work once and
+          expire in 10 minutes. Nothing there? Check your spam folder.
         </p>
-        <button type="button" className="btn btn-secondary btn-sm" onClick={() => setStatus("idle")}>
+        <form onSubmit={handleCode} className="space-y-3" noValidate>
+          <label htmlFor={`${id}-code`} className="label">Or enter the code</label>
+          <input
+            id={`${id}-code`}
+            type="text"
+            required
+            autoComplete="one-time-code"
+            inputMode="numeric"
+            pattern="[0-9]{6}"
+            maxLength={6}
+            spellCheck={false}
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            className="input text-center text-2xl tracking-[0.5em]"
+            placeholder="000000"
+          />
+          {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+          <button type="submit" disabled={verifying || code.length !== 6} className="btn btn-primary w-full py-3">
+            {verifying ? "Checking…" : "Sign in with code"}
+          </button>
+        </form>
+        <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setStatus("idle"); setCode(""); setError(""); }}>
           Use a different email
         </button>
       </div>

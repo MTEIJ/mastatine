@@ -13,8 +13,8 @@ RUN bun --bun next build
 
 FROM oven/bun:1-slim AS runner
 WORKDIR /app
-ENV NODE_ENV=production     NEXT_TELEMETRY_DISABLED=1     PORT=3000     HOSTNAME=0.0.0.0     UPLOAD_DIR=/data/uploads     FINANCE_DIR=/data/finance
-RUN mkdir -p /data/uploads /data/finance /app/.next/cache && chown -R bun:bun /data /app
+ENV NODE_ENV=production     NEXT_TELEMETRY_DISABLED=1     PORT=3000     HOSTNAME=0.0.0.0     UPLOAD_DIR=/data/uploads     FINANCE_DIR=/data/finance     DOCUMENTS_DIR=/data/documents
+RUN mkdir -p /data/uploads /data/finance /data/documents /app/.next/cache && chown -R bun:bun /data /app
 COPY --from=build --chown=bun:bun /app/.next/standalone ./
 COPY --from=build --chown=bun:bun /app/.next/static ./.next/static
 COPY --from=build --chown=bun:bun /app/public ./public

@@ -15,6 +15,7 @@ export default function Colophon() {
               {[
                 { label: "Privacy Policy", href: "/privacy" },
                 { label: "Site rules", href: "/terms" },
+                { label: "Documents", href: "/documents" },
                 { label: "Contact", href: "/contact" },
                 { label: "About", href: "/about" },
               ].map(({ label, href }) => (

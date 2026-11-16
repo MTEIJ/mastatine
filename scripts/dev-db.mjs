@@ -1,5 +1,5 @@
 // Docker-free local database for development: a real Postgres (PGlite, WebAssembly) served on 127.0.0.1:5432.
-// Data persists in ./.pglite between runs. Keep this running in its own terminal while you use `bun run dev`.
+// Data persists in ./.pglite between runs. Keep this running in its own terminal while you use `bun run dev:next`.
 // The same migrations as production are applied on start.
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";

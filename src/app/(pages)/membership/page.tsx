@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import MembershipRequest from "@/components/MembershipRequest";
 import PageHeader from "@/components/ui/PageHeader";
-import { FAQ, MEMBERSHIP_PERKS } from "@/content/site";
+import { FAQ, JOIN_STEPS, MEMBERSHIP_PERKS } from "@/content/site";
 import { getMembership } from "@/lib/membership";
 
 export const metadata: Metadata = {
@@ -19,10 +19,10 @@ export default async function MembershipPage() {
     <>
       <PageHeader
         title="Membership"
-        intro="It is free, it is optional, and it is not a study association membership. Here is what you get."
+        intro="Join M.A. Mastatine for free. Members take part in activities, have a say in the association and can join a committee."
       />
       <div className="container-page">
-        <ul className="grid gap-5 sm:grid-cols-2">
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {MEMBERSHIP_PERKS.map((perk) => (
             <li key={perk.title} className="card p-6">
               <h2 className="text-xl font-extrabold">{perk.title}</h2>
@@ -30,8 +30,17 @@ export default async function MembershipPage() {
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-muted">Membership is free. You ask for it with your account, and an admin approves each request.</p>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <h2 className="mt-14 text-2xl font-bold">How to join</h2>
+        <ol className="mt-5 grid gap-5 sm:grid-cols-3">
+          {JOIN_STEPS.map((step, i) => (
+            <li key={step.title} className="rounded-2xl border border-line p-5">
+              <p className="text-sm font-bold uppercase tracking-wide text-accent-text">Step {i + 1}</p>
+              <h3 className="mt-1 text-lg font-bold">{step.title}</h3>
+              <p className="mt-1.5 text-base text-muted">{step.text}</p>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
           <MembershipRequest membership={membership} next="/membership" />
           <Link href="/newsletter" className="btn btn-secondary">
             Subscribe to the newsletter

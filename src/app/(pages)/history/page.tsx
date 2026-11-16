@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/ui/PageHeader";
-import { HISTORY } from "@/content/site";
+import { FOUNDING, HISTORY } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "History",
-  description: "The history of M.A. Mastatine, from a rented room in Wyck in 2006 to our 4th lustrum.",
+  description: `The history of M.A. Mastatine, founded on ${FOUNDING.date} at our ${FOUNDING.occasion} activity in ${FOUNDING.place}.`,
 };
 
 export const instant = false;
@@ -14,7 +14,7 @@ export default function HistoryPage() {
     <>
       <PageHeader
         title="History"
-        intro="Twenty years of Mastatine, from a rented room in Wyck to our 4th lustrum."
+        intro={`Every association starts somewhere. Ours started at a ${FOUNDING.occasion} activity on ${FOUNDING.date}.`}
       />
       <div className="container-prose">
         <ol className="relative space-y-10 border-l border-line pl-8">

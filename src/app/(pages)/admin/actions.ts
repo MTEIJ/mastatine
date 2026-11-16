@@ -1,6 +1,7 @@
 "use server";
 
-import { unlink } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -10,7 +11,8 @@ import { z } from "zod";
 import sql from "@/lib/db";
 import { getAuth } from "@/lib/auth";
 import { requireAdmin } from "@/lib/session";
-import { UPLOAD_DIR, UPLOAD_FILENAME_RE } from "@/lib/uploads";
+import { UPLOAD_DIR, UPLOAD_FILENAME_RE, encodeWebp, sniffImageExt } from "@/lib/uploads";
+import { slugifyCommittee } from "@/lib/committees";
 import { sendIssue, sendTestIssue } from "@/lib/newsletter";
 import { AUDIENCES, countAudience, parseAudience } from "@/lib/newsletter-audience";
 import { membershipApprovedEmail, membershipEndedEmail } from "@/lib/email-templates";
@@ -227,18 +229,76 @@ export async function removeSubscriber(formData: FormData) {
 
 const committeeSchema = z.object({
   name: z.string().trim().min(1).max(80),
-  description: z.string().trim().max(200),
+  description: z.string().trim().max(400),
 });
+
+const MAX_BANNER_BYTES = 8 * 1024 * 1024;
 
 function refreshCommittees() {
   revalidatePath("/admin/committees");
   revalidatePath("/admin/users");
+  revalidatePath("/committees", "layout");
+}
+
+/** A slug nobody else uses: "name", then "name-2", "name-3" and so on. */
+async function uniqueCommitteeSlug(name: string): Promise<string> {
+  const base = slugifyCommittee(name);
+  for (let n = 1; n < 100; n++) {
+    const candidate = n === 1 ? base : `${base}-${n}`;
+    const [taken] = await sql`SELECT 1 FROM committees WHERE slug = ${candidate}`;
+    if (!taken) return candidate;
+  }
+  return `${base}-${Date.now()}`;
+}
+
+/** Validates, re-encodes and stores a banner; returns its /uploads URL. Throws a readable error for bad files. */
+async function storeBanner(file: File): Promise<string> {
+  if (file.size > MAX_BANNER_BYTES) throw new Error("The banner is too large (max 8 MB).");
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (!sniffImageExt(bytes)) throw new Error("The banner must be a JPG, PNG, WebP or GIF image.");
+  let webp: Buffer;
+  try {
+    webp = await encodeWebp(bytes);
+  } catch {
+    throw new Error("The banner could not be read as an image.");
+  }
+  const filename = `${Date.now()}-${randomUUID()}.webp`;
+  await mkdir(UPLOAD_DIR, { recursive: true });
+  await writeFile(path.join(UPLOAD_DIR, filename), webp);
+  return `/uploads/${filename}`;
+}
+
+async function removeBannerFile(bannerUrl: string | null) {
+  const filename = bannerUrl?.startsWith("/uploads/") ? bannerUrl.slice("/uploads/".length) : "";
+  if (!UPLOAD_FILENAME_RE.test(filename)) return;
+  const [stillUsed] = await sql`SELECT 1 FROM committees WHERE banner_url = ${bannerUrl} LIMIT 1`;
+  if (stillUsed) return;
+  await unlink(path.join(UPLOAD_DIR, filename)).catch(() => {});
 }
 
 export async function createCommittee(formData: FormData) {
   await requireAdmin();
   const data = committeeSchema.parse(Object.fromEntries(formData));
-  await sql`INSERT INTO committees (name, description) VALUES (${data.name}, ${data.description || null}) ON CONFLICT DO NOTHING`;
+  const slug = await uniqueCommitteeSlug(data.name);
+  await sql`INSERT INTO committees (name, slug, description) VALUES (${data.name}, ${slug}, ${data.description || null}) ON CONFLICT DO NOTHING`;
+  refreshCommittees();
+}
+
+export async function approveJoinRequest(formData: FormData) {
+  await requireAdmin();
+  const [request] = await sql<{ committee_id: string; user_id: string }[]>`
+    UPDATE committee_join_requests SET status = 'approved', decided_at = NOW()
+    WHERE id = ${id.parse(formData.get("id"))} AND status = 'pending' RETURNING committee_id, user_id
+  `;
+  if (request) {
+    await sql`INSERT INTO committee_members (committee_id, user_id) VALUES (${request.committee_id}, ${request.user_id}) ON CONFLICT DO NOTHING`;
+  }
+  refreshCommittees();
+}
+
+export async function declineJoinRequest(formData: FormData) {
+  await requireAdmin();
+  await sql`UPDATE committee_join_requests SET status = 'declined', decided_at = NOW() WHERE id = ${id.parse(formData.get("id"))} AND status = 'pending'`;
   refreshCommittees();
 }
 
@@ -274,6 +334,18 @@ export async function toggleCommitteeChair(formData: FormData) {
 export async function updateCommittee(formData: FormData) {
   await requireAdmin();
   const data = committeeSchema.parse(Object.fromEntries(formData));
-  await sql`UPDATE committees SET name = ${data.name}, description = ${data.description || null} WHERE id = ${id.parse(formData.get("id"))}`;
+  const committeeId = id.parse(formData.get("id"));
+  const [before] = await sql<{ banner_url: string | null }[]>`SELECT banner_url FROM committees WHERE id = ${committeeId}`;
+  if (!before) return;
+
+  // A new file replaces the banner; the checkbox removes it; otherwise it stays as it is.
+  const file = formData.get("banner");
+  let bannerUrl = before.banner_url;
+  if (file instanceof File && file.size > 0) bannerUrl = await storeBanner(file);
+  else if (formData.get("removeBanner") === "on") bannerUrl = null;
+
+  // The slug stays as it was, so links to the page keep working after a rename.
+  await sql`UPDATE committees SET name = ${data.name}, description = ${data.description || null}, banner_url = ${bannerUrl} WHERE id = ${committeeId}`;
+  if (before.banner_url !== bannerUrl) await removeBannerFile(before.banner_url);
   refreshCommittees();
 }

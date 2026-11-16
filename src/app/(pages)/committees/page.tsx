@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import CommitteeBanner from "@/components/CommitteeBanner";
 import PageHeader from "@/components/ui/PageHeader";
 import { getPublicCommittees, type PublicCommittee } from "@/lib/committees";
 
@@ -28,27 +29,25 @@ export default async function CommitteesPage() {
     <>
       <PageHeader
         title="Committees"
-        intro="Every great structure needs supports. These are ours."
+        intro="Committees are where members make things happen: organising activities, writing the newsletter, keeping the register. Every member can join one."
       />
       <div className="container-page">
         <ul className="grid gap-5 sm:grid-cols-2">
           {committees.map((committee) => (
-            <li key={committee.id} className="card p-6">
-              <h2 className="text-xl font-bold">{committee.name}</h2>
-              {committee.description && <p className="mt-3 text-base text-muted">{committee.description}</p>}
-              <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-accent-text">Members</h3>
-              {committee.members.length === 0 ? (
-                <p className="mt-2 text-base text-muted">No members yet.</p>
-              ) : (
-                <ul className="mt-2 flex flex-wrap gap-2">
-                  {committee.members.map((member, i) => (
-                    <li key={i} className="rounded-full border border-line bg-soft px-3 py-1 text-sm font-medium">
-                      {member.name}
-                      {member.is_chair && <span className="ml-1.5 font-bold text-accent-text">· chair</span>}
-                    </li>
-                  ))}
-                </ul>
-              )}
+            <li key={committee.id} className="card flex flex-col overflow-hidden">
+              <CommitteeBanner url={committee.banner_url} className="h-32" />
+              <div className="flex flex-1 flex-col p-6">
+                <h2 className="text-xl font-bold">
+                  <Link href={`/committees/${committee.slug}`} className="hover:underline">{committee.name}</Link>
+                </h2>
+                {committee.description && <p className="mt-3 line-clamp-3 text-base text-muted">{committee.description}</p>}
+                <p className="mt-auto pt-4 text-sm font-medium text-muted">
+                  {committee.members.length} {committee.members.length === 1 ? "member" : "members"}
+                </p>
+                <Link href={`/committees/${committee.slug}`} className="btn btn-secondary mt-3 self-start">
+                  View committee
+                </Link>
+              </div>
             </li>
           ))}
           <li className="card flex flex-col justify-between border-dashed p-6">

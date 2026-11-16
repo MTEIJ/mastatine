@@ -38,6 +38,8 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  // Committee banners are uploaded through a server action; the default cap is 1 MB.
+  experimental: { serverActions: { bodySizeLimit: "10mb" } },
   // Extra hosts allowed to reach the dev server (e.g. a LAN/Tailscale IP), comma-separated.
   allowedDevOrigins: process.env.DEV_ALLOWED_ORIGINS?.split(",").filter(Boolean),
   outputFileTracingRoot: path.resolve(__dirname),

@@ -54,6 +54,7 @@ services:
     volumes:
       - uploads:/data/uploads
       - finance:/data/finance
+      - documents:/data/documents
       - imgcache:/app/.next/cache
     # Loopback only: point your existing reverse proxy at 127.0.0.1:3000.
     ports:
@@ -66,4 +67,5 @@ volumes:
   pgdata:
   uploads:
   finance:
+  documents:
   imgcache:

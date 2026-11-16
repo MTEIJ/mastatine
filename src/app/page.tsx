@@ -97,7 +97,7 @@ export default async function HomePage(
                 M.A. Mastatine is the Master Association in Maastricht for students interested in masts, towers
                 and the infrastructure behind modern communication.{" "}
                 <span className="lp-more">
-                  We are an international, non-profit student association, founded in Wyck in 2006. We
+                  We are an international, non-profit student association, founded in Maastricht on 12 November 2026. We
                   help students build a community, grow personally and professionally, and get to know
                   the landscape around them, from the Sint Pietersberg to the Maas, one mast at a time.
                 </span>

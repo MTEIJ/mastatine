@@ -6,9 +6,11 @@ Next.js 16 (App Router) + PostgreSQL on [Bun](https://bun.sh), self-hosted with 
 
 ```bash
 bun install
-bun run db:dev:local   # terminal 1: Docker-free Postgres on 127.0.0.1:5432, data kept in ./.pglite
-bun run dev            # terminal 2: http://localhost:3000
+bun run dev            # everything: Docker-free Postgres (data kept in ./.pglite) + http://localhost:3000; Ctrl+C stops both
 ```
+
+Just one part: `bun run db:dev:local` (database only) and `bun run dev:next` (Next dev server only, e.g. with your own database).
+If something already listens on port 5432, `bun run dev` uses it instead of starting the bundled database.
 
 With Docker installed you can use `bun run db:dev` instead (Postgres in a container). Either way the same migrations run,
 and `.env.local` needs `DATABASE_URL`, `SITE_URL` and `BETTER_AUTH_SECRET` (see `.env.example`); with `db:dev:local` also set

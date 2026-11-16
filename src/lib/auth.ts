@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { admin, magicLink } from "better-auth/plugins";
+import { admin, emailOTP, magicLink } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { Pool } from "pg";
 import { requireEnv, siteUrl } from "@/lib/env";
@@ -12,6 +12,19 @@ import { deleteSubscriberByEmail } from "@/lib/newsletter";
 import { deleteAccountVotes } from "@/lib/voter-account";
 
 const MAGIC_LINK_TTL_SECONDS = 10 * 60;
+const SIGN_IN_CODE_LENGTH = 6;
+const SIGN_IN_CODE_MAX_ATTEMPTS = 3;
+// The email-OTP plugin ships endpoints for verification, password reset and email change. Only sign-in is used here.
+const UNUSED_OTP_PATHS = [
+  "/email-otp/send-verification-otp",
+  "/email-otp/check-verification-otp",
+  "/email-otp/verify-email",
+  "/email-otp/request-password-reset",
+  "/forget-password/email-otp",
+  "/email-otp/reset-password",
+  "/email-otp/request-email-change",
+  "/email-otp/change-email",
+];
 const CHANGE_EMAIL_TTL_SECONDS = 60 * 60;
 
 declare global {
@@ -27,6 +40,18 @@ function adminEmails(): Set<string> {
   );
 }
 
+/**
+ * The emailed link and code are two ways into one sign-in, so a successful sign-in by either spends both.
+ * The magic link row is keyed by a token hash, so it is found by the address inside its JSON value.
+ */
+async function discardPendingSignIns(email: string): Promise<void> {
+  const address = email.trim().toLowerCase();
+  await sql`
+    DELETE FROM verification
+    WHERE identifier = ${`sign-in-otp-${address}`}
+       OR CASE WHEN identifier LIKE 'magic-link:%' THEN lower(value::jsonb ->> 'email') END = ${address}`;
+}
+
 function createAuth() {
   const pool = (globalThis._authPool ??= new Pool({
     connectionString: requireEnv("DATABASE_URL"),
@@ -40,7 +65,7 @@ function createAuth() {
     trustedOrigins: [siteUrl()],
     // The admin plugin's endpoints that act as, or rewrite, another account are not used by this app. Closed so a stolen admin
     // session cannot become the treasurer (see also getFinanceAccess).
-    disabledPaths: ["/admin/impersonate-user", "/admin/stop-impersonating", "/admin/create-user", "/admin/update-user", "/admin/set-user-password"],
+    disabledPaths: ["/admin/impersonate-user", "/admin/stop-impersonating", "/admin/create-user", "/admin/update-user", "/admin/set-user-password", ...UNUSED_OTP_PATHS],
     database: pool,
     // The signed cookie cache saves a session + user lookup on most requests; a ban or role change can take up to a minute to apply.
     session: { expiresIn: 60 * 60 * 24 * 30, updateAge: 60 * 60 * 24, cookieCache: { enabled: true, maxAge: 60 } },
@@ -80,19 +105,22 @@ function createAuth() {
       customRules: {
         "/sign-in/magic-link": { window: 60, max: 3 },
         "/magic-link/verify": { window: 60, max: 10 },
+        "/sign-in/email-otp": { window: 60, max: 10 },
         "/change-email": { window: 3600, max: 5 },
       },
     },
     databaseHooks: {
       session: {
         create: {
-          // Addresses added to ADMIN_EMAILS later are promoted at their next sign-in (the link proves the address is theirs).
+          // Addresses added to ADMIN_EMAILS later are promoted at their next sign-in (the link or code proves the address is theirs).
           after: async (session) => {
             // Signing in is what keeps a membership from lapsing (see is_member).
             const [row] = await sql<{ email: string; role: string }[]>`UPDATE "user" SET last_active_at = NOW() WHERE id = ${session.userId} RETURNING email, role`;
-            if (row && row.role !== "admin" && adminEmails().has(row.email.toLowerCase())) {
+            if (!row) return;
+            if (row.role !== "admin" && adminEmails().has(row.email.toLowerCase())) {
               await sql`UPDATE "user" SET role = 'admin' WHERE id = ${session.userId}`;
             }
+            await discardPendingSignIns(row.email);
           },
         },
       },
@@ -125,8 +153,18 @@ function createAuth() {
         sendMagicLink: async ({ email, url }) => {
           // Silently skip when one address is being hammered; the caller always sees "check your email".
           if (!allowMagicLinkFor(email)) return;
-          await sendMail({ to: email, ...magicLinkEmail(url, MAGIC_LINK_TTL_SECONDS / 60) });
+          // The same email carries a one-time code, so the link and the code are two ways to finish one sign-in.
+          const code = await getAuth().api.createVerificationOTP({ body: { email, type: "sign-in" } });
+          await sendMail({ to: email, ...magicLinkEmail(url, MAGIC_LINK_TTL_SECONDS / 60, code) });
         },
+      }),
+      emailOTP({
+        otpLength: SIGN_IN_CODE_LENGTH,
+        expiresIn: MAGIC_LINK_TTL_SECONDS,
+        allowedAttempts: SIGN_IN_CODE_MAX_ATTEMPTS,
+        storeOTP: "hashed",
+        // Codes are created in sendMagicLink and mailed together with the link, never sent on their own.
+        sendVerificationOTP: async () => {},
       }),
       admin({ defaultRole: "user", adminRoles: ["admin"] }),
       nextCookies(), // keep last
