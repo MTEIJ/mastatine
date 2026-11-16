@@ -1,4 +1,5 @@
 import sql from "@/lib/db";
+import { dispatchPluginEvent } from "@/plugins/events";
 
 export type ActivityEventKind = "subscribed" | "unsubscribed" | "waitlisted";
 
@@ -9,4 +10,6 @@ export async function logActivityEvent(activityId: string, kind: ActivityEventKi
   } catch (error) {
     console.error("Failed to record an activity event:", (error as Error).message);
   }
+  // Plugins hear about it after the count is stored; they never block or break the signup.
+  await dispatchPluginEvent(activityId, kind);
 }

@@ -14,7 +14,9 @@ import { getSession } from "@/lib/session";
 import { formatAdjustment, formatEuro, parseSignupGroups, priceLabel, tallyByGroup } from "@/lib/signup-options";
 import ConfirmButton from "@/components/admin/ConfirmButton";
 import { CheckIcon } from "@/components/ui/icons";
+import { getInstances } from "@/lib/plugin-instances";
 import { getWaitlistInfo } from "@/lib/waitlist";
+import { resolvePlugin } from "@/plugins/registry";
 import { joinWaitlist, leaveWaitlist, removeParticipant, unsubscribe, updateParticipantChoices } from "../actions";
 import MessageParticipantsForm from "../MessageParticipantsForm";
 import SubscribeForm from "../SubscribeForm";
@@ -48,6 +50,8 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
   const tally = tallyByGroup(participants.map((p) => p.choices));
   const columns = tally.map((t) => t.group);
   const waitlist = await getWaitlistInfo(activity.id, user?.id ?? null);
+  const pluginInstances = await getInstances(activity.id, { onlyEnabled: true });
+  const pluginViewer = { userId: user?.id ?? null, isManager: canManage };
   const canUnsubscribe = activity.allow_unsubscribe && activity.starts_at > new Date();
 
   const spotsLeft = activity.subscription_limit === null ? null : Math.max(0, activity.subscription_limit - activity.participants);
@@ -184,6 +188,13 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
             ))}
           </dl>
 
+          {pluginInstances.map((instance) => {
+            const resolved = resolvePlugin(instance);
+            const Section = resolved?.plugin.ActivitySection;
+            if (!resolved || !Section) return null;
+            return <Section key={instance.id} instance={instance} config={resolved.config} viewer={pluginViewer} />;
+          })}
+
           {user && (
             <details className="card p-4">
               <summary className="cursor-pointer font-bold">Who is going ({participants.length})</summary>
@@ -273,6 +284,7 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
               <a href={`/mastapps/activities/${activity.id}/event.ics`} download className="btn btn-secondary">Add to calendar</a>
             )}
             {canManage && <Link href={`/mastapps/activities/${activity.id}/edit`} className="btn btn-secondary">Edit</Link>}
+            {canManage && <Link href={`/mastapps/activities/${activity.id}/plugins`} className="btn btn-secondary">Plugins</Link>}
           </div>
         </div>
 
