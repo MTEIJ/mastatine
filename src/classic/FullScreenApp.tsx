@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SidebarAccount from "./SidebarAccount";
-import MobileTabBar from "./MobileTabBar";
+import { AppTabBar, AppTopBar } from "./AppChrome";
 import { useAccountState } from "@/components/AccountState";
 import { getApps } from "@/content/apps";
 import { ADMIN_NAV, isAdminTabCurrent } from "@/content/admin-nav";
@@ -20,6 +20,7 @@ export default function FullScreenApp({ children }: { children: React.ReactNode 
 
   return (
     <div className={admin ? "dash dash--admin" : "dash"}>
+      <AppTopBar />
       <header className="dash-bar">
         {/* Always the way out: back to the MastApps hub from an app, back to the site from the hub itself. */}
         <Link href={app || admin ? "/mastapps" : "/"} className="dash-back">
@@ -62,8 +63,8 @@ export default function FullScreenApp({ children }: { children: React.ReactNode 
         {children}
       </main>
 
-      {/* The admin area keeps its dense tab row; everywhere else phones get the same tab bar as the site. */}
-      {!admin && <MobileTabBar />}
+      {/* The installed app's navigation bar (hidden in a browser tab, see surfaces.css). */}
+      <AppTabBar />
     </div>
   );
 }

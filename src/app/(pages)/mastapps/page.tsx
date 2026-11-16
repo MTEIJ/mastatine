@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import AdminAppTile from "@/components/AdminAppTile";
 import AppTile from "@/components/AppTile";
 import { getApps } from "@/content/apps";
@@ -15,6 +16,8 @@ export const instant = false;
 
 /** "Next: Quiz Night · 19 November 20:00" for the Activities hero tile, or nothing when none is planned. */
 async function nextActivityLine(): Promise<string | null> {
+  // Request-time data. Outside the try on purpose: the bail-out Next throws during the build must not be caught.
+  await connection();
   try {
     const { isMember } = await getMembership();
     const [next] = await getCachedUpcomingActivities(1, isMember);

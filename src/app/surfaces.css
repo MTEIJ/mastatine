@@ -29,7 +29,7 @@
   .announce,
   .loop-band,
   #colophon,
-  .dash-foot--desktop {
+  .dash-foot {
     display: none;
   }
 
@@ -40,5 +40,18 @@
   #container.two-columns-left .main { margin-top: 0; }
 
   /* Room under the content for the bottom navigation bar (it is fixed outside a full-screen app). */
-  #site-wrapper { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+  body:has(.tabbar) #site-wrapper { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+
+  /* One way up: the top bar's back arrow. The tools' own back button and title go. Their page tabs stay, but only
+     while one of them is the current page: on a detail page (an activity, a meeting) the strip would be noise. */
+  .dash-back,
+  .dash-title,
+  .dash-bar:not(:has(.dash-nav [aria-current="page"])) {
+    display: none;
+  }
+
+  /* Website pages opened inside the app: the top bar names the section, so the page title is a compact one. */
+  .page-header { padding-top: 1.25rem; padding-bottom: 1rem; }
+  .page-header h1 { font-size: 1.75rem; }
+  .page-header__bar { display: none; }
 }

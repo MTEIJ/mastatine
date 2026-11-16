@@ -26,6 +26,16 @@
     html { scroll-padding-top: 4.5rem; }
   }
 
+  /* ── App top bar (M3 small): the section, and the way back. Only shown in the installed app (surfaces.css). ── */
+  .appbar { position: sticky; top: 0; z-index: 30; display: flex; flex: none; align-items: center; gap: 0.25rem; height: 3.5rem; padding: 0 1rem; background: var(--md-surface); color: var(--md-on-surface); }
+  .appbar__back { display: grid; width: 3rem; height: 3rem; margin-left: -0.5rem; flex: none; place-items: center; border: 0; border-radius: var(--shape-full); background: transparent; color: var(--md-on-surface); cursor: pointer; transition: background-color 0.2s var(--ease-emphasized), border-radius var(--spring-fast-ms) var(--spring-fast); }
+  .appbar__back:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
+  .appbar__back:active { border-radius: var(--shape-md); background: color-mix(in srgb, var(--md-on-surface) 12%, transparent); }
+  .appbar__title { margin: 0; overflow: hidden; font-size: 1.375rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    .appbar { animation: app-bar-lift linear both; animation-timeline: scroll(block root); animation-range: 0 3rem; }
+  }
+
   /* ── Navigation bar (M3 Expressive flexible bar): icon in a pill indicator, label below; side by side on tablets ── */
   .tabbar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 35; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 0.4rem 0.25rem calc(0.4rem + env(safe-area-inset-bottom)); background: var(--md-surface-container); box-shadow: 0 -1px 3px rgb(34 26 21 / 0.08); }
   .tabbar__tab { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.15rem 0; color: var(--md-on-surface-variant); font-size: 0.75rem; font-weight: 800; line-height: 1.15; }
@@ -47,6 +57,8 @@
     .tabbar__icon { position: static; width: auto; height: auto; }
     .tabbar__icon::before { z-index: -1; }
   }
+  /* A desktop window: keep the bar's items together instead of spread across the whole width. */
+  @media (min-width: 1024px) { .tabbar { padding-inline: max(0.25rem, calc((100vw - 40rem) / 2)); } }
   /* Inside a full-screen app the bar is the last row of the flex shell, so the save bar of long forms sits above it. */
   .dash .tabbar { position: static; flex: none; }
 

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import FullScreenApp from "./FullScreenApp";
 import NewsletterBand from "./NewsletterBand";
-import MobileTabBar from "./MobileTabBar";
+import { AppTabBar, AppTopBar } from "./AppChrome";
 import { isFullScreenAppPath, isInformationPath } from "@/lib/paths";
 
 interface AppShellProps {
@@ -26,6 +26,7 @@ export default function AppShell({ sidebar, colophon, announcement, children }: 
 
   return (
     <div id="site-wrapper">
+      <AppTopBar />
       {announcement}
       <div id="content" className="cryout">
         <div id="container" className="two-columns-left">
@@ -38,7 +39,7 @@ export default function AppShell({ sidebar, colophon, announcement, children }: 
       </div>
       {isInformationPath(pathname) && <NewsletterBand />}
       {colophon}
-      <MobileTabBar />
+      <AppTabBar />
     </div>
   );
 }

@@ -2,7 +2,8 @@
 
 Status: approved (2026-11-16). Execute phase by phase; each phase ends in a working, committed state.
 
-Progress: phase 0 done (`90ed875`); phase 1 done (surface switch in `src/app/surfaces.css`).
+Progress: phase 0 done (`90ed875`); phase 1 done (surface switch in `src/app/surfaces.css`); phase 2 done (`AppChrome.tsx`:
+top bar + bottom bar; the Today tab still points at `/` until phase 3 adds `/app`, see `TODAY_HREF`).
 
 ## The problem
 
