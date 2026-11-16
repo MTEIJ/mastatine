@@ -98,7 +98,7 @@ function compose(subject: string, parts: MessageParts): EmailContent {
       ${(parts.links ?? []).map((l) => `<p style="margin:0 0 10px;font-size:14px"><a href="${escapeHtml(l.url)}" style="color:${LINK};font-weight:700">${escapeHtml(l.label)}</a></p>`).join("")}
       ${(parts.notes ?? []).map((n) => `<p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:${MUTED}">${escapeHtml(n)}</p>`).join("")}
     </td></tr>
-    <tr><td style="background:${INK};padding:26px 36px;font-size:12px;line-height:1.7;color:#cfc8bb"><strong style="font-family:${CAPS_FONT};font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#ffffff">Mast Association</strong><br>${footer.html}</td></tr>
+    <tr><td style="background:${INK};padding:26px 36px;font-size:12px;line-height:1.7;color:#cfc8bb"><strong style="font-family:${CAPS_FONT};font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#ffffff">Master Association</strong><br>${footer.html}</td></tr>
   </table>
 </td></tr></table></body></html>`;
 
