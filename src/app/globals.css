@@ -914,15 +914,15 @@ blockquote::before, blockquote::after { content: ""; content: none; }
   --accent: #f57f20;
   --accent-hover: #d96810;
   --accent-fg: #1a0f05; /* dark text on the brand orange: white on it is only 2.6:1 */
-  --accent-soft: #ffe8d2;
+  --accent-soft: #fff0e1;
   --accent-text: #a84700; /* orange that reads on white: about 6:1 */
   --navy: #0f2254;
   --success: #15803d;
   --danger: #b91c1c;
-  --warm-line: #e4c8a6;
-  --warm-soft: #ffe5cb;
-  --warm-faint: #fff0e0;
-  --warm-ink: #45342a;
+  --warm-line: #d9dde4;
+  --warm-soft: #eceef2;
+  --warm-faint: #f5f6f8;
+  --warm-ink: #3d4656;
 }
 
 @theme inline {
@@ -1239,10 +1239,10 @@ blockquote::before, blockquote::after { content: ""; content: none; }
   .news-card__all:hover { gap: 0.55rem; color: var(--accent-hover); }
 
   /* ── MastApps dashboard: full screen, a subtle orange top bar over a warm canvas ── */
-  .dash { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; background: #fbf7f2; color: var(--ink); }
+  .dash { position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; background: #f3f4f6; color: var(--ink); }
   .dash-bar { display: flex; flex-shrink: 0; flex-wrap: wrap; align-items: center; gap: 0.4rem 1.5rem; padding: 0 1.5rem; border-top: 3px solid var(--accent); border-bottom: 1px solid var(--warm-line); background: #fff; box-shadow: 0 1px 10px rgb(245 127 32 / 0.08); }
   /* Cards need to stand out from the warm canvas: a firmer edge and a clearer shadow (same look as the MastApps tiles). */
-  .dash { background: #f6efe6; }
+  .dash { background: #f3f4f6; }
   .dash .card { border: 1.5px solid #c9ced6; box-shadow: 0 1px 2px rgb(10 20 40 / 0.08), 0 8px 20px -10px rgb(10 20 40 / 0.25); }
   .dash a.card { transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s; }
   .dash a.card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow-md); }

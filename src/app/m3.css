@@ -9,25 +9,25 @@
   /* ── Colour roles (light scheme, seed #f57f20) ── */
   --md-primary: #9a4600;
   --md-on-primary: #ffffff;
-  --md-primary-container: #ffcdb0;
+  --md-primary-container: #ffe2cc;
   --md-on-primary-container: #331200;
   --md-secondary: #765848;
-  --md-secondary-container: #f5d0b8;
-  --md-on-secondary-container: #2c160a;
+  --md-secondary-container: #e3e6ec;
+  --md-on-secondary-container: #1c2028;
   --md-tertiary: #4a5c92;
   --md-tertiary-container: #dbe1ff;
   --md-on-tertiary-container: #00174b;
   --md-brand: #f57f20;
-  --md-surface: #fbede4;
+  --md-surface: #f3f4f6;
   --md-surface-container-lowest: #ffffff;
-  --md-surface-container-low: #f8e3d6;
-  --md-surface-container: #f3dccd;
-  --md-surface-container-high: #edd4c3;
-  --md-surface-container-highest: #e6cbb9;
-  --md-on-surface: #221a15;
-  --md-on-surface-variant: #52443c;
-  --md-outline: #6b5a51;
-  --md-outline-variant: #c4a898;
+  --md-surface-container-low: #eceef1;
+  --md-surface-container: #e6e8ec;
+  --md-surface-container-high: #e0e3e8;
+  --md-surface-container-highest: #d9dce2;
+  --md-on-surface: #1a1d23;
+  --md-on-surface-variant: #464c58;
+  --md-outline: #6b7280;
+  --md-outline-variant: #c9ced6;
 
   /* ── Shape scale ── */
   --shape-xs: 4px;
