@@ -2,6 +2,8 @@
 
 Status: approved (2026-11-16). Execute phase by phase; each phase ends in a working, committed state.
 
+Progress: phase 0 done (`90ed875`); phase 1 done (surface switch in `src/app/surfaces.css`).
+
 ## The problem
 
 The same pages and chrome serve two very different situations, and each borrows the wrong half of the other:
@@ -51,8 +53,11 @@ Use the CSS media feature `display-mode`, not a cookie and not sign-in state:
   logo/"Home" links never land on the website homepage inside the app.
 - Remove the "app mode" heuristic (`src/lib/app-mode.ts`: signed in or signed in before). The bottom bar is standalone-only.
 
-Tip for checking: in Chrome DevTools > Rendering > "Emulate CSS media feature display-mode", or via CDP
-`Emulation.setEmulatedMedia({ features: [{ name: "display-mode", value: "standalone" }] })`.
+How to check: Chrome cannot emulate `display-mode` (neither DevTools nor CDP `Emulation.setEmulatedMedia` supports
+it). Either install the site as an app and open it, or in a test script override `window.matchMedia` for
+`(display-mode: standalone)` before load and, once loaded, switch every `display-mode` `CSSMediaRule` on
+(`mediaText = "all"`; `"not all"` for the `not all and (display-mode: standalone)` ones). Production builds name the
+session cookie `__Secure-better-auth.session_token` (`useSecureCookies`), dev builds `better-auth.session_token`.
 
 ## Decisions (confirmed by Michiel, 2026-11-16)
 
@@ -90,8 +95,8 @@ Tip for checking: in Chrome DevTools > Rendering > "Emulate CSS media feature di
   body background from orange to `var(--md-surface)`.
 - `src/classic/MobileTabBar.tsx`: render always, wrap in `.only-app`; delete `useAppMode` and `src/lib/app-mode.ts`.
   Update the `body:has(.tabbar)` rules in `src/app/navigation.css` to apply only in standalone.
-- `src/app/manifest.ts`: `start_url: "/app?source=pwa"`; shortcuts stay (`/mastapps/activities`, `/mastapps`).
-- `src/components/PwaBoot.tsx`: when `matchMedia("(display-mode: standalone)")` matches and `pathname === "/"`,
+- (Moved to phase 3, because they need the `/app` route to exist.) `src/app/manifest.ts`:
+  `start_url: "/app?source=pwa"`; shortcuts stay. `src/components/PwaBoot.tsx`: when standalone and `pathname === "/"`,
   `router.replace("/app?source=pwa")`.
 - Acceptance: in a browser tab nothing app-like appears (no bottom bar at any width); with standalone emulated, no
   hamburger, footer, newsletter band, announcement or orange background on any page.

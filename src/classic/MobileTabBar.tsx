@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useAccountState } from "@/components/AccountState";
 import { Icons } from "@/content/apps";
-import { useAppMode } from "@/lib/app-mode";
 
 interface Tab {
   label: string;
@@ -34,16 +33,13 @@ function buildTabs(signedIn: boolean): Tab[] {
   ];
 }
 
-/** Bottom navigation bar on phones and tablets, in app mode: the activities and the MastApps are always one tap away. */
+/** Bottom navigation bar of the installed app (hidden in a browser tab, see surfaces.css): the activities and the MastApps are always one tap away. */
 export default function MobileTabBar() {
   const pathname = usePathname();
   const { signedIn } = useAccountState();
-  // First-time visitors get a plain website; the bar is for members and returning app users.
-  const appMode = useAppMode(signedIn);
-  if (!appMode) return null;
 
   return (
-    <nav className="tabbar lg:hidden" aria-label="Quick navigation">
+    <nav className="tabbar only-app" aria-label="Quick navigation">
       {buildTabs(signedIn).map((tab) => {
         const current = tab.isCurrent(pathname);
         return (

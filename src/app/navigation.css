@@ -49,11 +49,6 @@
   }
   /* Inside a full-screen app the bar is the last row of the flex shell, so the save bar of long forms sits above it. */
   .dash .tabbar { position: static; flex: none; }
-  @media (max-width: 1023px) {
-    /* Only when the navigation bar is there (app mode): room for it under the footer, and it carries the account link. */
-    body:has(.tabbar) #colophon { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
-    .dash:has(.tabbar) .dash-foot--desktop { display: none; }
-  }
 
   /* ── Homepage hub: app launcher (signed in) and the next activities (everyone) ── */
   .hub { margin: 2rem 0; padding: 1.75rem 1.75rem 2rem; border-radius: var(--shape-xl); background: var(--md-surface); box-shadow: none; color: var(--md-on-surface); }

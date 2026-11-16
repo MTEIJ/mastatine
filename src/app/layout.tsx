@@ -5,6 +5,7 @@ import { Lato } from "next/font/google";
 import "./globals.css";
 import "./navigation.css";
 import "./m3.css";
+import "./surfaces.css";
 import Sidebar from "@/classic/Sidebar";
 import SidebarAgenda from "@/classic/SidebarAgenda";
 import Colophon from "@/classic/Colophon";

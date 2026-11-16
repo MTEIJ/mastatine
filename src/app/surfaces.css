@@ -1,0 +1,44 @@
+/*
+ * Two surfaces, one codebase (see docs/plans/website-and-app.md):
+ *   - the website: any browser tab. Sidebar (desktop), plain header and drawer (phone), footer, newsletter band.
+ *   - the app: the installed home-screen app (`display-mode: standalone`). A top bar and a bottom navigation bar,
+ *     nothing of the website around it.
+ * Both chromes are rendered on the server; the browser picks one with the `display-mode` media feature, so there is no
+ * flash and no cookie (an installed app shares its cookies with the browser, a cookie would turn the browser tab into
+ * the app too).
+ *
+ * Deliberately outside any @layer: unlayered rules beat every layered rule and every Tailwind utility
+ * (`hidden lg:flex`, `lg:hidden`), which is exactly what a surface switch needs.
+ *
+ * Check it in Chrome DevTools > Rendering > "Emulate CSS media feature display-mode".
+ */
+
+/* Helpers for markup: show a piece only on one surface. `not all and` is the widely supported spelling of "not". */
+@media not all and (display-mode: standalone) {
+  .only-app { display: none; }
+}
+@media (display-mode: standalone) {
+  .only-web { display: none; }
+}
+
+@media (display-mode: standalone) {
+  /* The website's chrome. */
+  #sidebar,
+  .mobile-bar,
+  .drawer-overlay,
+  .announce,
+  .loop-band,
+  #colophon,
+  .dash-foot--desktop {
+    display: none;
+  }
+
+  /* No orange website backdrop and no floating white panels: the page is the app's surface. */
+  body { background-color: var(--md-surface); }
+  .page-panel { margin-bottom: 0; border-radius: 0; background: transparent; }
+  #lp-posts, #towers { background-color: transparent; }
+  #container.two-columns-left .main { margin-top: 0; }
+
+  /* Room under the content for the bottom navigation bar (it is fixed outside a full-screen app). */
+  #site-wrapper { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+}
