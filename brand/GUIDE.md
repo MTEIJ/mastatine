@@ -24,6 +24,8 @@ Sky gradient on the primary sticker: peach, then orange, then coral at the horiz
 ## Logo
 
 - The mark is an atom: two rings, seven electrons (astatine has seven valence electrons) and a lattice tower.
+- The tower's top cross-arm is wider than the other arms (74 to 126 in logo units, 2.7 thick) so the top reads a little like
+  a T. The tower stays orange. Skyline pylons keep the original narrow arm.
 - On a light sun or light surface give the electrons an ink outline; never put white electrons on cream.
 - Keep hairlines at or above about 0.27 mm in print (the build thickens the thin tower braces automatically).
 - Files: `brand/logo/` (colour, mono, white).

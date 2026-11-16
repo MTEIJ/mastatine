@@ -52,7 +52,7 @@ export default function MastatineLogo({ size = 64, className = "", mono = false 
         <line x1="100" y1="57" x2="100" y2="63" strokeWidth="2.5" />
 
         {/* Top cross-arm (conductor arms) */}
-        <line x1="82" y1="68" x2="118" y2="68" strokeWidth="2" />
+        <line x1="74" y1="68" x2="126" y2="68" strokeWidth="2.7" />
 
         {/* Top body — tapers inward from cross-arm */}
         <line x1="95" y1="63" x2="92" y2="82" strokeWidth="2" />

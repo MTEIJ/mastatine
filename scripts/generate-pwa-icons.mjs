@@ -14,7 +14,7 @@ const CREAM = "#fff4e2";
 // Tower lines in logo units (x1, y1, x2, y2, width). Heavier than the logo files so the tower survives small sizes.
 const TOWER = [
   [100, 56, 100, 63, 6],
-  [82, 68, 118, 68, 5],
+  [74, 68, 126, 68, 6],
   [95, 63, 92, 82, 5],
   [105, 63, 108, 82, 5],
   [95, 64, 108, 80, 3.4],
