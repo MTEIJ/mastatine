@@ -7,11 +7,11 @@ export const MUTED = "#5f5648";
 export const LINE = "#ece8e1";
 /** Orange darkened enough to stay readable as link text on white. */
 export const LINK = "#b8460b";
-export const PAGE_BG = "#f5f3ef";
+export const PAGE_BG = "#fbeeda";
 export const FONT = "Lato,'Helvetica Neue',Helvetica,Arial,sans-serif";
 export const CAPS_FONT = "'Barlow Condensed','Arial Narrow',Arial,sans-serif";
 
-export const P_STYLE = `margin:0 0 16px;font-size:16px;line-height:1.65;color:${INK}`;
+export const P_STYLE = `margin:0 0 14px;font-size:16px;line-height:1.6;color:${INK}`;
 
 export function escapeHtml(value: string): string {
   return value

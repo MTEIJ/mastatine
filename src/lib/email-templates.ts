@@ -47,16 +47,16 @@ function detailsTable(details: MailDetail[]): string {
     .map((d, i) => {
       const line = i < details.length - 1 ? `border-bottom:1px solid ${LINE};` : "";
       return `<tr>
-        <td style="padding:12px 12px 12px 0;${line}width:112px;vertical-align:top;font-family:${CAPS_FONT};font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:${MUTED}">${escapeHtml(d.label)}</td>
-        <td style="padding:12px 0;${line}vertical-align:top;font-size:15px;font-weight:700;color:${INK}">${escapeHtml(d.value).replace(/\n/g, "<br>")}</td>
+        <td style="padding:9px 12px 9px 0;${line}width:112px;vertical-align:top;font-family:${CAPS_FONT};font-size:13px;letter-spacing:0.14em;text-transform:uppercase;color:${MUTED}">${escapeHtml(d.label)}</td>
+        <td style="padding:9px 0;${line}vertical-align:top;font-size:15px;font-weight:700;color:${INK}">${escapeHtml(d.value).replace(/\n/g, "<br>")}</td>
       </tr>`;
     })
     .join("");
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 28px;background:${CREAM};border-radius:16px"><tr><td style="padding:6px 22px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr></table>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 22px;background:${CREAM}"><tr><td style="padding:6px 22px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr></table>`;
 }
 
 function button(url: string, label: string): string {
-  return `<p style="margin:8px 0 28px"><a href="${escapeHtml(url)}" style="display:inline-block;background:${INK};color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;padding:15px 30px;border-radius:999px">${escapeHtml(label)} <span style="color:${BRAND_ORANGE}">&rarr;</span></a></p>`;
+  return `<p style="margin:4px 0 22px"><a href="${escapeHtml(url)}" style="display:inline-block;background:${INK};color:#ffffff;text-decoration:none !important;border-radius:999px;font-size:16px;font-weight:700;padding:15px 30px">${escapeHtml(label)} <span style="color:${BRAND_ORANGE}">&rarr;</span></a></p>`;
 }
 
 /**
@@ -83,14 +83,13 @@ function compose(subject: string, parts: MessageParts): EmailContent {
 <body style="margin:0;background:${PAGE_BG};font-family:${FONT};color:${INK};-webkit-font-smoothing:antialiased">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${escapeHtml(parts.preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 12px 40px">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;background:#ffffff;border-radius:24px;overflow:hidden">
-    <tr><td style="background:${BRAND_ORANGE};padding:30px 36px 38px">
-      <p style="margin:0 0 30px;font-family:${CAPS_FONT};font-size:15px;font-weight:600;letter-spacing:0.24em;text-transform:uppercase;color:${INK}">M.A. Mastatine <span style="color:${CREAM};letter-spacing:0.35em">&nbsp;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</span></p>
-      <h1 style="margin:0;font-size:34px;line-height:1.12;font-weight:800;letter-spacing:-0.02em;color:${INK}">${escapeHtml(parts.heading)}</h1>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;background:#ffffff;overflow:hidden">
+    <tr><td bgcolor="${BRAND_ORANGE}" style="background:${BRAND_ORANGE};padding:34px 32px 22px">
+      <h1 style="margin:0;font-size:36px;line-height:1.1;font-weight:800;letter-spacing:-0.02em;color:${INK}">${escapeHtml(parts.heading)}</h1>
     </td></tr>
-    <tr><td style="height:6px;line-height:6px;font-size:0;background:${INK}">&nbsp;</td></tr>
-    <tr><td style="padding:36px 36px 12px">
-      ${parts.intro ? `<p style="${P_STYLE};font-size:18px">${escapeHtml(parts.intro)}</p>` : ""}
+    <tr><td bgcolor="${BRAND_ORANGE}" style="background:${BRAND_ORANGE};line-height:0;font-size:0"><img src="${escapeHtml(absoluteUrl("/email/skyline.png"))}" alt="M.A. Mastatine" width="580" style="display:block;width:100%;height:auto;border:0"></td></tr>
+    <tr><td style="padding:28px 32px 8px">
+      ${parts.intro ? `<p style="${P_STYLE};font-size:17px">${escapeHtml(parts.intro)}</p>` : ""}
       ${parts.body ? parts.body.html : ""}
       ${parts.extra ? parts.extra.html : ""}
       ${parts.details?.length ? detailsTable(parts.details) : ""}
@@ -98,7 +97,7 @@ function compose(subject: string, parts: MessageParts): EmailContent {
       ${(parts.links ?? []).map((l) => `<p style="margin:0 0 10px;font-size:14px"><a href="${escapeHtml(l.url)}" style="color:${LINK};font-weight:700">${escapeHtml(l.label)}</a></p>`).join("")}
       ${(parts.notes ?? []).map((n) => `<p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:${MUTED}">${escapeHtml(n)}</p>`).join("")}
     </td></tr>
-    <tr><td style="background:${INK};padding:26px 36px;font-size:12px;line-height:1.7;color:#cfc8bb"><strong style="font-family:${CAPS_FONT};font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#ffffff">Master Association</strong><br>${footer.html}</td></tr>
+    <tr><td style="background:${INK};padding:0 32px 24px;font-size:12px;line-height:1.7;color:#cfc8bb"><strong style="font-family:${CAPS_FONT};font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#ffffff">Master Association</strong><br>${footer.html}</td></tr>
   </table>
 </td></tr></table></body></html>`;
 
@@ -168,14 +167,18 @@ function activityCard(a: NewsletterActivity, wide: boolean): string {
   const when = [formatDateTime(a.startsAt), a.location].filter(Boolean).join(" · ");
   const url = escapeHtml(a.url);
   const poster = a.posterUrl
-    ? `<tr><td style="padding:0 0 14px"><a href="${url}"><img src="${escapeHtml(a.posterUrl)}" alt="Poster of ${escapeHtml(a.name)}" width="100%" style="display:block;width:100%;height:auto;border:0;border-radius:16px"></a></td></tr>`
+    ? `<tr><td style="padding:0 0 14px"><a href="${url}"><img src="${escapeHtml(a.posterUrl)}" alt="Poster of ${escapeHtml(a.name)}" width="100%" style="display:block;width:100%;height:auto;border:0"></a></td></tr>`
     : "";
-  const tile = `<td width="56" valign="top" style="width:56px;padding-right:12px"><table role="presentation" cellpadding="0" cellspacing="0" width="56" style="background:${BRAND_ORANGE};border-radius:12px"><tr><td align="center" style="padding:8px 0 7px;font-size:${wide ? 24 : 22}px;font-weight:800;line-height:1;color:${INK}">${dayFormat.format(a.startsAt)}<br><span style="font-family:${CAPS_FONT};font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase">${monthFormat.format(a.startsAt)}</span></td></tr></table></td>`;
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${poster}<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${tile}<td valign="top">
-    <p style="margin:0 0 3px;font-size:${wide ? 19 : 16}px;font-weight:800;line-height:1.25"><a href="${url}" style="color:${INK};text-decoration:none">${escapeHtml(a.name)}</a></p>
+  const dateTile = `<table role="presentation" cellpadding="0" cellspacing="0" width="56" style="background:${BRAND_ORANGE}"><tr><td align="center" style="padding:8px 0 7px;font-size:${wide ? 24 : 22}px;font-weight:800;line-height:1;color:${INK}">${dayFormat.format(a.startsAt)}<br><span style="font-family:${CAPS_FONT};font-size:12px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase">${monthFormat.format(a.startsAt)}</span></td></tr></table>`;
+  const tile = `<td width="56" valign="top" style="width:56px;padding-right:12px">${dateTile}</td>`;
+  const text = (size: number) => `<p style="margin:0 0 3px;font-size:${size}px;font-weight:800;line-height:1.25"><a href="${url}" style="color:${INK};text-decoration:none">${escapeHtml(a.name)}</a></p>
     <p style="margin:0 0 2px;font-size:13px;line-height:1.5;color:${INK}">${escapeHtml(when)}</p>
-    <p style="margin:0;font-size:12px;line-height:1.5;color:${MUTED}">${escapeHtml(a.committeeName)}</p>
-  </td></tr></table></td></tr></table>`;
+    <p style="margin:0;font-size:12px;line-height:1.5;color:${MUTED}">${escapeHtml(a.committeeName)}</p>`;
+  // The featured card puts a (portrait) poster beside its details, so a tall poster never takes over the email.
+  if (wide && a.posterUrl) {
+    return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="46%" valign="top" style="width:46%"><a href="${url}"><img src="${escapeHtml(a.posterUrl)}" alt="Poster of ${escapeHtml(a.name)}" width="100%" style="display:block;width:100%;height:auto;border:0"></a></td><td width="4%" style="width:4%">&nbsp;</td><td valign="top">${dateTile}<div style="height:12px;line-height:12px;font-size:0">&nbsp;</div>${text(20)}<p style="margin:12px 0 0;font-size:14px;font-weight:700"><a href="${url}" style="color:${LINK}">View activity &rarr;</a></p></td></tr></table>`;
+  }
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${poster}<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${tile}<td valign="top">${text(wide ? 19 : 16)}</td></tr></table></td></tr></table>`;
 }
 
 /** The "Coming up" block as a small bento grid: the first activity is featured full width, the others sit two by two. */
@@ -189,7 +192,7 @@ function upcomingActivities(activities: NewsletterActivity[]): { text: string; h
     rows.push(`<tr>${cell(pair[0])}<td width="4%" style="width:4%">&nbsp;</td>${cell(pair[1])}</tr><tr><td colspan="3" style="height:26px;line-height:26px;font-size:0">&nbsp;</td></tr>`);
   }
   const grid = rest.length ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows.join("")}</table>` : "";
-  const html = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0 0;background:${CREAM};border-radius:20px"><tr><td style="padding:26px 24px 8px">
+  const html = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0 0;background:${CREAM}"><tr><td style="padding:26px 24px 8px">
     <p style="margin:0 0 20px;font-family:${CAPS_FONT};font-size:18px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:${INK}">Coming up <span style="color:${CORAL}">&bull;</span></p>
     <div style="margin:0 0 26px">${activityCard(featured, true)}</div>${grid}
   </td></tr></table><div style="height:24px;line-height:24px;font-size:0">&nbsp;</div>`;
