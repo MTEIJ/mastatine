@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import FullScreenApp from "./FullScreenApp";
 import NewsletterBand from "./NewsletterBand";
 import { AppTabBar, AppTopBar } from "./AppChrome";
+import InstallBanner from "@/components/InstallBanner";
 import { isFullScreenAppPath, isInformationPath } from "@/lib/paths";
 
 interface AppShellProps {
@@ -39,6 +40,7 @@ export default function AppShell({ sidebar, colophon, announcement, children }: 
       </div>
       {isInformationPath(pathname) && <NewsletterBand />}
       {colophon}
+      <InstallBanner />
       <AppTabBar />
     </div>
   );

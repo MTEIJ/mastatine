@@ -46,6 +46,15 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/:path*", headers: SECURITY_HEADERS },
+      // Documents open in an overlay on our own pages, so they may be framed by this site (and only by it). The strict
+      // page policy is replaced here: a PDF has no scripts of ours, and `object-src 'none'` would block the PDF viewer.
+      {
+        source: "/documents/:id",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          ...(isProd ? [{ key: "Content-Security-Policy", value: "frame-ancestors 'self'" }] : []),
+        ],
+      },
       // The service worker must never be served stale, and may only run our own code.
       {
         source: "/sw.js",
