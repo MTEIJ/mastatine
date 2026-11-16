@@ -62,18 +62,18 @@ const withMembers = (c: CommitteeRow, members: { committee_id: string; name: str
   members: members.filter((m) => m.committee_id === c.id).map(({ name, is_chair }) => ({ name, is_chair })),
 });
 
-/** Every committee with its members, for the public committees overview. */
+/** Every committee not hidden by an admin, with its members, for the public committees overview. */
 export async function getPublicCommittees(): Promise<PublicCommittee[]> {
   const [committees, members] = await Promise.all([
-    sql<CommitteeRow[]>`SELECT id, slug, name, description, banner_url FROM committees ORDER BY name`,
+    sql<CommitteeRow[]>`SELECT id, slug, name, description, banner_url FROM committees WHERE is_public ORDER BY name`,
     loadMembers(),
   ]);
   return committees.map((c) => withMembers(c, members));
 }
 
-/** One committee for its own page, or null when the slug is unknown. */
+/** One committee for its own page, or null when the slug is unknown or the committee is hidden. */
 export async function getPublicCommittee(slug: string): Promise<PublicCommittee | null> {
-  const [committee] = await sql<CommitteeRow[]>`SELECT id, slug, name, description, banner_url FROM committees WHERE slug = ${slug}`;
+  const [committee] = await sql<CommitteeRow[]>`SELECT id, slug, name, description, banner_url FROM committees WHERE slug = ${slug} AND is_public`;
   if (!committee) return null;
   return withMembers(committee, await loadMembers(committee.id));
 }

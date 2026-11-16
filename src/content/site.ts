@@ -63,7 +63,7 @@ export interface Organ {
 /** How the association is organised, the way members expect it from a study association. */
 export const ORGANISATION: Organ[] = [
   { title: "General Members Meeting", text: "The members decide. The board accounts to them for its policy and its finances." },
-  { title: "The Board", text: "Four people who run the association day to day.", href: "/board" },
+  { title: "The Board", text: "The people who run the association day to day.", href: "/board" },
   { title: "Committees", text: "Members who organise activities, the newsletter, the register and more.", href: "/committees" },
   { title: "Members", text: "Everyone who joins. Members vote, take part and can join a committee.", href: "/membership" },
 ];

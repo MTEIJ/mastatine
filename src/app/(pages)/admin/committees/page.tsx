@@ -2,7 +2,7 @@ import sql from "@/lib/db";
 import ConfirmButton from "@/components/admin/ConfirmButton";
 import MemberSearch from "@/components/admin/MemberSearch";
 import { displayName, getPendingJoinRequests } from "@/lib/committees";
-import { addCommitteeMember, approveJoinRequest, createCommittee, declineJoinRequest, deleteCommittee, removeCommitteeMember, toggleCommitteeChair, updateCommittee } from "../actions";
+import { addCommitteeMember, approveJoinRequest, createCommittee, declineJoinRequest, deleteCommittee, removeCommitteeMember, setCommitteeVisibility, toggleCommitteeChair, updateCommittee } from "../actions";
 import { requireAdmin } from "@/lib/session";
 
 /** Members named in the table row; the rest are one click away in the edit menu. */
@@ -13,6 +13,7 @@ interface CommitteeRow {
   name: string;
   description: string | null;
   banner_url: string | null;
+  is_public: boolean;
 }
 
 interface MemberRow {
@@ -29,7 +30,7 @@ export default async function AdminCommittees() {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();
   const [committees, members, requests] = await Promise.all([
-    sql<CommitteeRow[]>`SELECT id, name, description, banner_url FROM committees ORDER BY name`,
+    sql<CommitteeRow[]>`SELECT id, name, description, banner_url, is_public FROM committees ORDER BY name`,
     sql<MemberRow[]>`
       SELECT m.committee_id, u.id AS user_id, u.name, u.email, m.is_chair
       FROM committee_members m JOIN "user" u ON u.id = m.user_id ORDER BY m.is_chair DESC, u.name, u.email
@@ -97,6 +98,7 @@ export default async function AdminCommittees() {
                 <tr key={c.id}>
                   <td data-primary>
                     <span className="font-medium">{c.name}</span>
+                    {!c.is_public && <span className="badge ml-2 !bg-soft !text-muted">Hidden from site</span>}
                     {c.description && <span className="block text-xs font-normal text-muted">{c.description}</span>}
                   </td>
                   <td data-label="Members" className="sm:max-w-md">
@@ -116,7 +118,14 @@ export default async function AdminCommittees() {
                     )}
                   </td>
                   <td>
-                    <div className="flex w-full justify-end">
+                    <div className="flex w-full items-start justify-end gap-1.5 max-sm:flex-col">
+                      <form action={setCommitteeVisibility} className="max-sm:w-full">
+                        <input type="hidden" name="id" value={c.id} />
+                        <input type="hidden" name="public" value={c.is_public ? "false" : "true"} />
+                        <button className="btn btn-secondary btn-sm max-sm:w-full" type="submit" title={c.is_public ? "Remove from the public committee pages" : "Show on the public committee pages"}>
+                          {c.is_public ? "Hide from site" : "Show on site"}
+                        </button>
+                      </form>
                       <details className="popover max-sm:w-full">
                         <summary className="btn btn-secondary btn-sm max-sm:w-full" aria-label={`Edit ${c.name}`} title="Edit"><span className="sm:hidden">Edit</span><span aria-hidden="true" className="max-sm:hidden text-base leading-none">⋯</span></summary>
                         <div className="popover__panel space-y-4 text-sm">

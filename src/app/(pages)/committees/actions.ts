@@ -13,7 +13,7 @@ const requestSchema = z.object({
 /** Asks to join a committee. Asking again while a request is open, or when already a member, changes nothing. */
 export async function requestToJoinCommittee(formData: FormData): Promise<void> {
   const data = requestSchema.parse(Object.fromEntries(formData));
-  const [committee] = await sql<{ slug: string }[]>`SELECT slug FROM committees WHERE id = ${data.committeeId}`;
+  const [committee] = await sql<{ slug: string }[]>`SELECT slug FROM committees WHERE id = ${data.committeeId} AND is_public`;
   if (!committee) return;
 
   const { user } = await requireNamedSession(`/committees/${committee.slug}`);

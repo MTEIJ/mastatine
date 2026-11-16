@@ -302,6 +302,14 @@ export async function declineJoinRequest(formData: FormData) {
   refreshCommittees();
 }
 
+/** Shows or hides a committee on the public pages. Nothing else about it changes. */
+export async function setCommitteeVisibility(formData: FormData) {
+  await requireAdmin();
+  const visible = z.enum(["true", "false"]).parse(formData.get("public")) === "true";
+  await sql`UPDATE committees SET is_public = ${visible} WHERE id = ${id.parse(formData.get("id"))}`;
+  refreshCommittees();
+}
+
 export async function deleteCommittee(formData: FormData) {
   await requireAdmin();
   await sql`DELETE FROM committees WHERE id = ${id.parse(formData.get("id"))}`;
