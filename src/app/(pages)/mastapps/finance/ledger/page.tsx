@@ -37,9 +37,12 @@ export default async function Ledger(props: { searchParams: Promise<SearchParams
       <Notice code={params.notice} />
 
       {access.canWrite && (
-        <section aria-labelledby="add-title">
-          <h2 id="add-title" className="mb-2 text-base font-extrabold">Add an entry</h2>
-          <form action={addEntry} className="card grid gap-3 !p-4 @xl:grid-cols-6">
+        <details className="card !p-0">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2.5">
+            <span className="font-semibold">Add an entry</span>
+            <span className="btn btn-primary btn-sm pointer-events-none">New entry</span>
+          </summary>
+          <form action={addEntry} className="grid gap-3 border-t border-line p-4 @xl:grid-cols-6">
             <div>
               <label className="label" htmlFor="direction">Money</label>
               <select id="direction" name="direction" className="input" defaultValue="in">
@@ -81,15 +84,15 @@ export default async function Ledger(props: { searchParams: Promise<SearchParams
               <span className="text-xs text-muted">Entries cannot be edited or deleted later; a mistake is fixed with a reversal. Donor names are personal data: only note what you need.</span>
             </div>
           </form>
-        </section>
+        </details>
       )}
 
       <section aria-labelledby="ledger-title">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <h2 id="ledger-title" className="text-base font-extrabold">Ledger</h2>
+          <h2 id="ledger-title" className="text-base font-semibold">Ledger</h2>
           <a href="/mastapps/finance/export" className="btn btn-secondary btn-sm" download>Download CSV</a>
         </div>
-        <form className="mb-3 flex flex-wrap items-end gap-2" role="search">
+        <form className="mb-3 grid grid-cols-2 items-end gap-2 sm:flex sm:flex-wrap" role="search">
           <div>
             <label className="label" htmlFor="f-year">Year</label>
             <input id="f-year" name="year" type="number" min={2020} className="input !w-24" defaultValue={year} />
@@ -108,11 +111,11 @@ export default async function Ledger(props: { searchParams: Promise<SearchParams
               {activities.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
           </div>
-          <button className="btn btn-secondary" type="submit">Filter</button>
+          <button className="btn btn-secondary col-span-2 sm:col-span-1" type="submit">Filter</button>
         </form>
 
-        <div className="table-wrap">
-          <table className="table">
+        <div className="table-open">
+          <table className="table table-stack">
             <thead>
               <tr><th>#</th><th>Date</th><th>What</th><th className="text-right">Amount</th><th>Receipts</th>{access.canWrite && <th><span className="sr-only">Actions</span></th>}</tr>
             </thead>
@@ -121,9 +124,9 @@ export default async function Ledger(props: { searchParams: Promise<SearchParams
                 const cancelled = e.reversed_by_id != null;
                 return (
                   <tr key={e.id} className={cancelled ? "text-muted line-through decoration-1" : undefined}>
-                    <td className="tabular-nums text-muted">{e.seq}</td>
-                    <td className="whitespace-nowrap">{formatDate(e.occurred_on)}</td>
-                    <td>
+                    <td data-label="No." className="tabular-nums text-muted">{e.seq}</td>
+                    <td data-label="Date" className="whitespace-nowrap">{formatDate(e.occurred_on)}</td>
+                    <td data-primary>
                       <span className="font-medium">{e.description}</span>
                       <span className="block text-xs text-muted">
                         {categoryLabel(e.category)}
@@ -132,34 +135,39 @@ export default async function Ledger(props: { searchParams: Promise<SearchParams
                         {` · by ${e.created_by_name}`}
                       </span>
                     </td>
-                    <td className={`whitespace-nowrap text-right font-medium tabular-nums ${e.amount_cents < 0 ? "" : "text-accent-text"}`}>{formatCents(e.amount_cents)}</td>
-                    <td className="no-underline">
-                      <ul className="space-y-1">
-                        {e.receipts.map((r, i) => (
-                          <li key={r.id}><a href={`/mastapps/finance/receipts/${r.id}`} target="_blank" rel="noopener" className="text-sm underline" title={r.original_name}>Receipt {i + 1}</a></li>
-                        ))}
-                      </ul>
-                      {access.canWrite && (
-                        <form action="/mastapps/finance/receipts" method="post" encType="multipart/form-data" className="mt-1 flex items-center gap-1">
-                          <input type="hidden" name="entry_id" value={e.id} />
-                          <label className="sr-only" htmlFor={`file-${e.id}`}>Attach a receipt to entry {e.seq}</label>
-                          <input id={`file-${e.id}`} name="file" type="file" required accept="image/*,application/pdf" className="max-w-40 text-xs" />
-                          <button className="btn btn-secondary btn-sm" type="submit">Attach</button>
-                        </form>
-                      )}
+                    <td data-label="Amount" className={`whitespace-nowrap text-right font-medium tabular-nums ${e.amount_cents < 0 ? "" : "text-accent-text"}`}>{formatCents(e.amount_cents)}</td>
+                    <td data-label="Receipts" className="no-underline">
+                      {e.receipts.length > 0 ? (
+                        <ul className="flex flex-wrap justify-end gap-x-3 gap-y-1 sm:justify-start">
+                          {e.receipts.map((r, i) => (
+                            <li key={r.id}><a href={`/mastapps/finance/receipts/${r.id}`} target="_blank" rel="noopener" className="text-sm underline" title={r.original_name}>Receipt {i + 1}</a></li>
+                          ))}
+                        </ul>
+                      ) : <span className="text-muted">–</span>}
                     </td>
                     {access.canWrite && (
                       <td>
-                        {!cancelled && e.reverses_id == null && (
-                          <form action={reverseEntry} className="flex items-center gap-1">
-                            <input type="hidden" name="id" value={e.id} />
-                            <label className="sr-only" htmlFor={`why-${e.id}`}>Reason for reversing entry {e.seq}</label>
-                            <input id={`why-${e.id}`} name="reason" className="input !w-36" required maxLength={200} placeholder="Reason" />
-                            <ConfirmButton className="btn btn-danger btn-sm" message="Reverse this entry? The original stays in the ledger and a cancelling entry is added.">Reverse</ConfirmButton>
-                          </form>
-                        )}
                         {cancelled && <span className="text-xs">reversed</span>}
                         {e.reverses_id != null && <span className="text-xs">reversal</span>}
+                        {!cancelled && e.reverses_id == null && (
+                          <details className="popover max-sm:w-full">
+                            <summary className="btn btn-secondary btn-sm max-sm:w-full" aria-label={`Manage entry ${e.seq}`}>Manage</summary>
+                            <div className="popover__panel space-y-3 text-sm">
+                              <form action="/mastapps/finance/receipts" method="post" encType="multipart/form-data" className="space-y-1.5">
+                                <input type="hidden" name="entry_id" value={e.id} />
+                                <label className="label" htmlFor={`file-${e.id}`}>Attach a receipt</label>
+                                <input id={`file-${e.id}`} name="file" type="file" required accept="image/*,application/pdf" className="w-full text-xs" />
+                                <button className="btn btn-secondary btn-sm" type="submit">Attach</button>
+                              </form>
+                              <form action={reverseEntry} className="space-y-1.5 border-t border-line pt-3">
+                                <input type="hidden" name="id" value={e.id} />
+                                <label className="label" htmlFor={`why-${e.id}`}>Reverse this entry</label>
+                                <input id={`why-${e.id}`} name="reason" className="input" required maxLength={200} placeholder="Reason" />
+                                <ConfirmButton className="btn btn-danger btn-sm" message="Reverse this entry? The original stays in the ledger and a cancelling entry is added.">Reverse</ConfirmButton>
+                              </form>
+                            </div>
+                          </details>
+                        )}
                       </td>
                     )}
                   </tr>

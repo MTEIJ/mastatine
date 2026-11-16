@@ -6,7 +6,6 @@ import SidebarAccount from "./SidebarAccount";
 import { AppTabBar, AppTopBar } from "./AppChrome";
 import { useAccountState } from "@/components/AccountState";
 import { FINANCE_APP, getApps } from "@/content/apps";
-import { ADMIN_NAV, isAdminTabCurrent } from "@/content/admin-nav";
 import { appSlug, isAdminPath } from "@/lib/paths";
 
 /** Full-screen shell for a single MastApp or the admin area: a slim header with the pages, and a scrolling canvas. */
@@ -31,16 +30,6 @@ export default function FullScreenApp({ children }: { children: React.ReactNode 
         </Link>
 
         {admin && <span className="dash-title">Admin</span>}
-
-        {admin && (
-          <nav className="dash-nav" aria-label="Admin pages">
-            {ADMIN_NAV.map((item) => (
-              <Link key={item.href} href={item.href} aria-current={isAdminTabCurrent(pathname, item.href) ? "page" : undefined}>
-                <span>{item.label}</span>
-              </Link>
-            ))}
-          </nav>
-        )}
 
         {/* A single page needs no tabs (signed-out visitors of Activities only have the list). */}
         {app && appNav.length > 1 && (

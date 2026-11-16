@@ -1518,3 +1518,81 @@ button.check[type="submit"][aria-checked="true"] { border-color: var(--accent); 
   .dash--admin .dash-title { margin-right: auto; }
   .dash--admin .dash-foot { order: 2; margin-left: 0; }
 }
+
+/* ── Admin and Finance: a calm, professional surface ──
+   Quiet type, square-ish corners, flat buttons, hairline borders. Unlayered so it wins over the playful defaults. */
+.admin-compact h2 { font-weight: 650; letter-spacing: 0; }
+.admin-compact .btn { border-radius: 6px; box-shadow: none; font-weight: 600; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+.admin-compact .btn:hover { box-shadow: none; }
+.admin-compact .btn:active { transform: none; }
+.admin-compact .card { border: 1px solid #dde1e7; border-radius: 8px; background: #fff; box-shadow: none; }
+.admin-compact a.card:hover { transform: none; box-shadow: none; }
+.admin-compact .input { border-radius: 6px; }
+.admin-compact .label { font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
+.admin-compact .badge { border-radius: 4px; font-weight: 600; }
+.admin-compact .table-wrap, .admin-compact .table-open { border: 1px solid #dde1e7; border-radius: 8px; background: #fff; box-shadow: none; overflow: hidden; }
+.admin-compact .table-open { overflow: visible; }
+.admin-compact .table th { background: #f8f9fb; color: var(--muted); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em; text-transform: none; }
+.admin-compact .tabs .tab { font-weight: 600; }
+
+/* Calm section headings with the primary action beside them. */
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem; margin-bottom: 0.75rem; }
+.section-head h2 { margin: 0; font-size: 1rem; }
+.section-head p { margin: 0; color: var(--muted); font-size: 0.8125rem; }
+
+/* Key figures: one panel, hairline dividers, no little boxes. */
+.stat-strip { display: grid; grid-template-columns: repeat(2, 1fr); overflow: hidden; border: 1px solid #dde1e7; border-radius: 8px; background: #fff; }
+.stat-strip > * { padding: 0.9rem 1.1rem; border-bottom: 1px solid #eceef2; }
+.stat-strip > :nth-child(odd) { border-right: 1px solid #eceef2; }
+.stat-strip > :nth-last-child(-n+2) { border-bottom: 0; }
+.stat-strip__label { display: block; color: var(--muted); font-size: 0.8125rem; font-weight: 500; }
+.stat-strip__value { display: block; margin-top: 0.15rem; font-size: 1.5rem; font-weight: 650; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.stat-strip__note { display: block; margin-top: 0.1rem; overflow: hidden; color: var(--muted); font-size: 0.75rem; text-overflow: ellipsis; white-space: nowrap; }
+@media (min-width: 900px) {
+  .stat-strip--4 { grid-template-columns: repeat(4, 1fr); }
+  .stat-strip--6 { grid-template-columns: repeat(3, 1fr); }
+  .stat-strip > * { border-bottom: 0 !important; border-right: 1px solid #eceef2 !important; }
+  .stat-strip--4 > :last-child { border-right: 0 !important; }
+  .stat-strip--6 > * { border-bottom: 1px solid #eceef2 !important; }
+  .stat-strip--6 > :nth-child(3n) { border-right: 0 !important; }
+  .stat-strip--6 > :nth-last-child(-n+3) { border-bottom: 0 !important; }
+}
+a.stat-strip__cell:hover { background: #f8f9fb; }
+
+/* Admin shell: grouped rail on the left (wide), one current-page menu (phone). */
+.admin-shell { max-width: 1280px; }
+.admin-nav__rail { display: none; }
+.admin-nav__menu { margin-bottom: 1rem; border: 1px solid #dde1e7; border-radius: 8px; background: #fff; }
+.admin-nav__menu > summary { display: flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; padding: 0.4rem 0.9rem; cursor: pointer; list-style: none; }
+.admin-nav__menu > summary::-webkit-details-marker { display: none; }
+.admin-nav__menu > summary svg { margin-left: auto; transition: rotate 0.15s; }
+.admin-nav__menu[open] > summary svg { rotate: 180deg; }
+.admin-nav__section { color: var(--muted); font-size: 0.8125rem; }
+.admin-nav__current { font-weight: 650; }
+.admin-nav__panel { padding: 0.25rem 0.5rem 0.75rem; border-top: 1px solid #eceef2; }
+.admin-nav__group { margin-top: 0.5rem; }
+.admin-nav__title { margin: 0.5rem 0.5rem 0.2rem; color: var(--muted); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.admin-nav ul { margin: 0; padding: 0; list-style: none; }
+.admin-nav a { display: flex; align-items: center; min-height: 2.5rem; padding: 0.35rem 0.6rem; border-radius: 6px; color: var(--warm-ink, #3d4656); font-size: 0.9375rem; font-weight: 500; }
+.admin-nav a:hover { background: #eef0f4; color: var(--ink); }
+.admin-nav a[aria-current="page"] { background: #e6eaf3; color: var(--navy); font-weight: 650; }
+@media (min-width: 900px) {
+  .admin-shell { display: grid; grid-template-columns: 12.5rem minmax(0, 1fr); gap: 0 2rem; align-items: start; }
+  .admin-nav { position: sticky; top: 1.5rem; }
+  .admin-nav__menu { display: none; }
+  .admin-nav__rail { display: block; }
+  .admin-nav a { min-height: 2.125rem; font-size: 0.875rem; }
+  .admin-shell__content { min-width: 0; }
+}
+
+/* Phones: tap-sized controls, and 16px inputs so iOS does not zoom the page on focus. */
+@media (max-width: 639px) {
+  .admin-compact .input, .admin-compact select.input { min-height: 2.5rem; font-size: 1rem; }
+  .admin-compact .btn-sm { min-height: 2.5rem; padding-inline: 0.9rem; font-size: 0.875rem; }
+  .admin-compact .table-wrap:has(.table-stack), .admin-compact .table-open:has(.table-stack) { border: 0; background: transparent; }
+  .admin-compact .table-stack tr { border: 1px solid #dde1e7; border-radius: 8px; box-shadow: none; }
+  .admin-compact .card { padding: 0.9rem; }
+  .admin-compact .table-stack td { font-size: 0.9375rem; }
+}
+.stat-strip > li:has(> .stat-strip__cell) { padding: 0; }
+.stat-strip__cell { padding: 0.9rem 1.1rem; }

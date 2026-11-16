@@ -73,25 +73,23 @@ export default async function AdminOverview() {
   const peak = Math.max(1, ...weekly.map((w) => w.n));
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {stats.member_requests > 0 && (
-        <Link href="/admin/users?filter=requests" className="card flex flex-wrap items-center justify-between gap-2 border-accent !p-2.5 hover:bg-accent-soft">
-          <span className="text-sm font-extrabold">
+        <Link href="/admin/users?filter=requests" className="card flex flex-wrap items-center justify-between gap-2 !p-3 hover:bg-accent-soft">
+          <span className="text-sm font-semibold">
             {stats.member_requests} membership {stats.member_requests === 1 ? "request is" : "requests are"} waiting for you
           </span>
           <span className="btn btn-primary btn-sm">Review</span>
         </Link>
       )}
 
-      <ul className="grid grid-cols-2 gap-2 @xl:grid-cols-3 @4xl:grid-cols-6">
+      <ul className="stat-strip stat-strip--6">
         {cards.map((card) => (
-          <li key={card.label}>
-            <Link href={card.href} className="card flex h-full items-baseline justify-between gap-2 !p-2.5 hover:border-accent @4xl:block">
-              <span className="min-w-0">
-                <span className="block text-xs font-bold uppercase tracking-wide text-muted">{card.label}</span>
-                {card.note && <span className="block truncate text-xs text-muted">{card.note}</span>}
-              </span>
-              <span className="text-2xl font-bold tabular-nums">{card.value.toLocaleString("en-US")}</span>
+          <li key={card.label} className="p-0">
+            <Link href={card.href} className="stat-strip__cell block h-full">
+              <span className="stat-strip__label">{card.label}</span>
+              <span className="stat-strip__value">{card.value.toLocaleString("en-US")}</span>
+              <span className="stat-strip__note">{card.note ?? " "}</span>
             </Link>
           </li>
         ))}
@@ -99,8 +97,8 @@ export default async function AdminOverview() {
 
       <div className="grid gap-3 @3xl:grid-cols-2">
         <section aria-labelledby="coming-title">
-          <h2 id="coming-title" className="mb-1 text-sm font-extrabold">Coming up</h2>
-          <div className="table-open">
+          <h2 id="coming-title" className="mb-2 text-sm font-semibold">Coming up</h2>
+          <div className="table-wrap">
             <table className="table">
               <thead><tr><th>Activity</th><th>When</th><th className="text-right">Going</th></tr></thead>
               <tbody>
@@ -118,8 +116,8 @@ export default async function AdminOverview() {
         </section>
 
         <section aria-labelledby="newest-title">
-          <h2 id="newest-title" className="mb-1 text-sm font-extrabold">Newest users</h2>
-          <div className="table-open">
+          <h2 id="newest-title" className="mb-2 text-sm font-semibold">Newest users</h2>
+          <div className="table-wrap">
             <table className="table">
               <thead><tr><th>Name</th><th>Email</th><th className="text-right">Joined</th></tr></thead>
               <tbody>
@@ -136,8 +134,8 @@ export default async function AdminOverview() {
         </section>
 
         <section aria-labelledby="masts-title">
-          <h2 id="masts-title" className="mb-1 text-sm font-extrabold">Top masts</h2>
-          <div className="table-open">
+          <h2 id="masts-title" className="mb-2 text-sm font-semibold">Top masts</h2>
+          <div className="table-wrap">
             <table className="table">
               <thead><tr><th className="w-8">#</th><th>Mast</th><th className="text-right">Votes</th></tr></thead>
               <tbody>
@@ -154,8 +152,8 @@ export default async function AdminOverview() {
         </section>
 
         <section aria-labelledby="committees-title">
-          <h2 id="committees-title" className="mb-1 text-sm font-extrabold">Committees</h2>
-          <div className="table-open">
+          <h2 id="committees-title" className="mb-2 text-sm font-semibold">Committees</h2>
+          <div className="table-wrap">
             <table className="table">
               <thead><tr><th>Committee</th><th className="text-right">Members</th></tr></thead>
               <tbody>
@@ -172,7 +170,7 @@ export default async function AdminOverview() {
         </section>
 
         <section aria-labelledby="signups-title" className="@3xl:col-span-2">
-          <h2 id="signups-title" className="mb-1 text-sm font-extrabold">New users, last {WEEKS} weeks</h2>
+          <h2 id="signups-title" className="mb-2 text-sm font-semibold">New users, last {WEEKS} weeks</h2>
           <div className="card !p-3">
             <ol className="flex h-24 items-end gap-2" aria-label="New users per week, oldest first">
               {weekly.map((w) => (
