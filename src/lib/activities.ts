@@ -154,6 +154,18 @@ export function getUpcomingActivityCards(limit: number, isMember: boolean) {
   `;
 }
 
+/** The soonest activity the user is going to that has not ended yet, or null. */
+export async function getMyNextActivity(userId: string): Promise<UpcomingActivityCard | null> {
+  const [row] = await sql<UpcomingActivityCard[]>`
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name, a.poster_url, a.members_only
+    FROM activity_subscriptions s
+    JOIN activities a ON a.id = s.activity_id JOIN committees c ON c.id = a.committee_id
+    WHERE s.user_id = ${userId} AND a.is_visible AND ${endsAt()} > NOW()
+    ORDER BY a.starts_at LIMIT 1
+  `;
+  return row ?? null;
+}
+
 /** Which of the given activities the user is subscribed to. */
 export async function getSubscribedIds(userId: string, activityIds: string[]): Promise<Set<string>> {
   if (activityIds.length === 0) return new Set();

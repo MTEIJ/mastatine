@@ -1,3 +1,9 @@
+/**
+ * Where the installed app starts: its Today screen. `source=pwa` is the app marking its own requests (the server cannot
+ * see `display-mode`); in a browser tab `/app` without it sends people to the website. It is a hint, not access control.
+ */
+export const APP_HOME = "/app?source=pwa";
+
 /** The admin area is its own full-screen shell, like the MastApps. */
 export function isAdminPath(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/");

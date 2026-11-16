@@ -5,14 +5,15 @@ import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useAccountState } from "@/components/AccountState";
 import { Icons } from "@/content/apps";
+import { APP_HOME } from "@/lib/paths";
 
 /**
  * The installed app's chrome: a top app bar (where am I, and the way back) and a bottom navigation bar (the four
  * places). Both are rendered everywhere but only show in the installed app; see surfaces.css.
  */
 
-/** Where the Today tab goes. Phase 3 of docs/plans/website-and-app.md moves this to the app's own Today screen. */
-const TODAY_HREF = "/";
+/** Where the Today tab goes: the app's own Today screen. */
+const TODAY_HREF = APP_HOME;
 
 const under = (pathname: string, base: string) => pathname === base || pathname.startsWith(`${base}/`);
 
@@ -53,9 +54,9 @@ const SECTION_TITLES: [string, string][] = [
 
 const ROOTS = new Set(["/", "/app", "/mastapps", "/mastapps/activities", "/account"]);
 
-/** The section the current page belongs to: the name in the top bar. */
-function titleFor(pathname: string): string {
-  if (pathname === "/" || pathname === "/app") return "Today";
+/** The section the current page belongs to: the name in the top bar. Signed out, Today is just the way in. */
+function titleFor(pathname: string, signedIn: boolean): string {
+  if (pathname === "/" || pathname === "/app") return signedIn ? "Today" : "M.A. Mastatine";
   if (under(pathname, "/mastapps/activities")) return "Activities";
   if (pathname === "/mastapps") return "Apps";
   if (under(pathname, "/admin")) return "Admin";
@@ -84,6 +85,7 @@ function parentOf(pathname: string): string {
 export function AppTopBar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { signedIn } = useAccountState();
   const showBack = !ROOTS.has(pathname);
 
   function goBack() {
@@ -100,7 +102,7 @@ export function AppTopBar() {
           </svg>
         </button>
       )}
-      <p className="appbar__title">{titleFor(pathname)}</p>
+      <p className="appbar__title">{titleFor(pathname, signedIn)}</p>
     </header>
   );
 }

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { APP_HOME } from "@/lib/paths";
 
 /** Makes the site installable as an app; the shortcuts appear on a long press of the home-screen icon. */
 export default function manifest(): MetadataRoute.Manifest {
@@ -7,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "M.A. Mastatine",
     short_name: "Mastatine",
     description: "Activities, MastApps and the finest masts of M.A. Mastatine.",
-    start_url: "/",
+    start_url: APP_HOME,
     scope: "/",
     display: "standalone",
     background_color: "#fff4e2",

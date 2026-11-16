@@ -1,12 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { getApps, type MastApp } from "@/content/apps";
 import { getCachedUpcomingActivityCards } from "@/lib/activities-cached";
 import { getSubscribedIds, type UpcomingActivityCard } from "@/lib/activities";
-import { formatDayMonth, formatDayNumber, formatMonthShort, formatTime } from "@/lib/datetime";
 import { getMembership } from "@/lib/membership";
 import { getSession } from "@/lib/session";
-import { CheckIcon } from "@/components/ui/icons";
+import ActivityCard from "@/components/ActivityCard";
 import ShapeIcon from "@/components/ui/ShapeIcon";
 
 const CARDS = 3;
@@ -17,32 +15,6 @@ function Arrow() {
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M5 12h14M13 6l6 6-6 6" />
     </svg>
-  );
-}
-
-function ActivityCard({ activity: a, going }: { activity: UpcomingActivityCard; going: boolean }) {
-  return (
-    <Link href={`${ACTIVITIES}/${a.id}`} className={`hub-act${going ? " is-going" : ""}`}>
-      {a.poster_url ? (
-        <Image src={a.poster_url} alt="" width={128} height={160} sizes="64px" className="hub-act__thumb" />
-      ) : (
-        <time dateTime={a.starts_at.toISOString()} className="hub-act__thumb hub-act__date">
-          <span>{formatDayNumber(a.starts_at)}</span>
-          <span>{formatMonthShort(a.starts_at)}</span>
-        </time>
-      )}
-      <span className="hub-act__body">
-        <span className="hub-act__name">{a.name}</span>
-        <span className="hub-act__when">{formatDayMonth(a.starts_at)} · {formatTime(a.starts_at)}</span>
-        {a.location && <span className="hub-act__where">{a.location}</span>}
-        {(going || a.members_only) && (
-          <span className="hub-act__tags">
-            {going && <span className="hub-tag hub-tag--going"><CheckIcon />You&rsquo;re going</span>}
-            {a.members_only && <span className="hub-tag">Members only</span>}
-          </span>
-        )}
-      </span>
-    </Link>
   );
 }
 
