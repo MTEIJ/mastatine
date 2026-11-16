@@ -28,7 +28,7 @@ export default function QuoteCard({ quote, canDelete }: QuoteCardProps) {
       <blockquote className="mt-1 whitespace-pre-line text-lg font-medium leading-snug text-black">{quote.body}</blockquote>
       <footer className="mt-2 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-[#3d3935]">
-          Grade <span className="badge !bg-accent !text-white text-sm">{formatGrade(quote.average)}</span>
+          Grade <span className="badge !bg-accent !text-accent-fg text-sm">{formatGrade(quote.average)}</span>
           {quote.votes > 0 && <span> · {quote.votes} {quote.votes === 1 ? "vote" : "votes"}</span>}
         </p>
         <form action={voteQuote} className="flex items-center gap-2">

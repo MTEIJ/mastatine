@@ -9,25 +9,25 @@
   /* ── Colour roles (light scheme, seed #f57f20) ── */
   --md-primary: #9a4600;
   --md-on-primary: #ffffff;
-  --md-primary-container: #ffdbc9;
+  --md-primary-container: #ffcdb0;
   --md-on-primary-container: #331200;
   --md-secondary: #765848;
-  --md-secondary-container: #fbe1d1;
+  --md-secondary-container: #f5d0b8;
   --md-on-secondary-container: #2c160a;
   --md-tertiary: #4a5c92;
   --md-tertiary-container: #dbe1ff;
   --md-on-tertiary-container: #00174b;
   --md-brand: #f57f20;
-  --md-surface: #fff8f5;
+  --md-surface: #fbede4;
   --md-surface-container-lowest: #ffffff;
-  --md-surface-container-low: #fff1ea;
-  --md-surface-container: #fbebe2;
-  --md-surface-container-high: #f5e5dc;
-  --md-surface-container-highest: #efdfd6;
+  --md-surface-container-low: #f8e3d6;
+  --md-surface-container: #f3dccd;
+  --md-surface-container-high: #edd4c3;
+  --md-surface-container-highest: #e6cbb9;
   --md-on-surface: #221a15;
   --md-on-surface-variant: #52443c;
-  --md-outline: #85736a;
-  --md-outline-variant: #d8c2b8;
+  --md-outline: #6b5a51;
+  --md-outline-variant: #c4a898;
 
   /* ── Shape scale ── */
   --shape-xs: 4px;
@@ -229,7 +229,7 @@
   .dash:not(.dash--admin) .dash-nav a { color: var(--md-on-surface-variant); transition: background-color 0.2s var(--ease-emphasized), color 0.2s var(--ease-emphasized), border-radius var(--spring-fast-ms) var(--spring-fast); }
   .dash:not(.dash--admin) .dash-nav a:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); color: var(--md-on-surface); }
   .dash:not(.dash--admin) .dash-nav a[aria-current="page"] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); box-shadow: none; }
-  .dash:not(.dash--admin) .card { border: 0; background: var(--md-surface-container-lowest); box-shadow: 0 1px 2px rgb(34 26 21 / 0.08), 0 1px 3px 1px rgb(34 26 21 / 0.05); }
+  .dash:not(.dash--admin) .card { border: 1px solid var(--md-outline-variant); background: var(--md-surface-container-lowest); box-shadow: 0 1px 2px rgb(34 26 21 / 0.1); }
   .dash:not(.dash--admin) a.card { transition: border-radius var(--spring-default-ms) var(--spring-default), scale var(--spring-fast-ms) var(--spring-fast), box-shadow 0.2s var(--ease-emphasized); }
   .dash:not(.dash--admin) a.card:hover { border-color: transparent; box-shadow: 0 2px 6px 2px rgb(34 26 21 / 0.1), 0 1px 2px rgb(34 26 21 / 0.12); transform: none; }
   .dash:not(.dash--admin) .dash-head h1 { font-weight: 900; letter-spacing: -0.025em; }

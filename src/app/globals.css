@@ -39,7 +39,7 @@ body {
 
 /* ── Links — exact Verbosa defaults ── */
 a:link, a:visited { text-decoration: none; }
-a { color: var(--orange); }
+a { color: var(--accent-text); }
 a:hover { color: var(--blue); }
 
 /* ── Headings ── */
@@ -516,7 +516,7 @@ article.hentry:hover .post-thumbnail-container img {
   overflow: hidden;
   position: relative;
 }
-#footer a { color: var(--orange); }
+#footer a { color: var(--accent-text); }
 #footer a:hover { color: var(--blue); }
 #site-copyright {
   display: block;
@@ -588,7 +588,7 @@ article.hentry:hover .post-thumbnail-container img {
 }
 .footer-three .widget-container { width: 33.333%; }
 .footer-three .widget-container:nth-child(3n+1) { clear: both; }
-#colophon a { color: var(--orange); }
+#colophon a { color: var(--accent-text); }
 #colophon a:hover { color: var(--blue); }
 #colophon .widget-title span { background-color: #fff; }
 #colophon .widget-title::after { background-color: var(--border); }
@@ -651,7 +651,7 @@ input[type="submit"],
 input[type="reset"],
 button[type="submit"] {
   background-color: var(--orange);
-  color: #ffffff;
+  color: #1a0f05;
   padding: .7em 1.5em;
   border: 0;
   font-family: inherit;
@@ -664,6 +664,7 @@ input[type="submit"]:hover,
 input[type="reset"]:hover,
 button[type="submit"]:hover {
   background-color: var(--blue);
+  color: #ffffff;
 }
 
 textarea,
@@ -906,22 +907,22 @@ blockquote::before, blockquote::after { content: ""; content: none; }
    ─────────────────────────────────────────────────────────────────────────── */
 :root {
   --surface: #ffffff;
-  --soft: #f5f5f5;
+  --soft: #eeeeee;
   --ink: #0a0a0a;
-  --muted: #555555;
-  --line: #eaeaea;
+  --muted: #4a4a4a;
+  --line: #d4d4d4;
   --accent: #f57f20;
   --accent-hover: #d96810;
-  --accent-fg: #ffffff;
-  --accent-soft: #fff3e8;
-  --accent-text: #c2570c; /* orange that stays readable on white */
+  --accent-fg: #1a0f05; /* dark text on the brand orange: white on it is only 2.6:1 */
+  --accent-soft: #ffe8d2;
+  --accent-text: #a84700; /* orange that reads on white: about 6:1 */
   --navy: #0f2254;
   --success: #15803d;
   --danger: #b91c1c;
-  --warm-line: #f1dcc6;
-  --warm-soft: #fff1e4;
-  --warm-faint: #fff8f0;
-  --warm-ink: #5b4a3a;
+  --warm-line: #e4c8a6;
+  --warm-soft: #ffe5cb;
+  --warm-faint: #fff0e0;
+  --warm-ink: #45342a;
 }
 
 @theme inline {
@@ -1496,6 +1497,7 @@ button.check[type="submit"][aria-checked="true"] { border-color: var(--accent); 
 
 /* ── Admin: the same full-screen shell as the MastApps, but plain: navy on neutral grey, denser, no decoration ── */
 .dash--admin {
+  --accent-fg: #ffffff;
   --accent: var(--navy);
   --accent-hover: #1b3475;
   --accent-soft: #eaeef6;
