@@ -6,20 +6,21 @@ import { installStore, promptInstall, vapidKeyBytes } from "@/lib/pwa-client";
 
 type PushStatus = "loading" | "unsupported" | "needs-install" | "blocked" | "off" | "on";
 
-function InstallCard() {
+/** Install the site as an app. Not shown in the installed app itself. */
+export function InstallCard() {
   const { standalone, canPrompt, ios } = useSyncExternalStore(installStore.subscribe, installStore.getSnapshot, installStore.getServerSnapshot);
   if (standalone) return null;
 
   return (
-    <section aria-labelledby="install-title" className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-4">
-      <div className="min-w-0 flex-1 basis-64">
-        <h2 id="install-title" className="font-extrabold">Install the app</h2>
-        <p className="mt-1 text-sm text-muted">
+    <section aria-labelledby="install-title" className="card setting-row mt-4">
+      <div className="setting-row__body">
+        <h2 id="install-title" className="setting-row__title">Install the app</h2>
+        <p className="setting-row__text">
           {ios
-            ? "Tap the Share button in Safari, then “Add to Home Screen”. Mastatine then opens like an app, with notifications."
+            ? "Tap Share in Safari, then “Add to Home Screen”."
             : canPrompt
-              ? "Put Mastatine on your home screen or desktop: one tap to the activities and the MastApps."
-              : "Use your browser menu (“Install app” or “Add to Home screen”) to put Mastatine on your home screen."}
+              ? "Put Mastatine on your home screen: one tap to your activities and the MastApps."
+              : "Use your browser menu (“Install app” or “Add to Home screen”)."}
         </p>
       </div>
       {canPrompt && (
@@ -52,13 +53,14 @@ function initialStatus(ios: boolean, standalone: boolean): PushStatus {
 const STATUS_TEXT: Record<PushStatus, string> = {
   loading: "Checking this device…",
   unsupported: "This browser cannot show notifications.",
-  "needs-install": "On iPhone and iPad, install the app first (see above), then turn notifications on from the app.",
-  blocked: "Notifications are blocked for this site. Allow them in your browser settings, then come back.",
-  off: "Get a nudge on this device when a new activity is announced, the day before an activity you joined, and when one you joined changes.",
-  on: "On for this device. You hear about new activities, reminders, and changes to activities you joined.",
+  "needs-install": "On iPhone and iPad, install the app first, then turn this on from the app.",
+  blocked: "Blocked for this site. Allow notifications in your browser settings.",
+  off: "New activities, reminders and changes to activities you joined.",
+  on: "On for this device.",
 };
 
-function NotificationsCard({ publicKey }: { publicKey: string }) {
+/** The notifications setting for this device: a switch, with a way to send a test once it is on. */
+export function NotificationsRow({ publicKey }: { publicKey: string }) {
   const { standalone, ios } = useSyncExternalStore(installStore.subscribe, installStore.getSnapshot, installStore.getServerSnapshot);
   // What the browser itself allows, read during render ("loading" means: supported, ask the service worker).
   const capability = useSyncExternalStore(noSubscription, () => initialStatus(ios, standalone), () => "loading" as PushStatus);
@@ -136,34 +138,29 @@ function NotificationsCard({ publicKey }: { publicKey: string }) {
     setBusy(false);
   }
 
-  return (
-    <section aria-labelledby="push-title" className="card mt-6 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0 flex-1 basis-64">
-          <h2 id="push-title" className="font-extrabold">Notifications</h2>
-          <p className="mt-1 text-sm text-muted">{STATUS_TEXT[status]}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {status === "off" && <button type="button" className="btn btn-primary btn-sm" disabled={busy} onClick={turnOn}>{busy ? "Turning on…" : "Turn on"}</button>}
-          {status === "on" && (
-            <>
-              <button type="button" className="btn btn-secondary btn-sm" disabled={busy} onClick={test}>Send a test</button>
-              <button type="button" className="btn btn-secondary btn-sm" disabled={busy} onClick={turnOff}>Turn off</button>
-            </>
-          )}
-        </div>
-      </div>
-      {message && <p role="status" className="mt-2 text-sm text-muted">{message}</p>}
-    </section>
-  );
-}
+  const canToggle = status === "on" || status === "off" || status === "loading";
 
-/** Account page: install the site as an app and manage push notifications for this device. */
-export default function AppSettings({ vapidPublicKey }: { vapidPublicKey: string | null }) {
   return (
-    <>
-      <InstallCard />
-      {vapidPublicKey && <NotificationsCard publicKey={vapidPublicKey} />}
-    </>
+    <div className="setting-row">
+      <div className="setting-row__body">
+        <h2 id="push-title" className="setting-row__title">Notifications</h2>
+        <p className="setting-row__text">{STATUS_TEXT[status]}</p>
+        {status === "on" && (
+          <button type="button" className="setting-row__link" disabled={busy} onClick={test}>Send a test</button>
+        )}
+        {message && <p role="status" className="setting-row__text">{message}</p>}
+      </div>
+      {canToggle && (
+        <button
+          type="button"
+          role="switch"
+          aria-checked={status === "on"}
+          aria-labelledby="push-title"
+          className="switch"
+          disabled={busy || status === "loading"}
+          onClick={status === "on" ? turnOff : turnOn}
+        />
+      )}
+    </div>
   );
 }

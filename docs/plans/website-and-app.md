@@ -6,6 +6,8 @@ Progress: phase 0 done (`90ed875`); phase 1 done (surface switch in `src/app/sur
 top bar + bottom bar); phase 3 done (`/app` Today screen, `APP_HOME` in `src/lib/paths.ts`, manifest `start_url`, `PwaBoot`
 redirect). Deviation: Today's "Coming up" cards show "You're going" / "Members only" but no join cue (one tap opens the
 activity, where joining happens); revisit if people ask for joining straight from Today.
+Phase 4 done (account page: profile header, settings list with switches for notifications and newsletter, install card
+hidden in the app, sign out at the bottom in the app; styles in `src/app/screens.css`).
 
 ## The problem
 
