@@ -63,3 +63,23 @@ export function zonedDay(date: Date): string {
   const p = zonedParts(date);
   return `${p.year}-${p.month}-${p.day}`;
 }
+
+const dayAndMonthShort = (date: Date): string => `${formatDayNumber(date)} ${formatMonthShort(date)}`;
+
+/**
+ * When an activity takes place, with its end when there is one:
+ * "12 November · 20:00", "12 November · 20:00 – 23:00" or, over several days, "12 Nov 20:00 – 14 Nov 18:00".
+ */
+export function formatWhen(start: Date, end: Date | null): string {
+  if (!end || end.getTime() <= start.getTime()) return `${formatDayMonth(start)} · ${formatTime(start)}`;
+  if (zonedDay(end) === zonedDay(start)) return `${formatDayMonth(start)} · ${formatTime(start)} – ${formatTime(end)}`;
+  return `${dayAndMonthShort(start)} ${formatTime(start)} – ${dayAndMonthShort(end)} ${formatTime(end)}`;
+}
+
+/** The days of a past activity with the year: "12 November 2026", "12 – 14 Nov 2026" or "30 Oct – 2 Nov 2026". */
+export function formatDays(start: Date, end: Date | null): string {
+  const year = zonedDay(end && end > start ? end : start).slice(0, 4);
+  if (!end || zonedDay(end) === zonedDay(start)) return `${formatDayMonth(start)} ${year}`;
+  const sameMonth = formatMonthShort(start) === formatMonthShort(end);
+  return `${sameMonth ? formatDayNumber(start) : dayAndMonthShort(start)} – ${dayAndMonthShort(end)} ${year}`;
+}

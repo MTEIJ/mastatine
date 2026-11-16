@@ -139,15 +139,17 @@ export function getUpcomingActivities(limit: number, isMember: boolean) {
 }
 
 /** An upcoming activity with what a homepage card needs on top of the agenda fields. */
-export interface UpcomingActivityCard extends UpcomingActivity {
+export interface UpcomingActivityCard extends UpcomingActivity, ParticipantCount {
   poster_url: string | null;
   members_only: boolean;
 }
 
+const cardCounts = () => sql`a.subscription_limit, (SELECT COUNT(*) FROM activity_subscriptions p WHERE p.activity_id = a.id)::int AS participants`;
+
 /** The next visible activities that have not ended yet, with their posters, for the homepage cards. */
 export function getUpcomingActivityCards(limit: number, isMember: boolean) {
   return sql<UpcomingActivityCard[]>`
-    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name, a.poster_url, a.members_only
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name, a.poster_url, a.members_only, ${cardCounts()}
     FROM activities a JOIN committees c ON c.id = a.committee_id
     WHERE a.is_visible AND ${audience(isMember)} AND COALESCE(a.ends_at, a.starts_at + INTERVAL '3 hours') > NOW()
     ORDER BY a.starts_at LIMIT ${limit}
@@ -157,7 +159,7 @@ export function getUpcomingActivityCards(limit: number, isMember: boolean) {
 /** The soonest activity the user is going to that has not ended yet, or null. */
 export async function getMyNextActivity(userId: string): Promise<UpcomingActivityCard | null> {
   const [row] = await sql<UpcomingActivityCard[]>`
-    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name, a.poster_url, a.members_only
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name, a.poster_url, a.members_only, ${cardCounts()}
     FROM activity_subscriptions s
     JOIN activities a ON a.id = s.activity_id JOIN committees c ON c.id = a.committee_id
     WHERE s.user_id = ${userId} AND a.is_visible AND ${endsAt()} > NOW()
@@ -232,4 +234,7 @@ export function formatCost(cents: number | null): string {
   return `€ ${(cents / 100).toFixed(2).replace(".", ",")}`;
 }
 
-export const formatParticipants = (a: Activity): string => `${a.participants} / ${a.subscription_limit ?? "∞"}`;
+/** What the "2 / ∞ going" count needs. */
+export type ParticipantCount = Pick<Activity, "participants" | "subscription_limit">;
+
+export const formatParticipants = (a: ParticipantCount): string => `${a.participants} / ${a.subscription_limit ?? "∞"}`;

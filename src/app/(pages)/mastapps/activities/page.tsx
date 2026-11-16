@@ -3,10 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import AppFrame from "@/components/ui/AppFrame";
 import CalendarSubscribe from "@/components/CalendarSubscribe";
+import GoingCount from "@/components/GoingCount";
 import {
   formatParticipants, getActivities, getCommitteeOptions, getPastActivities, hasActivityFilters, parseActivityFilters, subscribeState, type Activity,
 } from "@/lib/activities";
-import { formatDayMonth, formatDayNumber, formatMonthShort, formatTime } from "@/lib/datetime";
+import { formatDays, formatDayMonth, formatDayNumber, formatMonthShort, formatWhen } from "@/lib/datetime";
 import { getMembership } from "@/lib/membership";
 import { getSession } from "@/lib/session";
 import { parseSignupGroups, priceLabel } from "@/lib/signup-options";
@@ -160,11 +161,11 @@ export default async function ActivitiesPage(props: { searchParams: Promise<Reco
                     )}
                     <div className="flex min-w-0 flex-1 flex-col">
                       <h2 className="text-lg font-extrabold leading-tight">{a.name}{a.members_only && <MembersBadge />}</h2>
-                      <p className="mt-0.5 text-sm font-bold text-accent-text">{formatDayMonth(a.starts_at)} · {formatTime(a.starts_at)}</p>
+                      <p className="mt-0.5 text-sm font-bold text-accent-text">{formatWhen(a.starts_at, a.ends_at)}</p>
                       <p className="text-sm text-muted">{price}{a.location ? ` · ${a.location}` : ""}</p>
                       <div className="mt-auto flex items-center justify-between gap-2 pt-2">
                         <CueBadge cue={cue} />
-                        <span className="text-xs text-muted">{formatParticipants(a)} going</span>
+                        <GoingCount activity={a} />
                       </div>
                     </div>
                   </div>
@@ -203,11 +204,11 @@ export default async function ActivitiesPage(props: { searchParams: Promise<Reco
                     </div>
                     <div className="flex flex-1 flex-col gap-1 p-4">
                       <h2 className="text-lg font-extrabold leading-tight">{a.name}{a.members_only && <MembersBadge />}</h2>
-                      <p className="text-sm font-bold text-accent-text">{formatDayMonth(a.starts_at)} · {formatTime(a.starts_at)}</p>
+                      <p className="text-sm font-bold text-accent-text">{formatWhen(a.starts_at, a.ends_at)}</p>
                       <p className="text-sm text-muted">{price}{a.location ? ` · ${a.location}` : ""}</p>
                       <div className="mt-auto flex items-center justify-between gap-2 pt-3">
                         <CueBadge cue={cue} />
-                        <span className="text-xs text-muted">{formatParticipants(a)} going</span>
+                        <GoingCount activity={a} />
                       </div>
                     </div>
                   </div>
@@ -224,12 +225,23 @@ export default async function ActivitiesPage(props: { searchParams: Promise<Reco
           <ul className="card divide-y divide-line overflow-hidden">
             {past.map((a) => (
               <li key={a.id}>
-                <Link href={`/mastapps/activities/${a.id}`} className="flex items-center gap-3 px-4 py-2.5 text-ink hover:bg-soft hover:text-ink">
-                  <time dateTime={a.starts_at.toISOString()} className="w-28 shrink-0 whitespace-nowrap text-sm text-muted">
-                    {formatDayMonth(a.starts_at)} {a.starts_at.getFullYear()}
-                  </time>
-                  <span className="min-w-0 flex-1 truncate font-semibold">{a.name}{a.members_only && <MembersBadge />}</span>
+                <Link href={`/mastapps/activities/${a.id}`} className="flex items-center gap-3 px-3 py-2 text-ink hover:bg-soft hover:text-ink">
+                  {a.poster_url ? (
+                    <Image src={a.poster_url} alt="" width={80} height={100} sizes="40px" className="h-12 w-10 shrink-0 rounded object-cover" />
+                  ) : (
+                    <time dateTime={a.starts_at.toISOString()} className="flex h-12 w-10 shrink-0 flex-col items-center justify-center rounded bg-soft font-extrabold leading-none text-accent-text">
+                      <span className="text-base">{formatDayNumber(a.starts_at)}</span>
+                      <span className="text-[0.65rem] uppercase">{formatMonthShort(a.starts_at)}</span>
+                    </time>
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold">{a.name}{a.members_only && <MembersBadge />}</span>
+                    <time dateTime={a.starts_at.toISOString()} className="block truncate text-sm text-muted">
+                      {formatDays(a.starts_at, a.ends_at)}<span className="sm:hidden"> · {a.committee_name}</span>
+                    </time>
+                  </span>
                   <span className="hidden shrink-0 text-sm text-muted sm:inline">{a.committee_name}</span>
+                  <span className="shrink-0 text-xs text-muted">{formatParticipants(a)}<span className="hidden sm:inline"> went</span></span>
                   {a.subscribed && <span className="shrink-0 text-success" title="You went"><CheckIcon /><span className="sr-only">You went</span></span>}
                 </Link>
               </li>

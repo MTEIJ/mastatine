@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import GoingCount from "@/components/GoingCount";
 import { CheckIcon } from "@/components/ui/icons";
 import type { UpcomingActivityCard } from "@/lib/activities";
-import { formatDayMonth, formatDayNumber, formatMonthShort, formatTime } from "@/lib/datetime";
+import { formatDayNumber, formatMonthShort, formatWhen } from "@/lib/datetime";
 
 interface ActivityCardProps {
   activity: UpcomingActivityCard;
@@ -24,14 +25,13 @@ export default function ActivityCard({ activity: a, going }: ActivityCardProps) 
       )}
       <span className="hub-act__body">
         <span className="hub-act__name">{a.name}</span>
-        <span className="hub-act__when">{formatDayMonth(a.starts_at)} · {formatTime(a.starts_at)}</span>
+        <span className="hub-act__when">{formatWhen(a.starts_at, a.ends_at)}</span>
         {a.location && <span className="hub-act__where">{a.location}</span>}
-        {(going || a.members_only) && (
-          <span className="hub-act__tags">
-            {going && <span className="hub-tag hub-tag--going"><CheckIcon />You&rsquo;re going</span>}
-            {a.members_only && <span className="hub-tag">Members only</span>}
-          </span>
-        )}
+        <span className="hub-act__tags">
+          {going && <span className="hub-tag hub-tag--going"><CheckIcon />You&rsquo;re going</span>}
+          {a.members_only && <span className="hub-tag">Members only</span>}
+          <GoingCount activity={a} className="ml-auto" />
+        </span>
       </span>
     </Link>
   );
