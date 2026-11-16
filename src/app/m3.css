@@ -235,7 +235,11 @@
   .dash:not(.dash--admin) .dash-head h1 { font-weight: 900; letter-spacing: -0.025em; }
 
   /* ── Desktop sidebar: the same tonal pill as the navigation bar ── */
-  .nav-pill { border-radius: var(--shape-full); background: var(--md-secondary-container); }
+  .nav-list [data-navrow] { border-radius: var(--shape-full); }
+  .nav-list [data-navrow]:has(.nav-link[data-active="true"]),
+  .nav-list [data-navrow]:has(:focus-visible) { background: var(--md-secondary-container); }
+  @media (hover: hover) { .nav-list [data-navrow]:hover { background: color-mix(in srgb, var(--md-secondary-container) 60%, transparent); } }
+  @media (hover: hover) { .nav-list [data-navrow]:has(.nav-link[data-active="true"]):hover { background: var(--md-secondary-container); } }
   .nav-link[data-active="true"] { color: var(--md-on-secondary-container); }
 
   /* ── Mobile navigation drawer: the M3 modal drawer ── */

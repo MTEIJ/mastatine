@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MastatineLogo from "./MastatineLogo";
@@ -19,13 +19,14 @@ function buildNav(): NavItem[] {
   { label: "Home", href: "/" },
   {
     label: "Association",
-    href: "#",
+    href: "/about", // clicking the group opens its landing page and expands the subpages
     children: [
-      { label: "About & Disclaimer", href: "/about" },
+      { label: "About us", href: "/about" },
       { label: "The Board", href: "/board" },
       { label: "Committees", href: "/committees" },
-      { label: "History", href: "/history" },
       { label: "Membership", href: "/membership" },
+      { label: "History", href: "/history" },
+      { label: "Contact", href: "/contact" },
     ],
   },
   { label: "Activities", href: "/mastapps/activities" },
@@ -35,30 +36,29 @@ function buildNav(): NavItem[] {
 }
 
 function NavNode({ item, depth = 0, onNavigate }: { item: NavItem; depth?: number; onNavigate?: () => void }) {
-  const [open, setOpen] = useState(false);
   const has = !!item.children?.length;
   const pathname = usePathname();
-  const active = !has && !item.external && (item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`));
-  // Internal pages navigate client-side; groups and the external shop stay plain anchors.
-  const Tag: React.ElementType = !has && !item.external ? Link : "a";
+  const matches = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
+  const childActive = has && item.children!.some((c) => matches(c.href));
+  const [open, setOpen] = useState(childActive);
+  // Landing on (or navigating to) a page inside the group expands it.
+  useEffect(() => {
+    if (childActive) setOpen(true);
+  }, [childActive]);
+  const active = !has && !item.external && matches(item.href);
+  // Internal pages navigate client-side; only the external shop stays a plain anchor.
+  const Tag: React.ElementType = !item.external ? Link : "a";
 
   return (
     <li style={{ position: "relative", display: "block", float: "none", clear: "both" }}>
       <div data-navrow style={{ display: "flex", alignItems: "center" }}>
         <Tag
-          href={has ? undefined : item.href}
+          href={item.href}
           className="nav-link"
           data-active={active}
           target={item.external ? "_blank" : undefined}
           rel={item.external ? "noopener noreferrer" : undefined}
-          onClick={
-            has
-              ? (e: React.MouseEvent) => {
-                  e.preventDefault();
-                  setOpen((o) => !o);
-                }
-              : onNavigate
-          }
+          onClick={has ? () => setOpen(true) : onNavigate}
           style={{
             display: "inline-block",
             lineHeight: 3,
@@ -112,57 +112,10 @@ function NavNode({ item, depth = 0, onNavigate }: { item: NavItem; depth?: numbe
   );
 }
 
-/** Menu list with one highlight pill that glides to the hovered/focused row and rests on the current page. */
+/** Menu list; rows tint themselves on hover/focus and for the current page (pure CSS). */
 function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate: () => void }) {
-  const listRef = useRef<HTMLUListElement>(null);
-  const pillRef = useRef<HTMLSpanElement>(null);
-  const pathname = usePathname();
-
-  const moveTo = useCallback((row: HTMLElement | null) => {
-    const list = listRef.current;
-    const pill = pillRef.current;
-    if (!list || !pill) return;
-    if (!row) {
-      pill.style.opacity = "0";
-      return;
-    }
-    const listBox = list.getBoundingClientRect();
-    const rowBox = row.getBoundingClientRect();
-    pill.style.opacity = "1";
-    pill.style.height = `${rowBox.height}px`;
-    pill.style.transform = `translateY(${rowBox.top - listBox.top}px)`;
-  }, []);
-
-  const rest = useCallback(() => {
-    const active = listRef.current?.querySelector<HTMLElement>('.nav-link[data-active="true"]');
-    moveTo(active?.closest<HTMLElement>("[data-navrow]") ?? null);
-  }, [moveTo]);
-
-  const rowOf = (target: EventTarget) =>
-    target instanceof Element ? target.closest<HTMLElement>("[data-navrow]") : null;
-
-  // Settle on the current page after navigation, and whenever a submenu opens or the list resizes.
-  useLayoutEffect(() => {
-    rest();
-    const list = listRef.current;
-    if (!list) return;
-    const observer = new ResizeObserver(rest);
-    observer.observe(list);
-    return () => observer.disconnect();
-  }, [pathname, rest]);
-
   return (
-    <ul
-      id="prime_nav"
-      ref={listRef}
-      className="nav-list"
-      style={{ listStyle: "none", padding: 0, margin: 0 }}
-      onMouseOver={(e) => moveTo(rowOf(e.target))}
-      onMouseLeave={rest}
-      onFocus={(e) => moveTo(rowOf(e.target))}
-      onBlur={rest}
-    >
-      <span ref={pillRef} className="nav-pill" aria-hidden />
+    <ul id="prime_nav" className="nav-list" style={{ listStyle: "none", padding: 0, margin: 0 }}>
       {items.map((item) => (
         <NavNode key={item.label} item={item} onNavigate={onNavigate} />
       ))}

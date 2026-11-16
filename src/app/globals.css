@@ -1116,11 +1116,14 @@ blockquote::before, blockquote::after { content: ""; content: none; }
   /* Sidebar navigation: real hover and current-page states */
   .nav-list { position: relative; }
   .nav-list > li { position: relative; z-index: 1; }
-  .nav-pill { position: absolute; z-index: 0; top: 0; left: 0; right: 0; border-radius: 10px; background: var(--warm-soft); opacity: 0; pointer-events: none; transition: transform 0.35s cubic-bezier(0.34, 1.3, 0.5, 1), height 0.3s ease, opacity 0.2s ease; }
+  /* Each row tints itself: no moving pill, so nothing to lag behind the cursor. */
+  .nav-list [data-navrow] { border-radius: 10px; background: transparent; transition: background-color 0.12s ease-out; }
+  .nav-list [data-navrow]:has(.nav-link[data-active="true"]) { background: var(--warm-soft); }
+  @media (hover: hover) { .nav-list [data-navrow]:hover { background: var(--warm-soft); } }
+  .nav-list [data-navrow]:has(:focus-visible) { background: var(--warm-soft); }
   .nav-link { padding-right: 0.9em; color: #000; border-radius: 10px; transition: color 0.2s; }
   .nav-link:hover, .nav-link:focus-visible { color: var(--accent-text); }
   .nav-link[data-active="true"] { color: var(--accent-text); }
-  @media (prefers-reduced-motion: reduce) { .nav-pill { transition: opacity 0.2s ease; } }
   .nav-toggle { display: grid; flex-shrink: 0; width: 2.2rem; height: 2.2rem; margin-right: 0.5rem; place-items: center; border: 0; border-radius: 999px; background: var(--accent-soft); color: var(--accent-text); cursor: pointer; transition: background-color 0.15s, color 0.15s; }
   .nav-toggle:hover, .nav-toggle[aria-expanded="true"] { background: var(--accent); color: #fff; }
   .nav-toggle svg { transition: transform 0.2s ease; }
@@ -1330,7 +1333,7 @@ blockquote::before, blockquote::after { content: ""; content: none; }
     .mobile-drawer #access { margin: 0.75rem 0 1rem; }
     .mobile-drawer .loop-account { margin-top: 0.75rem; }
     .mobile-drawer .nav-link { min-height: 3rem; }
-    .mobile-drawer .nav-pill { display: none; } /* the hover pill sticks on touch screens */
+    .mobile-drawer .nav-list [data-navrow] { background: transparent; } /* the drawer tints the link itself */
     .mobile-drawer .nav-link[data-active="true"] { background: var(--warm-soft); }
     /* Inputs under 16px make iOS zoom the page on focus. */
     .input, textarea, select, input[type="text"], input[type="email"], input[type="search"] { font-size: 1rem; }
