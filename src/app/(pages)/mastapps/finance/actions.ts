@@ -40,8 +40,18 @@ function isSensibleDate(value: string): boolean {
   return !Number.isNaN(date.getTime()) && date.toISOString().startsWith(value) && date.getTime() <= limit && date.getUTCFullYear() >= 2020;
 }
 
-export async function addEntry(formData: FormData) {
-  const actor = await requireFinance("write");
+interface ParsedEntry {
+  occurred_on: string;
+  amount_cents: number;
+  category: string;
+  counterparty: string;
+  description: string;
+  activity_id: string | null;
+  activity_label: string;
+}
+
+/** Validates the entry form shared by "add" and "edit": every rule in one place, so an edit cannot sneak past a check. */
+async function parseEntryForm(formData: FormData): Promise<ParsedEntry> {
   const parsed = entrySchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success || !isSensibleDate(parsed.data.occurred_on)) fail("invalid");
   const data = parsed.data;
@@ -57,16 +67,85 @@ export async function addEntry(formData: FormData) {
     activityLabel = activity.name;
   }
 
-  const signed = data.direction === "in" ? data.amount : -data.amount;
+  return {
+    occurred_on: data.occurred_on,
+    amount_cents: data.direction === "in" ? data.amount : -data.amount,
+    category: data.category,
+    counterparty: data.counterparty,
+    description: data.description,
+    activity_id: data.activity_id ?? null,
+    activity_label: activityLabel,
+  };
+}
+
+export async function addEntry(formData: FormData) {
+  const actor = await requireFinance("write");
+  const e = await parseEntryForm(formData);
   await sql`
     INSERT INTO finance_entries (occurred_on, amount_cents, category, counterparty, description, activity_id, activity_label, created_by_id, created_by_name)
-    VALUES (${data.occurred_on}, ${signed}, ${data.category}, ${data.counterparty}, ${data.description}, ${data.activity_id ?? null}, ${activityLabel}, ${actor.userId}, ${actor.name})
+    VALUES (${e.occurred_on}, ${e.amount_cents}, ${e.category}, ${e.counterparty}, ${e.description}, ${e.activity_id}, ${e.activity_label}, ${actor.userId}, ${actor.name})
   `;
   revalidatePath(HOME, "layout");
   redirect(`${LEDGER}&notice=added`);
 }
 
-/** Entries are never edited or deleted: a mistake is cancelled by an equal and opposite entry, with the reason. */
+const SNAPSHOT_COLUMNS = sql`to_char(occurred_on, 'YYYY-MM-DD') AS occurred_on, amount_cents::float8, category, counterparty, description, activity_label`;
+
+/** An entry still inside its edit window (the database enforces this too): not sealed, not a reversal. */
+async function findOpenEntry(entryId: string) {
+  const [row] = await sql<ParsedEntry[]>`
+    SELECT ${SNAPSHOT_COLUMNS}, activity_id FROM finance_entries
+    WHERE id = ${entryId} AND seq IS NULL AND reverses_id IS NULL AND created_at > NOW() - finance_edit_window()
+  `;
+  return row;
+}
+
+/** Corrects an open entry. The old and new values are written to the audit log. */
+export async function updateEntry(formData: FormData) {
+  const actor = await requireFinance("write");
+  const entryId = id.safeParse(formData.get("id"));
+  if (!entryId.success) fail("invalid");
+  const before = await findOpenEntry(entryId.data);
+  if (!before) fail("locked");
+  const after = await parseEntryForm(formData);
+
+  try {
+    await sql`
+      UPDATE finance_entries SET occurred_on = ${after.occurred_on}, amount_cents = ${after.amount_cents}, category = ${after.category},
+        counterparty = ${after.counterparty}, description = ${after.description}, activity_id = ${after.activity_id}, activity_label = ${after.activity_label}
+      WHERE id = ${entryId.data} AND seq IS NULL
+    `;
+  } catch (error) {
+    if ((error as { code?: string }).code === "23000") fail("locked");
+    throw error;
+  }
+  await logAudit(actor, "entry_edited", { id: entryId.data, before, after });
+  revalidatePath(HOME, "layout");
+  redirect(`${LEDGER}&notice=updated`);
+}
+
+/** Deletes an open entry that has no receipts. The deleted values are written to the audit log. */
+export async function deleteEntry(formData: FormData) {
+  const actor = await requireFinance("write");
+  const entryId = id.safeParse(formData.get("id"));
+  if (!entryId.success) fail("invalid");
+  const before = await findOpenEntry(entryId.data);
+  if (!before) fail("locked");
+
+  try {
+    await sql`DELETE FROM finance_entries WHERE id = ${entryId.data} AND seq IS NULL`;
+  } catch (error) {
+    const code = (error as { code?: string }).code;
+    if (code === "23503") fail("has-receipts");
+    if (code === "23000") fail("locked");
+    throw error;
+  }
+  await logAudit(actor, "entry_deleted", { id: entryId.data, before });
+  revalidatePath(HOME, "layout");
+  redirect(`${LEDGER}&notice=deleted`);
+}
+
+/** Once an entry is sealed (after its edit window) a mistake is cancelled by an equal and opposite entry, with the reason. */
 export async function reverseEntry(formData: FormData) {
   const actor = await requireFinance("write");
   const parsedId = id.safeParse(formData.get("id"));
@@ -77,7 +156,7 @@ export async function reverseEntry(formData: FormData) {
 
   const [original] = await sql<{ amount_cents: number; occurred_on: string; category: string; counterparty: string; activity_id: string | null; activity_label: string; description: string }[]>`
     SELECT amount_cents::float8, to_char(occurred_on, 'YYYY-MM-DD') AS occurred_on, category, counterparty, activity_id, activity_label, description
-    FROM finance_entries WHERE id = ${entryId} AND reverses_id IS NULL
+    FROM finance_entries WHERE id = ${entryId} AND reverses_id IS NULL AND seq IS NOT NULL
   `;
   if (!original) fail("invalid");
 

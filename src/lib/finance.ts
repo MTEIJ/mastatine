@@ -22,7 +22,8 @@ export const categoryLabel = (value: string): string => CATEGORIES.find((c) => c
 
 export interface Entry {
   id: string;
-  seq: number;
+  /** Null while the entry is open: it gets its number when it is sealed into the chain. */
+  seq: number | null;
   occurred_on: string;
   amount_cents: number;
   category: Category;
@@ -34,6 +35,9 @@ export interface Entry {
   reversed_by_id: string | null;
   created_by_name: string;
   created_at: Date;
+  /** Open entries can still be edited or deleted, until this moment. */
+  open: boolean;
+  locks_at: Date;
   receipts: { id: string; original_name: string }[];
 }
 
@@ -56,11 +60,12 @@ export async function listEntries(filters: EntryFilters, page: number): Promise<
   const rows = await sql<Entry[]>`
     SELECT e.id, e.seq::float8, to_char(e.occurred_on, 'YYYY-MM-DD') AS occurred_on, e.amount_cents::float8, e.category, e.counterparty,
       e.description, e.activity_id, e.activity_label, e.reverses_id, e.created_by_name, e.created_at,
+      (e.seq IS NULL) AS open, e.created_at + finance_edit_window() AS locks_at,
       (SELECT r.id FROM finance_entries r WHERE r.reverses_id = e.id) AS reversed_by_id,
       COALESCE((SELECT json_agg(json_build_object('id', f.id, 'original_name', f.original_name) ORDER BY f.created_at)
                 FROM finance_receipts f WHERE f.entry_id = e.id), '[]'::json) AS receipts
     FROM finance_entries e WHERE ${where}
-    ORDER BY e.occurred_on DESC, e.seq DESC LIMIT ${PAGE_SIZE + 1} OFFSET ${(page - 1) * PAGE_SIZE}
+    ORDER BY e.occurred_on DESC, e.created_at DESC LIMIT ${PAGE_SIZE + 1} OFFSET ${(page - 1) * PAGE_SIZE}
   `;
   return { entries: rows.slice(0, PAGE_SIZE), hasMore: rows.length > PAGE_SIZE };
 }
@@ -150,14 +155,14 @@ export interface ChainReport {
   problems: { seq: number; problem: string }[];
 }
 
-/** Re-computes every hash and link. Detects edited rows, deleted rows in the middle and broken links. */
+/** Re-computes every hash and link of the sealed entries (open ones are not part of the chain yet). Detects edited rows, deleted rows in the middle and broken links. */
 export async function verifyChain(): Promise<ChainReport> {
   const rows = await sql<{ seq: number; hash_ok: boolean; link_ok: boolean; gap: boolean; entry_hash: string }[]>`
     SELECT e.seq::int, e.entry_hash,
       e.entry_hash = finance_entry_hash(e) AS hash_ok,
       e.prev_hash = COALESCE(LAG(e.entry_hash) OVER (ORDER BY e.seq), repeat('0', 64)) AS link_ok,
       e.seq <> COALESCE(LAG(e.seq) OVER (ORDER BY e.seq), 0) + 1 AS gap
-    FROM finance_entries e ORDER BY e.seq
+    FROM finance_entries e WHERE e.seq IS NOT NULL ORDER BY e.seq
   `;
   const problems = rows.flatMap((r) => [
     ...(r.hash_ok ? [] : [{ seq: r.seq, problem: "content does not match its hash" }]),
@@ -165,6 +170,11 @@ export async function verifyChain(): Promise<ChainReport> {
     ...(r.gap ? [{ seq: r.seq, problem: "an entry before this one is missing" }] : []),
   ]);
   return { ok: problems.length === 0, count: rows.length, headHash: rows.at(-1)?.entry_hash ?? null, problems };
+}
+
+/** Seals every entry whose edit window has ended into the hash chain. Cheap and safe to call on every request. */
+export async function sealDueEntries(): Promise<void> {
+  await sql`SELECT finance_seal_due()`;
 }
 
 /** Who did what. Written for budget changes and exports; the ledger itself records who added each entry. */

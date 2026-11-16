@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import sql from "@/lib/db";
-import { logAudit } from "@/lib/finance";
+import { logAudit, sealDueEntries } from "@/lib/finance";
 import { getFinanceAccess } from "@/lib/finance-access";
 import { centsToDecimal } from "@/lib/finance-money";
 
@@ -10,17 +10,18 @@ function cell(value: string): string {
   return `"${safe.replaceAll('"', '""')}"`;
 }
 
-/** The whole ledger as CSV for the annual accounts or the kascommissie, including each row's hash. */
+/** The sealed ledger as CSV (entries still in their edit window are not included yet) for the annual accounts or the kascommissie, including each row's hash. */
 export async function GET() {
   const access = await getFinanceAccess();
   if (!access) return new NextResponse("Not found", { status: 404 });
 
+  await sealDueEntries();
   const rows = await sql<
     { seq: number; occurred_on: string; amount_cents: number; category: string; counterparty: string; description: string; activity_label: string; reverses_seq: number | null; created_by_name: string; created_at: Date; entry_hash: string }[]
   >`
     SELECT e.seq::int, to_char(e.occurred_on, 'YYYY-MM-DD') AS occurred_on, e.amount_cents::float8, e.category, e.counterparty,
       e.description, e.activity_label, o.seq::int AS reverses_seq, e.created_by_name, e.created_at, e.entry_hash
-    FROM finance_entries e LEFT JOIN finance_entries o ON o.id = e.reverses_id ORDER BY e.seq
+    FROM finance_entries e LEFT JOIN finance_entries o ON o.id = e.reverses_id WHERE e.seq IS NOT NULL ORDER BY e.seq
   `;
   await logAudit(access, "export_csv", { rows: rows.length });
 

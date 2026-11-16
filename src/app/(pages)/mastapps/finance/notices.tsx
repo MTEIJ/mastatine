@@ -1,5 +1,9 @@
 const NOTICES: Record<string, { text: string; tone: "ok" | "bad" }> = {
   added: { text: "Entry added to the ledger.", tone: "ok" },
+  updated: { text: "Entry updated. The change is in the audit log.", tone: "ok" },
+  deleted: { text: "Entry deleted. The deletion is in the audit log.", tone: "ok" },
+  locked: { text: "Nothing changed. That entry is sealed, or is a reversal. Use a reversal to correct it.", tone: "bad" },
+  "has-receipts": { text: "Not deleted: this entry has receipts attached. Correct it instead, or reverse it once it is sealed.", tone: "bad" },
   reversed: { text: "Entry reversed. The original stays in the ledger, cancelled by a new entry.", tone: "ok" },
   "budget-saved": { text: "Budget saved.", tone: "ok" },
   "receipt-added": { text: "Receipt attached.", tone: "ok" },

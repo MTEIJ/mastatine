@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORY_VALUES, type Category } from "@/lib/finance";
+import { CATEGORY_VALUES, sealDueEntries, type Category } from "@/lib/finance";
 import { requireFinance } from "@/lib/finance-access";
 import Notice from "./notices";
 import BudgetsView from "./_views/BudgetsView";
@@ -31,6 +31,7 @@ export default async function Finance(props: { searchParams: Promise<SearchParam
   // Layouts do not re-run on client navigation, so each page checks access itself.
   const access = await requireFinance();
   const params = await props.searchParams;
+  await sealDueEntries();
   const view: ViewId = VIEWS.find((v) => v.id === params.view)?.id ?? "overview";
 
   const thisYear = new Date().getFullYear();

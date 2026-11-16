@@ -5,7 +5,8 @@ import { CATEGORIES, categoryLabel, listActivityOptions, listEntries, type Categ
 import type { FinanceAccess } from "@/lib/finance-access";
 import { formatCents } from "@/lib/finance-money";
 import { formatDate } from "@/lib/news";
-import { addEntry, reverseEntry } from "../actions";
+import { addEntry, deleteEntry, reverseEntry, updateEntry } from "../actions";
+import EntryFields from "./EntryFields";
 
 export interface LedgerParams {
   page: number;
@@ -14,7 +15,7 @@ export interface LedgerParams {
   activityId?: string;
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
+const shortDate = (d: Date) => new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 
 export default async function LedgerView({ access, params }: { access: FinanceAccess; params: LedgerParams }) {
   const { page, year, category, activityId } = params;
@@ -27,52 +28,15 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
       <div className="section-head !mb-0">
         <div>
           <h2 id="ledger-title">Ledger</h2>
-          <p>Every entry is permanent. A mistake is fixed with a reversal.</p>
+          <p>New entries can be corrected or deleted for 3 days. After that they are sealed and only a reversal can fix them.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <a href="/mastapps/finance/export" className="btn btn-secondary btn-sm" download>Download CSV</a>
           {access.canWrite && (
-            <Modal label="Add entry" title="Add an entry" description="Entries cannot be edited or deleted later. Donor names are personal data: only note what you need." triggerClassName="btn btn-primary btn-sm">
-              <form action={addEntry} className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="label" htmlFor="direction">Money</label>
-                  <select id="direction" name="direction" className="input" defaultValue="in">
-                    <option value="in">In</option>
-                    <option value="out">Out</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="label" htmlFor="amount">Amount (€)</label>
-                  <input id="amount" name="amount" className="input" inputMode="decimal" required placeholder="12,50" />
-                </div>
-                <div className="col-span-2">
-                  <label className="label" htmlFor="occurred_on">Date</label>
-                  <input id="occurred_on" name="occurred_on" type="date" className="input" required defaultValue={today()} max={today()} />
-                </div>
-                <div className="col-span-2">
-                  <label className="label" htmlFor="category">Category</label>
-                  <select id="category" name="category" className="input" defaultValue="donation">
-                    {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label} ({c.direction === "either" ? "in or out" : c.direction})</option>)}
-                  </select>
-                </div>
-                <div className="col-span-2">
-                  <label className="label" htmlFor="description">What for</label>
-                  <input id="description" name="description" className="input" required maxLength={300} />
-                </div>
-                <div className="col-span-2">
-                  <label className="label" htmlFor="counterparty">From / to (optional)</label>
-                  <input id="counterparty" name="counterparty" className="input" maxLength={120} placeholder="Donor or supplier" />
-                </div>
-                <div className="col-span-2">
-                  <label className="label" htmlFor="activity_id">Activity (optional)</label>
-                  <select id="activity_id" name="activity_id" className="input" defaultValue="">
-                    <option value="">Not tied to an activity</option>
-                    {activities.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-                  </select>
-                </div>
-                <div className="col-span-2 pt-1">
-                  <button type="submit" className="btn btn-primary w-full sm:w-auto">Add to ledger</button>
-                </div>
+            <Modal label="Add entry" title="Add an entry" description="You can correct or delete it for 3 days; after that it is sealed. Donor names are personal data: only note what you need." triggerClassName="btn btn-primary btn-sm">
+              <form action={addEntry} className="space-y-4">
+                <EntryFields idPrefix="add" activities={activities} />
+                <button type="submit" className="btn btn-primary w-full sm:w-auto">Add to ledger</button>
               </form>
             </Modal>
           )}
@@ -113,7 +77,7 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
               const cancelled = e.reversed_by_id != null;
               return (
                 <tr key={e.id} className={cancelled ? "text-muted line-through decoration-1" : undefined}>
-                  <td data-label="No." className="tabular-nums text-muted">{e.seq}</td>
+                  <td data-label="No." className="tabular-nums text-muted">{e.seq ?? "–"}</td>
                   <td data-label="Date" className="whitespace-nowrap">{formatDate(e.occurred_on)}</td>
                   <td data-primary>
                     <span className="font-medium">{e.description}</span>
@@ -123,6 +87,7 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
                       {e.activity_label && <> · <Link href={`/mastapps/finance?view=ledger&activity=${e.activity_id}`} className="hover:text-accent-text">{e.activity_label}</Link></>}
                       {` · by ${e.created_by_name}`}
                     </span>
+                    {e.open && <span className="badge mt-1 inline-block !bg-soft !font-medium !text-muted">Open until {shortDate(e.locks_at)}</span>}
                   </td>
                   <td data-label="Amount" className={`whitespace-nowrap text-right font-medium tabular-nums ${e.amount_cents < 0 ? "" : "text-accent-text"}`}>{formatCents(e.amount_cents)}</td>
                   <td data-label="Receipts" className="no-underline">
@@ -139,20 +104,35 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
                       {cancelled && <span className="text-xs">reversed</span>}
                       {e.reverses_id != null && <span className="text-xs">reversal</span>}
                       {!cancelled && e.reverses_id == null && (
-                        <Modal label="Manage" triggerLabel={`Manage entry ${e.seq}`} title={`Entry ${e.seq}`} description={e.description} triggerClassName="btn btn-secondary btn-sm max-sm:w-full">
+                        <Modal label="Manage" triggerLabel={`Manage entry ${e.seq ?? "(open)"}`} title={e.seq ? `Entry ${e.seq}` : "Open entry"} description={e.open ? `You can still change this until ${shortDate(e.locks_at)}.` : e.description} triggerClassName="btn btn-secondary btn-sm max-sm:w-full">
                           <div className="space-y-5 text-sm">
-                            <form action="/mastapps/finance/receipts" method="post" encType="multipart/form-data" className="space-y-2">
+                            {e.open && (
+                              <form action={updateEntry} className="space-y-4">
+                                <input type="hidden" name="id" value={e.id} />
+                                <EntryFields idPrefix={`edit-${e.id}`} activities={activities} entry={e} />
+                                <button className="btn btn-primary btn-sm" type="submit">Save changes</button>
+                              </form>
+                            )}
+                            <form action="/mastapps/finance/receipts" method="post" encType="multipart/form-data" className={`space-y-2 ${e.open ? "border-t border-line pt-5" : ""}`}>
                               <input type="hidden" name="entry_id" value={e.id} />
                               <label className="label" htmlFor={`file-${e.id}`}>Attach a receipt</label>
                               <input id={`file-${e.id}`} name="file" type="file" required accept="image/*,application/pdf" className="w-full text-sm" />
                               <button className="btn btn-secondary btn-sm" type="submit">Attach</button>
                             </form>
-                            <form action={reverseEntry} className="space-y-2 border-t border-line pt-5">
-                              <input type="hidden" name="id" value={e.id} />
-                              <label className="label" htmlFor={`why-${e.id}`}>Reverse this entry</label>
-                              <input id={`why-${e.id}`} name="reason" className="input" required maxLength={200} placeholder="Reason" />
-                              <ConfirmButton className="btn btn-danger btn-sm" message="Reverse this entry? The original stays in the ledger and a cancelling entry is added.">Reverse</ConfirmButton>
-                            </form>
+                            {e.open ? (
+                              <form action={deleteEntry} className="space-y-2 border-t border-line pt-5">
+                                <input type="hidden" name="id" value={e.id} />
+                                <p className="text-muted">Deleting removes the entry completely (it stays in the audit log). Entries with receipts cannot be deleted.</p>
+                                <ConfirmButton className="btn btn-danger btn-sm" message="Delete this entry? This cannot be undone.">Delete entry</ConfirmButton>
+                              </form>
+                            ) : (
+                              <form action={reverseEntry} className="space-y-2 border-t border-line pt-5">
+                                <input type="hidden" name="id" value={e.id} />
+                                <label className="label" htmlFor={`why-${e.id}`}>Reverse this entry</label>
+                                <input id={`why-${e.id}`} name="reason" className="input" required maxLength={200} placeholder="Reason" />
+                                <ConfirmButton className="btn btn-danger btn-sm" message="Reverse this entry? The original stays in the ledger and a cancelling entry is added.">Reverse</ConfirmButton>
+                              </form>
+                            )}
                           </div>
                         </Modal>
                       )}
