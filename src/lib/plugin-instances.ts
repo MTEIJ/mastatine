@@ -53,6 +53,25 @@ export const regenerateToken = (id: string) => sql`UPDATE activity_plugins SET p
 
 export const deleteInstance = (id: string) => sql`DELETE FROM activity_plugins WHERE id = ${id}`;
 
+export interface InstalledPlugin {
+  id: string;
+  plugin_id: string;
+  enabled: boolean;
+  activity_id: string;
+  activity_name: string;
+  starts_at: Date;
+}
+
+/** Plugins switched on (or off) for the activities this user organises; admins see all. Same scope as the activity "mine" list. */
+export function getManagedInstances(user: { id: string; role?: string | null }) {
+  const scope = user.role === "admin" ? sql`TRUE` : sql`a.committee_id IN (SELECT committee_id FROM committee_members WHERE user_id = ${user.id})`;
+  return sql<InstalledPlugin[]>`
+    SELECT p.id, p.plugin_id, p.enabled, a.id AS activity_id, a.name AS activity_name, a.starts_at
+    FROM activity_plugins p JOIN activities a ON a.id = p.activity_id
+    WHERE ${scope} ORDER BY a.starts_at DESC, p.position LIMIT 200
+  `;
+}
+
 /** How many activities use each plugin. Counts only: the library must not reveal hidden activities. */
 export async function getUsageCounts(): Promise<Map<string, number>> {
   const rows = await sql<{ plugin_id: string; n: number }[]>`SELECT plugin_id, COUNT(*)::int AS n FROM activity_plugins WHERE enabled GROUP BY plugin_id`;

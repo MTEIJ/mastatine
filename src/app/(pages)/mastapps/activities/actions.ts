@@ -226,7 +226,7 @@ export async function subscribe(_prev: SubscribeState, formData: FormData): Prom
   if (created.length > 0) {
     after(async () => {
       await sendSubscriptionConfirmation(id, session.user.id);
-      await logActivityEvent(id, "subscribed");
+      await logActivityEvent(id, "subscribed", session.user.id);
     });
     await sql`DELETE FROM activity_waitlist WHERE activity_id = ${id} AND user_id = ${session.user.id}`;
   }

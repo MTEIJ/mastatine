@@ -1,12 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getPluginViewer } from "@/lib/plugin-access";
 import { MAX_PLUGINS_PER_ACTIVITY, createInstance, deleteInstance, getInstance, getInstances, regenerateToken, setEnabled, updateConfig } from "@/lib/plugin-instances";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { requireNamedSession } from "@/lib/session";
-import { getPlugin } from "@/plugins/registry";
+import { getPlugin, resolvePlugin } from "@/plugins/registry";
 
 const limiter = createRateLimiter(60, 60 * 60 * 1000);
 
@@ -40,6 +41,8 @@ export async function addPlugin(formData: FormData): Promise<void> {
   if ((await getInstances(activityId.data)).length >= MAX_PLUGINS_PER_ACTIVITY) return;
   await createInstance(activityId.data, plugin.id, plugin.defaultConfig as Record<string, unknown>);
   refresh(activityId.data);
+  // The new plugin starts with default settings: take the organiser straight to them.
+  redirect(`/mastapps/activities/${activityId.data}/plugins`);
 }
 
 export interface SettingsState {
@@ -53,7 +56,13 @@ export async function saveSettings(_prev: SettingsState, formData: FormData): Pr
   if (!instance || !plugin) return { error: "You cannot change this plugin." };
   const parsed = plugin.configSchema.safeParse(plugin.configFromForm(formData));
   if (!parsed.success) return { error: "Some settings are not valid. Check the fields and try again." };
+  const previous = resolvePlugin(instance)?.config ?? plugin.defaultConfig;
   await updateConfig(instance.id, parsed.data as Record<string, unknown>);
+  try {
+    await plugin.onSaved?.({ instance: { ...instance, config: parsed.data }, config: parsed.data, previous });
+  } catch (error) {
+    console.error(`Plugin ${instance.plugin_id} failed after saving settings:`, (error as Error).message);
+  }
   refresh(instance.activity_id);
   return { saved: true };
 }

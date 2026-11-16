@@ -6,7 +6,7 @@ import FullScreenApp from "./FullScreenApp";
 import NewsletterBand from "./NewsletterBand";
 import { AppTabBar, AppTopBar } from "./AppChrome";
 import InstallBanner from "@/components/InstallBanner";
-import { isFullScreenAppPath, isInformationPath } from "@/lib/paths";
+import { isFullScreenAppPath, isInformationPath, isStandalonePath } from "@/lib/paths";
 
 interface AppShellProps {
   /** The regular site chrome, rendered on the server and passed in. */
@@ -20,6 +20,8 @@ interface AppShellProps {
 /** MastApps open full screen as a dashboard; every other page keeps the site layout (sidebar + footer). */
 export default function AppShell({ sidebar, colophon, announcement, children }: AppShellProps) {
   const pathname = usePathname();
+
+  if (isStandalonePath(pathname)) return <>{children}</>;
 
   if (isFullScreenAppPath(pathname)) {
     return <FullScreenApp>{children}</FullScreenApp>;

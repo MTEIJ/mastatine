@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { canMark, cleanPlayerName, firstName, gridRows, parseConfig, rankPlayers, timingSafeEqual } from "./logic";
+import { canMark, cleanPlayerName, firstName, gridRows, parseConfig, playerIdForUser, rankPlayers, timingSafeEqual } from "./logic";
 
 const player = { editKey: "secret-key" };
 const nobody = { isManager: false, playerKey: null };
@@ -35,12 +35,17 @@ describe("timingSafeEqual", () => {
 
 describe("parseConfig", () => {
   it("accepts a valid config", () => {
-    assert.deepEqual(parseConfig({ title: " Advent ", editMode: "self" }), { title: "Advent", editMode: "self" });
+    assert.deepEqual(parseConfig({ title: " Advent ", editMode: "self" }), { title: "Advent", editMode: "self", autoAddSubscribers: false });
+  });
+
+  it("reads the auto-add option, and treats it as off for boards saved before it existed", () => {
+    assert.equal(parseConfig({ title: "A", editMode: "anyone", autoAddSubscribers: true }).autoAddSubscribers, true);
+    assert.equal(parseConfig({ title: "A", editMode: "anyone" }).autoAddSubscribers, false);
   });
 
   it("falls back to the defaults for anything malformed", () => {
     for (const bad of [null, {}, { title: "", editMode: "anyone" }, { title: "x", editMode: "root" }, "nope", { title: "x".repeat(61), editMode: "anyone" }]) {
-      assert.deepEqual(parseConfig(bad), { title: "Scoreboard", editMode: "anyone" });
+      assert.deepEqual(parseConfig(bad), { title: "Scoreboard", editMode: "anyone", autoAddSubscribers: false });
     }
   });
 });
@@ -79,5 +84,20 @@ describe("ranking and grid", () => {
 
   it("is empty when nobody scored", () => {
     assert.deepEqual(gridRows([{ id: "1", name: "A", marks: 0 }]), []);
+  });
+});
+
+describe("playerIdForUser", () => {
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+  it("is a stable UUID per person and board", () => {
+    const id = playerIdForUser("board-1", "user-1");
+    assert.match(id, uuid);
+    assert.equal(playerIdForUser("board-1", "user-1"), id);
+  });
+
+  it("differs between people and between boards", () => {
+    assert.notEqual(playerIdForUser("board-1", "user-1"), playerIdForUser("board-1", "user-2"));
+    assert.notEqual(playerIdForUser("board-1", "user-1"), playerIdForUser("board-2", "user-1"));
   });
 });

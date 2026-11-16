@@ -3,7 +3,7 @@ import AutoRefresh from "./AutoRefresh";
 import { DEFAULT_CONFIG, EDIT_MODES, EDIT_MODE_LABELS, scoreboardConfigSchema } from "./logic";
 import Manage from "./Manage";
 import ScoreboardView from "./ScoreboardView";
-import { getPlayers } from "./store";
+import { addSubscriber, getPlayers, importSubscribers } from "./store";
 
 
 export default definePlugin({
@@ -12,13 +12,17 @@ export default definePlugin({
   description: "Keep score per person, like last year's advent calendar sheet. Has a public page without login, and can be set so everyone ticks their own row.",
   configSchema: scoreboardConfigSchema,
   defaultConfig: DEFAULT_CONFIG,
-  configFromForm: (form) => ({ title: form.get("title"), editMode: form.get("editMode") }),
+  configFromForm: (form) => ({ title: form.get("title"), editMode: form.get("editMode"), autoAddSubscribers: form.get("autoAddSubscribers") === "on" }),
 
   ConfigFields: ({ config }) => (
     <div className="space-y-4">
       <label className="block">
         <span className="label">Title</span>
         <input className="input" name="title" defaultValue={config.title} maxLength={60} required />
+      </label>
+      <label className="flex items-start gap-2 text-sm">
+        <input type="checkbox" name="autoAddSubscribers" defaultChecked={config.autoAddSubscribers} className="mt-1" />
+        <span><strong>Add everyone who subscribes.</strong> People who subscribe now and later are added by first name. Someone you remove stays off, unless they subscribe again.</span>
       </label>
       <fieldset className="space-y-2">
         <legend className="label">Who may add marks?</legend>
@@ -33,6 +37,15 @@ export default definePlugin({
   ),
 
   Manage,
+
+  onEvent: async ({ instance, config, event, userId }) => {
+    if (config.autoAddSubscribers && event === "subscribed" && userId) await addSubscriber(instance.id, userId);
+  },
+
+  // Switching the option on picks up the people who subscribed before.
+  onSaved: async ({ instance, config, previous }) => {
+    if (config.autoAddSubscribers && !previous.autoAddSubscribers) await importSubscribers(instance.id, instance.activity_id, "subscription");
+  },
 
   // Player names are first names of people who signed up. The activity page only shows "Who is going" to signed-in
   // visitors, so the board follows the same rule there. (The public link is deliberately open to whoever has it.)

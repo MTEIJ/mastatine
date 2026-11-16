@@ -4,7 +4,7 @@ A plugin is an extra tool a committee can switch on for one activity, for exampl
 calendar. Plugins are code in this repository and are added through a pull request; there is no uploading.
 
 Committees use them from an activity: **Activity → Plugins → Add**. The overview of everything available is at
-`/mastapps/plugins`.
+`/mastapps/plugins`, with an **Installed** tab (what is switched on for your activities) and an **Explore** tab (everything available, with an "Add to" picker).
 
 ## How it fits together
 
@@ -16,7 +16,7 @@ Committees use them from an activity: **Activity → Plugins → Add**. The over
 | Instances: which plugin is on for which activity | table `activity_plugins`, `src/lib/plugin-instances.ts` |
 | Per-instance storage for plugins | table `plugin_data`, `src/lib/plugin-data.ts` |
 | Manage page (settings, link, add/remove) | `/mastapps/activities/[id]/plugins` |
-| Public page without login | `/p/<token>` |
+| Public page without login | `/p/<token>`: standalone and full screen, without the site header, sidebar or footer (`isStandalonePath`) |
 | Signup events | `src/plugins/events.ts`, called from `logActivityEvent` |
 
 ## Writing a plugin
@@ -33,7 +33,8 @@ What a definition provides:
 - `Manage` (optional): extra tools for organisers beside the settings.
 - `ActivitySection` (optional): a block on the activity page.
 - `PublicPage` (optional): the page at `/p/<token>`. Without it the plugin has no public address.
-- `onEvent` (optional): runs after a subscribe, unsubscribe or waitlist join.
+- `onEvent` (optional): runs after a subscribe, unsubscribe or waitlist join. `userId` is the person (null when unknown).
+- `onSaved` (optional): runs after an organiser saved the settings, with the previous settings, so a plugin can act on a changed option.
 
 ## Rules that keep it safe
 
@@ -56,5 +57,9 @@ Keeps a free-form number of marks per player. Settings: a title and who may add 
 - **Anyone with the link**: everyone with `/p/<token>` can add or undo marks for anybody.
 - **Only the committee**: the public page is read-only.
 - **Everyone only their own**: every player gets a personal link (`/p/<token>?p=<key>`) that only changes their row.
+
+Another option adds everyone who subscribes, now and later, by first name. Switching it on imports the current subscribers; someone an organiser removed stays off unless they subscribe again. Subscribers get a fixed player id per board, so adding the same person twice is harmless.
+
+The look lives in `src/plugins/scoreboard/scoreboard.css` (`.sb-*` classes). The same board markup is themed light on the activity page and dark and festive on the full-screen page.
 
 Every mark is its own row in `plugin_data` with who made it (`link`, `self` or `committee:<user id>`) and when.

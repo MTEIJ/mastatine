@@ -44,8 +44,10 @@ export interface PluginDefinition<Config = unknown> {
   ActivitySection?: (props: { instance: PluginInstance; config: Config; viewer: PluginViewer }) => ReactNode | Promise<ReactNode>;
   /** The no-login page at /p/<token>. Without it the plugin has no public address. */
   PublicPage?: (props: { instance: PluginInstance; config: Config; viewer: PluginViewer; search: Record<string, string | undefined> }) => ReactNode | Promise<ReactNode>;
-  /** Called after someone subscribes, unsubscribes or joins the waitlist. Failures are logged and never block the person. */
-  onEvent?: (props: { instance: PluginInstance; config: Config; event: PluginEvent }) => Promise<void>;
+  /** Called after someone subscribes, unsubscribes or joins the waitlist (`userId` is the person, when known). Failures are logged and never block the person. */
+  onEvent?: (props: { instance: PluginInstance; config: Config; event: PluginEvent; userId: string | null }) => Promise<void>;
+  /** Called after an organiser saved the settings, with what they were before. Lets a plugin act on a changed option. */
+  onSaved?: (props: { instance: PluginInstance; config: Config; previous: Config }) => Promise<void>;
 }
 
 /** Identity function that checks a definition against the contract while keeping its Config type. */

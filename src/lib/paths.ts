@@ -9,6 +9,11 @@ export function isAdminPath(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
+/** Public plugin pages (/p/<token>) stand alone: no site header, sidebar or footer, they bring their own full-screen look. */
+export function isStandalonePath(pathname: string): boolean {
+  return pathname.startsWith("/p/");
+}
+
 /** Individual MastApps (/mastapps/<app>/...) and the admin area open full screen; the MastApps overview itself stays inside the website. */
 export function isFullScreenAppPath(pathname: string): boolean {
   return pathname.startsWith("/mastapps/") || isAdminPath(pathname);

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { z } from "zod";
 
 /** Pure scoreboard rules: no database, no React, so they are easy to test and safe to import anywhere. */
@@ -18,10 +19,12 @@ export const MAX_NAME = 40;
 export const scoreboardConfigSchema = z.object({
   title: z.string().trim().min(1).max(60),
   editMode: z.enum(EDIT_MODES),
+  /** Everyone who subscribes to the activity (now and later) is added to the board automatically. */
+  autoAddSubscribers: z.boolean().default(false),
 });
 export type ScoreboardConfig = z.infer<typeof scoreboardConfigSchema>;
 
-export const DEFAULT_CONFIG: ScoreboardConfig = { title: "Scoreboard", editMode: "anyone" };
+export const DEFAULT_CONFIG: ScoreboardConfig = { title: "Scoreboard", editMode: "anyone", autoAddSubscribers: false };
 
 /** Settings from the database; anything malformed falls back to the defaults. */
 export function parseConfig(raw: unknown): ScoreboardConfig {
@@ -78,4 +81,13 @@ export function rankPlayers<T extends PlayerRow>(players: readonly T[]): T[] {
 export function gridRows(players: readonly PlayerRow[]): boolean[][] {
   const height = players.reduce((max, p) => Math.max(max, p.marks), 0);
   return Array.from({ length: height }, (_, row) => players.map((p) => row < p.marks));
+}
+
+/**
+ * The player id of a subscriber: the same person on the same board always gets the same id, shaped like a UUID. That makes
+ * adding them idempotent (two signups at once cannot create two rows) and keeps it removable like any other player.
+ */
+export function playerIdForUser(instanceId: string, userId: string): string {
+  const h = createHash("sha256").update(`scoreboard:${instanceId}:${userId}`).digest("hex");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-8${h.slice(17, 20)}-${h.slice(20, 32)}`;
 }
