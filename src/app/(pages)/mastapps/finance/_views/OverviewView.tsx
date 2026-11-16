@@ -113,8 +113,8 @@ export default async function OverviewView({ year }: { year: number }) {
 
       <section aria-labelledby="recent-title">
         <div className="section-head">
-          <h2 id="recent-title">Latest entries</h2>
-          <Link href="/mastapps/finance?view=ledger" className="text-sm font-medium text-accent-text hover:underline">Open the ledger</Link>
+          <h2 id="recent-title">Latest mutations</h2>
+          <Link href="/mastapps/finance?view=mutations" className="text-sm font-medium text-accent-text hover:underline">Open the mutations</Link>
         </div>
         <div className="table-wrap">
           <table className="ledger-table">
@@ -134,12 +134,12 @@ export default async function OverviewView({ year }: { year: number }) {
         </div>
       </section>
 
-      <section aria-label="Ledger integrity and access" className="card divide-y divide-line !p-0 text-sm">
+      <section aria-label="Books integrity and access" className="card divide-y divide-line !p-0 text-sm">
         <details open={!chain.ok}>
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2.5">
             <span className="flex items-center gap-2 font-medium">
               <span aria-hidden className={`inline-block size-2 rounded-full ${chain.ok ? "bg-success" : "bg-danger"}`} />
-              {chain.ok ? `Ledger verified · ${chain.count} entries` : "Ledger check failed"}
+              {chain.ok ? `Books verified · ${chain.count} sealed mutations` : "Books check failed"}
             </span>
             <span className="text-xs text-muted">Details</span>
           </summary>
@@ -153,7 +153,7 @@ export default async function OverviewView({ year }: { year: number }) {
             ) : (
               <ul className="list-disc pl-5 text-danger">
                 {chain.problems.map((p) => <li key={`${p.seq}-${p.problem}`}>Entry {p.seq}: {p.problem}</li>)}
-                <li>Someone changed the ledger outside the app. Do not add entries; restore from a backup and find out how.</li>
+                <li>Someone changed the books outside the app. Do not add mutations; restore from a backup and find out how.</li>
               </ul>
             )}
           </div>

@@ -9,8 +9,9 @@ import { requireFinance } from "@/lib/finance-access";
 import { parseEuroToCents } from "@/lib/finance-money";
 
 const HOME = "/mastapps/finance";
-const LEDGER = "/mastapps/finance?view=ledger";
+const LEDGER = "/mastapps/finance?view=mutations";
 const BUDGETS = "/mastapps/finance?view=budgets";
+const YEARS = "/mastapps/finance?view=years";
 
 const id = z.uuid();
 const optionalId = z.preprocess((v) => (v === "" ? undefined : v), z.uuid().optional());
@@ -81,21 +82,26 @@ async function parseEntryForm(formData: FormData): Promise<ParsedEntry> {
 export async function addEntry(formData: FormData) {
   const actor = await requireFinance("write");
   const e = await parseEntryForm(formData);
-  await sql`
-    INSERT INTO finance_entries (occurred_on, amount_cents, category, counterparty, description, activity_id, activity_label, created_by_id, created_by_name)
-    VALUES (${e.occurred_on}, ${e.amount_cents}, ${e.category}, ${e.counterparty}, ${e.description}, ${e.activity_id}, ${e.activity_label}, ${actor.userId}, ${actor.name})
-  `;
+  try {
+    await sql`
+      INSERT INTO finance_entries (occurred_on, amount_cents, category, counterparty, description, activity_id, activity_label, created_by_id, created_by_name)
+      VALUES (${e.occurred_on}, ${e.amount_cents}, ${e.category}, ${e.counterparty}, ${e.description}, ${e.activity_id}, ${e.activity_label}, ${actor.userId}, ${actor.name})
+    `;
+  } catch (error) {
+    if ((error as { code?: string }).code === "23000") fail("year-closed");
+    throw error;
+  }
   revalidatePath(HOME, "layout");
   redirect(`${LEDGER}&notice=added`);
 }
 
 const snapshotColumns = () => sql`to_char(occurred_on, 'YYYY-MM-DD') AS occurred_on, amount_cents::float8, category, counterparty, description, activity_label`;
 
-/** An entry still inside its edit window (the database enforces this too): not sealed, not a reversal. */
+/** A mutation that is still open (the database enforces this too): not sealed, not a reversal. */
 async function findOpenEntry(entryId: string) {
   const [row] = await sql<ParsedEntry[]>`
     SELECT ${snapshotColumns()}, activity_id FROM finance_entries
-    WHERE id = ${entryId} AND seq IS NULL AND reverses_id IS NULL AND created_at > NOW() - finance_edit_window()
+    WHERE id = ${entryId} AND seq IS NULL AND reverses_id IS NULL
   `;
   return row;
 }
@@ -116,7 +122,7 @@ export async function updateEntry(formData: FormData) {
       WHERE id = ${entryId.data} AND seq IS NULL
     `;
   } catch (error) {
-    if ((error as { code?: string }).code === "23000") fail("locked");
+    if ((error as { code?: string }).code === "23000") fail("year-closed");
     throw error;
   }
   await logAudit(actor, "entry_edited", { id: entryId.data, before, after });
@@ -145,7 +151,7 @@ export async function deleteEntry(formData: FormData) {
   redirect(`${LEDGER}&notice=deleted`);
 }
 
-/** Once an entry is sealed (after its edit window) a mistake is cancelled by an equal and opposite entry, with the reason. */
+/** Once a mutation is sealed (its book year is closed) a mistake is cancelled by an equal and opposite mutation dated today, with the reason. */
 export async function reverseEntry(formData: FormData) {
   const actor = await requireFinance("write");
   const parsedId = id.safeParse(formData.get("id"));
@@ -163,7 +169,7 @@ export async function reverseEntry(formData: FormData) {
   try {
     await sql`
       INSERT INTO finance_entries (occurred_on, amount_cents, category, counterparty, description, activity_id, activity_label, reverses_id, created_by_id, created_by_name)
-      VALUES (${original.occurred_on}, ${-original.amount_cents}, ${original.category}, ${original.counterparty},
+      VALUES (CURRENT_DATE, ${-original.amount_cents}, ${original.category}, ${original.counterparty},
         ${`Reversal: ${reason.data} (was: ${original.description})`.slice(0, 300)}, ${original.activity_id}, ${original.activity_label}, ${entryId}, ${actor.userId}, ${actor.name})
     `;
   } catch (error) {
@@ -173,6 +179,26 @@ export async function reverseEntry(formData: FormData) {
   }
   revalidatePath(HOME, "layout");
   redirect(`${LEDGER}&notice=reversed`);
+}
+
+/** Closes a book year after it has ended: its open mutations are sealed into the hash chain (the database enforces every rule). */
+export async function closeBookYear(formData: FormData) {
+  const actor = await requireFinance("write");
+  const year = z.coerce.number().int().min(2000).max(2200).safeParse(formData.get("year"));
+  if (!year.success) redirect(`${YEARS}&notice=invalid`);
+  if (year.data >= new Date().getFullYear()) redirect(`${YEARS}&notice=year-not-ended`);
+
+  let sealed: number;
+  try {
+    const [row] = await sql<{ sealed: number }[]>`SELECT finance_close_year(${year.data}, ${actor.userId}, ${actor.name}) AS sealed`;
+    sealed = row.sealed;
+  } catch (error) {
+    if ((error as { code?: string }).code === "23000") redirect(`${YEARS}&notice=year-close-failed`);
+    throw error;
+  }
+  await logAudit(actor, "year_closed", { year: year.data, sealed });
+  revalidatePath(HOME, "layout");
+  redirect(`${YEARS}&notice=year-closed-ok`);
 }
 
 const budgetSchema = z.object({

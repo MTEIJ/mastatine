@@ -35,9 +35,9 @@ export interface Entry {
   reversed_by_id: string | null;
   created_by_name: string;
   created_at: Date;
-  /** Open entries can still be edited or deleted, until this moment. */
+  /** Open entries can still be edited or deleted, until their book year is closed. */
   open: boolean;
-  locks_at: Date;
+  book_year: number;
   receipts: { id: string; original_name: string }[];
 }
 
@@ -60,7 +60,7 @@ export async function listEntries(filters: EntryFilters, page: number): Promise<
   const rows = await sql<Entry[]>`
     SELECT e.id, e.seq::float8, to_char(e.occurred_on, 'YYYY-MM-DD') AS occurred_on, e.amount_cents::float8, e.category, e.counterparty,
       e.description, e.activity_id, e.activity_label, e.reverses_id, e.created_by_name, e.created_at,
-      (e.seq IS NULL) AS open, e.created_at + finance_edit_window() AS locks_at,
+      (e.seq IS NULL) AS open, EXTRACT(YEAR FROM e.occurred_on)::int AS book_year,
       (SELECT r.id FROM finance_entries r WHERE r.reverses_id = e.id) AS reversed_by_id,
       COALESCE((SELECT json_agg(json_build_object('id', f.id, 'original_name', f.original_name) ORDER BY f.created_at)
                 FROM finance_receipts f WHERE f.entry_id = e.id), '[]'::json) AS receipts
@@ -172,9 +172,30 @@ export async function verifyChain(): Promise<ChainReport> {
   return { ok: problems.length === 0, count: rows.length, headHash: rows.at(-1)?.entry_hash ?? null, problems };
 }
 
-/** Seals every entry whose edit window has ended into the hash chain. Cheap and safe to call on every request. */
-export async function sealDueEntries(): Promise<void> {
-  await sql`SELECT finance_seal_due()`;
+export interface BookYear {
+  year: number;
+  closed: boolean;
+  closed_at: Date | null;
+  closed_by_name: string | null;
+  entries: number;
+  open_entries: number;
+}
+
+/** Every book year that has mutations, was closed, or is the current one, newest first. */
+export async function listBookYears(): Promise<BookYear[]> {
+  return sql<BookYear[]>`
+    SELECT y.year, (b.year IS NOT NULL) AS closed, b.closed_at, b.closed_by_name,
+      COUNT(e.id)::int AS entries, (COUNT(e.id) FILTER (WHERE e.seq IS NULL))::int AS open_entries
+    FROM (
+      SELECT EXTRACT(YEAR FROM occurred_on)::int AS year FROM finance_entries
+      UNION SELECT year FROM finance_book_years
+      UNION SELECT EXTRACT(YEAR FROM CURRENT_DATE)::int
+    ) y
+    LEFT JOIN finance_book_years b ON b.year = y.year
+    LEFT JOIN finance_entries e ON EXTRACT(YEAR FROM e.occurred_on)::int = y.year
+    GROUP BY y.year, b.year, b.closed_at, b.closed_by_name
+    ORDER BY y.year DESC
+  `;
 }
 
 /** Who did what. Written for budget changes and exports; the ledger itself records who added each entry. */

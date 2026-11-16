@@ -8,35 +8,40 @@ import { formatDate } from "@/lib/news";
 import { addEntry, deleteEntry, reverseEntry, updateEntry } from "../actions";
 import EntryFields from "./EntryFields";
 
-export interface LedgerParams {
+export interface MutationParams {
   page: number;
+  /** The book year shown; undefined means all years. */
   year?: number;
   category?: Category;
   activityId?: string;
 }
 
-const shortDate = (d: Date) => new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-
-export default async function LedgerView({ access, params }: { access: FinanceAccess; params: LedgerParams }) {
+export default async function MutationsView({ access, params }: { access: FinanceAccess; params: MutationParams }) {
   const { page, year, category, activityId } = params;
   const [{ entries, hasMore }, activities] = await Promise.all([listEntries({ year, category, activityId }, page), listActivityOptions()]);
   const link = (p: number) =>
-    `/mastapps/finance?${new URLSearchParams({ view: "ledger", ...(year && { year: String(year) }), ...(category && { category }), ...(activityId && { activity: activityId }), page: String(p) })}`;
+    `/mastapps/finance?${new URLSearchParams({ view: "mutations", year: year ? String(year) : "all", ...(category && { category }), ...(activityId && { activity: activityId }), page: String(p) })}`;
+
+  // Reversed mutations and their reversals cancel out, so the page totals count only what still stands.
+  const counted = entries.filter((e) => e.reversed_by_id == null);
+  const income = counted.filter((e) => e.amount_cents > 0).reduce((sum, e) => sum + e.amount_cents, 0);
+  const expense = counted.filter((e) => e.amount_cents < 0).reduce((sum, e) => sum - e.amount_cents, 0);
+  const columns = access.canWrite ? 8 : 7;
 
   return (
-    <section aria-labelledby="ledger-title" className="space-y-4">
+    <section aria-labelledby="mutations-title" className="space-y-4">
       <div className="section-head !mb-0">
         <div>
-          <h2 id="ledger-title">Ledger</h2>
-          <p>New entries can be corrected or deleted for 3 days. After that they are sealed and only a reversal can fix them.</p>
+          <h2 id="mutations-title">Mutations {year ? year : "· all years"}</h2>
+          <p>Every mutation can be corrected or deleted until its book year is closed. After that only a reversal can fix it.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <a href="/mastapps/finance/export" className="btn btn-secondary btn-sm" download>Download CSV</a>
           {access.canWrite && (
-            <Modal label="Add entry" title="Add an entry" description="You can correct or delete it for 3 days; after that it is sealed. Donor names are personal data: only note what you need." triggerClassName="btn btn-primary btn-sm">
+            <Modal label="New mutation" title="New mutation" description="You can correct or delete it until its book year is closed. Donor names are personal data: only note what you need." triggerClassName="btn btn-primary btn-sm">
               <form action={addEntry} className="space-y-4">
                 <EntryFields idPrefix="add" activities={activities} />
-                <button type="submit" className="btn btn-primary w-full sm:w-auto">Add to ledger</button>
+                <button type="submit" className="btn btn-primary w-full sm:w-auto">Book mutation</button>
               </form>
             </Modal>
           )}
@@ -44,11 +49,8 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
       </div>
 
       <form className="grid grid-cols-2 items-end gap-2 sm:flex sm:flex-wrap" role="search">
-        <input type="hidden" name="view" value="ledger" />
-        <div>
-          <label className="label" htmlFor="f-year">Year</label>
-          <input id="f-year" name="year" type="number" min={2020} className="input !w-24" defaultValue={year} />
-        </div>
+        <input type="hidden" name="view" value="mutations" />
+        <input type="hidden" name="year" value={year ?? "all"} />
         <div>
           <label className="label" htmlFor="f-category">Category</label>
           <select id="f-category" name="category" className="input" defaultValue={category ?? ""}>
@@ -64,32 +66,39 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
           </select>
         </div>
         <button className="btn btn-secondary btn-sm col-span-2 sm:col-span-1" type="submit">Filter</button>
-        {(year || category || activityId) && <Link href="/mastapps/finance?view=ledger" className="col-span-2 self-center text-sm text-muted hover:text-accent-text sm:col-span-1">Clear filters</Link>}
+        {(category || activityId) && <Link href={`/mastapps/finance?view=mutations&year=${year ?? "all"}`} className="col-span-2 self-center text-sm text-muted hover:text-accent-text sm:col-span-1">Clear filters</Link>}
       </form>
 
       <div className="table-wrap">
-        <table className="table table-stack">
+        <table className="table table-stack ledger-book">
           <thead>
-            <tr><th>#</th><th>Date</th><th>What</th><th className="text-right">Amount</th><th>Receipts</th>{access.canWrite && <th><span className="sr-only">Actions</span></th>}</tr>
+            <tr>
+              <th>No.</th><th>Date</th><th>Description</th><th>Category</th>
+              <th className="text-right">Income</th><th className="text-right">Expense</th>
+              <th>Receipts</th>
+              {access.canWrite && <th><span className="sr-only">Actions</span></th>}
+            </tr>
           </thead>
           <tbody>
             {entries.map((e) => {
               const cancelled = e.reversed_by_id != null;
               return (
                 <tr key={e.id} className={cancelled ? "text-muted line-through decoration-1" : undefined}>
-                  <td data-label="No." className="tabular-nums text-muted">{e.seq ?? "–"}</td>
+                  <td data-label="No." className="tabular-nums text-muted">
+                    {e.seq ?? <span className="badge !bg-soft !font-medium !text-muted no-underline" title={`Open: can still be changed until ${e.book_year} is closed`}>open</span>}
+                  </td>
                   <td data-label="Date" className="whitespace-nowrap">{formatDate(e.occurred_on)}</td>
                   <td data-primary>
                     <span className="font-medium">{e.description}</span>
                     <span className="block text-xs text-muted">
-                      {categoryLabel(e.category)}
-                      {e.counterparty && ` · ${e.counterparty}`}
-                      {e.activity_label && <> · <Link href={`/mastapps/finance?view=ledger&activity=${e.activity_id}`} className="hover:text-accent-text">{e.activity_label}</Link></>}
-                      {` · by ${e.created_by_name}`}
+                      {e.counterparty}
+                      {e.activity_label && <>{e.counterparty && " · "}<Link href={`/mastapps/finance?view=mutations&year=all&activity=${e.activity_id}`} className="hover:text-accent-text">{e.activity_label}</Link></>}
+                      {(e.counterparty || e.activity_label) && " · "}by {e.created_by_name}
                     </span>
-                    {e.open && <span className="badge mt-1 inline-block !bg-soft !font-medium !text-muted">Open until {shortDate(e.locks_at)}</span>}
                   </td>
-                  <td data-label="Amount" className={`whitespace-nowrap text-right font-medium tabular-nums ${e.amount_cents < 0 ? "" : "text-accent-text"}`}>{formatCents(e.amount_cents)}</td>
+                  <td data-label="Category" className="text-sm">{categoryLabel(e.category)}</td>
+                  <td data-label="Income" className="whitespace-nowrap text-right font-medium tabular-nums text-accent-text">{e.amount_cents > 0 ? formatCents(e.amount_cents) : ""}</td>
+                  <td data-label="Expense" className="whitespace-nowrap text-right font-medium tabular-nums">{e.amount_cents < 0 ? formatCents(-e.amount_cents) : ""}</td>
                   <td data-label="Receipts" className="no-underline">
                     {e.receipts.length > 0 ? (
                       <ul className="flex flex-wrap justify-end gap-x-3 gap-y-1 sm:justify-start">
@@ -104,7 +113,7 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
                       {cancelled && <span className="text-xs">reversed</span>}
                       {e.reverses_id != null && <span className="text-xs">reversal</span>}
                       {!cancelled && e.reverses_id == null && (
-                        <Modal label="Manage" triggerLabel={`Manage entry ${e.seq ?? "(open)"}`} title={e.seq ? `Entry ${e.seq}` : "Open entry"} description={e.open ? `You can still change this until ${shortDate(e.locks_at)}.` : e.description} triggerClassName="btn btn-secondary btn-sm max-sm:w-full">
+                        <Modal label="Manage" triggerLabel={`Manage mutation ${e.seq ?? "(open)"}`} title={e.seq ? `Mutation ${e.seq}` : "Open mutation"} description={e.open ? `You can still change this until book year ${e.book_year} is closed.` : e.description} triggerClassName="btn btn-secondary btn-sm max-sm:w-full">
                           <div className="space-y-5 text-sm">
                             {e.open && (
                               <form action={updateEntry} className="space-y-4">
@@ -122,15 +131,16 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
                             {e.open ? (
                               <form action={deleteEntry} className="space-y-2 border-t border-line pt-5">
                                 <input type="hidden" name="id" value={e.id} />
-                                <p className="text-muted">Deleting removes the entry completely (it stays in the audit log). Entries with receipts cannot be deleted.</p>
-                                <ConfirmButton className="btn btn-danger btn-sm" message="Delete this entry? This cannot be undone.">Delete entry</ConfirmButton>
+                                <p className="text-muted">Deleting removes the mutation completely (it stays in the audit log). Mutations with receipts cannot be deleted.</p>
+                                <ConfirmButton className="btn btn-danger btn-sm" message="Delete this mutation? This cannot be undone.">Delete mutation</ConfirmButton>
                               </form>
                             ) : (
                               <form action={reverseEntry} className="space-y-2 border-t border-line pt-5">
                                 <input type="hidden" name="id" value={e.id} />
-                                <label className="label" htmlFor={`why-${e.id}`}>Reverse this entry</label>
+                                <label className="label" htmlFor={`why-${e.id}`}>Reverse this mutation</label>
                                 <input id={`why-${e.id}`} name="reason" className="input" required maxLength={200} placeholder="Reason" />
-                                <ConfirmButton className="btn btn-danger btn-sm" message="Reverse this entry? The original stays in the ledger and a cancelling entry is added.">Reverse</ConfirmButton>
+                                <p className="text-muted">The original stays. A cancelling mutation dated today is booked.</p>
+                                <ConfirmButton className="btn btn-danger btn-sm" message="Reverse this mutation? The original stays and a cancelling mutation is booked today.">Reverse</ConfirmButton>
                               </form>
                             )}
                           </div>
@@ -141,8 +151,18 @@ export default async function LedgerView({ access, params }: { access: FinanceAc
                 </tr>
               );
             })}
-            {entries.length === 0 && <tr><td colSpan={6} className="py-6 text-center text-muted">No entries match.</td></tr>}
+            {entries.length === 0 && <tr><td colSpan={columns} className="py-6 text-center text-muted">No mutations match.</td></tr>}
           </tbody>
+          {entries.length > 0 && (
+            <tfoot>
+              <tr className="font-semibold">
+                <td colSpan={4} className="max-sm:hidden text-right text-sm text-muted">Total of this page</td>
+                <td data-label="Income" className="whitespace-nowrap text-right tabular-nums">{formatCents(income)}</td>
+                <td data-label="Expense" className="whitespace-nowrap text-right tabular-nums">{formatCents(expense)}</td>
+                <td className="max-sm:hidden" colSpan={access.canWrite ? 2 : 1} />
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
 

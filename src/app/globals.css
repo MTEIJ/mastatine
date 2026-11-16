@@ -1641,3 +1641,7 @@ dialog.modal[open] { display: flex; }
 .ledger-table .is-total td { border-top: 1px solid #c9ced6; font-weight: 650; }
 .ledger-table .is-grand td { border-top: 2px solid var(--ink); border-bottom: 3px double var(--ink); font-weight: 700; }
 .ledger-table .is-muted { color: var(--muted); }
+
+/* Mutations list in the style of bookkeeping software: separate income and expense columns, totals row. */
+.ledger-book tfoot td { border-top: 2px solid var(--line); background: var(--soft); }
+.ledger-book thead th { white-space: nowrap; }

@@ -57,7 +57,7 @@ export default async function BudgetsView({ access }: { access: FinanceAccess })
                 return (
                   <tr key={line.id}>
                     <td data-primary className="font-medium">
-                      <Link href={`/mastapps/finance?view=ledger&activity=${line.id}`} className="hover:text-accent-text">{line.name}</Link>
+                      <Link href={`/mastapps/finance?view=mutations&activity=${line.id}`} className="hover:text-accent-text">{line.name}</Link>
                       <span className="block text-xs font-normal text-muted">
                         {line.committee_name} · {formatDateTime(line.starts_at)}
                         {line.uses_budget && line.planned_expense_cents === 0 && <strong className="font-medium text-amber-700"> · budget not set</strong>}
