@@ -1,7 +1,7 @@
 // Dev only: fills the local database with example activities, each with a generated poster.
 // Run with the dev database up:  bun scripts/seed-activities.mjs
 // Safe to re-run: it replaces the activities it created before (matched by name) and rewrites their posters.
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import postgres from "postgres";
 import sharp from "sharp";

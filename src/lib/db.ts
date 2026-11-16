@@ -8,7 +8,10 @@ declare global {
 
 function createClient(): Sql {
   const url = process.env.DATABASE_URL;
-  if (url) return postgres(url, { max: 10, idle_timeout: 20, connect_timeout: 10 });
+  // The Docker-free dev database (PGlite) serves one query at a time over its socket: concurrent queries on one
+  // connection get their protocol messages mixed up ("bind message supplies N parameters..."). Set 1 there.
+  const max = Number(process.env.DATABASE_POOL_MAX) || 10;
+  if (url) return postgres(url, { max, idle_timeout: 20, connect_timeout: 10 });
 
   // Fail with an actionable message at query time (not import time, so `next build` still works).
   const fail = (): never => {

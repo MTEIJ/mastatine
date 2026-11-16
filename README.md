@@ -11,7 +11,8 @@ bun run dev            # terminal 2: http://localhost:3000
 ```
 
 With Docker installed you can use `bun run db:dev` instead (Postgres in a container). Either way the same migrations run,
-and `.env.local` needs `DATABASE_URL`, `SITE_URL` and `BETTER_AUTH_SECRET` (see `.env.example`). With any other Postgres,
+and `.env.local` needs `DATABASE_URL`, `SITE_URL` and `BETTER_AUTH_SECRET` (see `.env.example`); with `db:dev:local` also set
+`DATABASE_POOL_MAX=1`, because that database handles one query at a time and pages hang without it. With any other Postgres,
 point `DATABASE_URL` at it and run `bun run db:migrate`. With `MAIL_TRANSPORT=log` sign-in emails are printed in the dev
 server's terminal instead of being sent. Set `ADMIN_EMAILS` to get the admin role on first sign-in.
 
