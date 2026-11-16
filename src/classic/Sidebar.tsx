@@ -41,10 +41,13 @@ function NavNode({ item, depth = 0, onNavigate }: { item: NavItem; depth?: numbe
   const matches = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const childActive = has && item.children!.some((c) => matches(c.href));
   const [open, setOpen] = useState(childActive);
-  // Landing on (or navigating to) a page inside the group expands it.
-  useEffect(() => {
+  // Landing on (or navigating to) a page inside the group expands it. Adjusting state while rendering, from the
+  // previous value of childActive, avoids the extra render pass an effect would cause.
+  const [wasChildActive, setWasChildActive] = useState(childActive);
+  if (childActive !== wasChildActive) {
+    setWasChildActive(childActive);
     if (childActive) setOpen(true);
-  }, [childActive]);
+  }
   const active = !has && !item.external && matches(item.href);
   // Internal pages navigate client-side; only the external shop stays a plain anchor.
   const Tag: React.ElementType = !item.external ? Link : "a";
