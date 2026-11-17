@@ -52,7 +52,7 @@ function detailsTable(details: MailDetail[]): string {
       </tr>`;
     })
     .join("");
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 22px;background:${CREAM}"><tr><td style="padding:6px 22px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr></table>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${CREAM}" style="margin:4px 0 22px;background:${CREAM}"><tr><td bgcolor="${CREAM}" style="padding:6px 22px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr></table>`;
 }
 
 function button(url: string, label: string): string {
@@ -79,16 +79,16 @@ function compose(subject: string, parts: MessageParts): EmailContent {
   ];
 
   const html = `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${escapeHtml(subject)}</title></head>
-<body style="margin:0;background:${PAGE_BG};font-family:${FONT};color:${INK};-webkit-font-smoothing:antialiased">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><style>:root{color-scheme:light only;supported-color-schemes:light only}</style><title>${escapeHtml(subject)}</title></head>
+<body bgcolor="${PAGE_BG}" style="margin:0;background:${PAGE_BG};font-family:${FONT};color:${INK};-webkit-font-smoothing:antialiased">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${escapeHtml(parts.preheader)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 12px 40px">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;background:#ffffff;overflow:hidden">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${PAGE_BG}"><tr><td align="center" bgcolor="${PAGE_BG}" style="background:${PAGE_BG};padding:32px 12px 40px">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="max-width:580px;background:#ffffff;overflow:hidden">
     <tr><td bgcolor="${BRAND_ORANGE}" style="background:${BRAND_ORANGE};padding:34px 32px 22px">
       <h1 style="margin:0;font-size:36px;line-height:1.1;font-weight:800;letter-spacing:-0.02em;color:${INK}">${escapeHtml(parts.heading)}</h1>
     </td></tr>
     <tr><td bgcolor="${BRAND_ORANGE}" style="background:${BRAND_ORANGE};line-height:0;font-size:0"><img src="${escapeHtml(absoluteUrl("/email/skyline.png"))}" alt="M.A. Mastatine" width="580" style="display:block;width:100%;height:auto;border:0"></td></tr>
-    <tr><td style="padding:28px 32px 8px">
+    <tr><td bgcolor="#ffffff" style="background:#ffffff;color:${INK};padding:28px 32px 8px">
       ${parts.intro ? `<p style="${P_STYLE};font-size:17px">${escapeHtml(parts.intro)}</p>` : ""}
       ${parts.body ? parts.body.html : ""}
       ${parts.extra ? parts.extra.html : ""}
@@ -97,7 +97,7 @@ function compose(subject: string, parts: MessageParts): EmailContent {
       ${(parts.links ?? []).map((l) => `<p style="margin:0 0 10px;font-size:14px"><a href="${escapeHtml(l.url)}" style="color:${LINK};font-weight:700">${escapeHtml(l.label)}</a></p>`).join("")}
       ${(parts.notes ?? []).map((n) => `<p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:${MUTED}">${escapeHtml(n)}</p>`).join("")}
     </td></tr>
-    <tr><td style="background:${INK};padding:0 32px 24px;font-size:12px;line-height:1.7;color:#cfc8bb"><strong style="font-family:${CAPS_FONT};font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#ffffff">Master Association</strong><br>${footer.html}</td></tr>
+    <tr><td bgcolor="${INK}" style="background:${INK};padding:0 32px 24px;font-size:12px;line-height:1.7;color:#cfc8bb"><strong style="font-family:${CAPS_FONT};font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:#ffffff">Master Association</strong><br>${footer.html}</td></tr>
   </table>
 </td></tr></table></body></html>`;
 
@@ -192,7 +192,7 @@ function upcomingActivities(activities: NewsletterActivity[]): { text: string; h
     rows.push(`<tr>${cell(pair[0])}<td width="4%" style="width:4%">&nbsp;</td>${cell(pair[1])}</tr><tr><td colspan="3" style="height:26px;line-height:26px;font-size:0">&nbsp;</td></tr>`);
   }
   const grid = rest.length ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows.join("")}</table>` : "";
-  const html = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:32px 0 0;background:${CREAM}"><tr><td style="padding:26px 24px 8px">
+  const html = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${CREAM}" style="margin:32px 0 0;background:${CREAM}"><tr><td bgcolor="${CREAM}" style="padding:26px 24px 8px">
     <p style="margin:0 0 20px;font-family:${CAPS_FONT};font-size:18px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:${INK}">Coming up <span style="color:${CORAL}">&bull;</span></p>
     <div style="margin:0 0 26px">${activityCard(featured, true)}</div>${grid}
   </td></tr></table><div style="height:24px;line-height:24px;font-size:0">&nbsp;</div>`;
