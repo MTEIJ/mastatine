@@ -21,8 +21,9 @@ export function getCommitteesFor(user: Viewer): Promise<Committee[]> {
   `;
 }
 
-export async function isCommitteeMember(user: Viewer, committeeId: string): Promise<boolean> {
+export async function isCommitteeMember(user: Viewer, committeeId: string | null): Promise<boolean> {
   if (user.role === "admin") return true;
+  if (!committeeId) return false;
   const [row] = await sql`SELECT 1 FROM committee_members WHERE user_id = ${user.id} AND committee_id = ${committeeId}`;
   return !!row;
 }

@@ -33,7 +33,7 @@ export function emptyActivityValues(committeeId?: string): ActivityFormValues {
 export function activityToValues(a: Activity): ActivityFormValues {
   return {
     id: a.id,
-    committee_id: a.committee_id,
+    committee_id: a.committee_id ?? undefined,
     name: a.name,
     description: a.description,
     location: a.location,

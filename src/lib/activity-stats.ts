@@ -19,13 +19,13 @@ export interface ActivityStat {
 export function getActivityStats(user: Viewer): Promise<ActivityStat[]> {
   const scope = user.role === "admin" ? sql`TRUE` : sql`a.committee_id IN (SELECT committee_id FROM committee_members WHERE user_id = ${user.id})`;
   return sql<ActivityStat[]>`
-    SELECT a.id, a.name, c.name AS committee_name, a.starts_at, a.subscription_limit,
+    SELECT a.id, a.name, COALESCE(c.name, 'Mastatine') AS committee_name, a.starts_at, a.subscription_limit,
       (SELECT COUNT(*) FROM activity_subscriptions s WHERE s.activity_id = a.id)::int AS going,
       (SELECT COUNT(*) FROM activity_waitlist w WHERE w.activity_id = a.id)::int AS waitlist,
       (SELECT COUNT(*) FROM activity_events e WHERE e.activity_id = a.id AND e.kind = 'unsubscribed')::int AS unsubscribed,
       (SELECT COUNT(*) FROM activity_events e WHERE e.activity_id = a.id AND e.kind = 'subscribed' AND e.created_at > NOW() - INTERVAL '7 days')::int AS signups_7d,
       (SELECT COUNT(*) FROM activity_messages m WHERE m.activity_id = a.id)::int AS messages
-    FROM activities a JOIN committees c ON c.id = a.committee_id
+    FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
     WHERE ${scope}
     ORDER BY a.starts_at DESC LIMIT 200
   `;

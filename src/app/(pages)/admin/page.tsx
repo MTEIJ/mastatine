@@ -42,9 +42,9 @@ export default async function AdminOverview() {
       GROUP BY w.week ORDER BY w.week
     `,
     sql<{ id: string; name: string; starts_at: Date; committee: string; participants: number; subscription_limit: number | null }[]>`
-      SELECT a.id, a.name, a.starts_at, c.name AS committee, a.subscription_limit,
+      SELECT a.id, a.name, a.starts_at, COALESCE(c.name, 'Mastatine') AS committee, a.subscription_limit,
         (SELECT COUNT(*) FROM activity_subscriptions s WHERE s.activity_id = a.id)::int AS participants
-      FROM activities a JOIN committees c ON c.id = a.committee_id
+      FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
       WHERE a.starts_at > NOW() ORDER BY a.starts_at LIMIT 5
     `,
     sql<{ id: string; name: string; email: string; createdAt: Date }[]>`SELECT id, name, email, "createdAt" FROM "user" ORDER BY "createdAt" DESC LIMIT 5`,

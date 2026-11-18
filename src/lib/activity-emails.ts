@@ -33,7 +33,7 @@ export function toDetails(row: SubscriptionMail): ActivityMailDetails {
 }
 
 export const mailColumns = () => sql`
-  s.activity_id, s.user_id, u.email, a.name AS activity_name, c.name AS committee_name,
+  s.activity_id, s.user_id, u.email, a.name AS activity_name, COALESCE(c.name, 'Mastatine') AS committee_name,
   a.starts_at, a.location, a.allow_unsubscribe, s.price_cents, s.choices
 `;
 
@@ -43,7 +43,7 @@ export async function sendSubscriptionConfirmation(activityId: string, userId: s
     const [row] = await sql<SubscriptionMail[]>`
       SELECT ${mailColumns()}
       FROM activity_subscriptions s
-      JOIN activities a ON a.id = s.activity_id JOIN committees c ON c.id = a.committee_id JOIN "user" u ON u.id = s.user_id
+      JOIN activities a ON a.id = s.activity_id LEFT JOIN committees c ON c.id = a.committee_id JOIN "user" u ON u.id = s.user_id
       WHERE s.activity_id = ${activityId} AND s.user_id = ${userId}
     `;
     if (row) await sendMail({ to: row.email, ...activityConfirmationEmail(toDetails(row)) });
@@ -67,10 +67,10 @@ export async function sendDueReminders(): Promise<{ sent: number; failed: number
         AND s.created_at < a.starts_at - INTERVAL '24 hours'
       RETURNING s.activity_id, s.user_id, s.price_cents, s.choices
     )
-    SELECT s.activity_id, s.user_id, u.email, a.name AS activity_name, c.name AS committee_name,
+    SELECT s.activity_id, s.user_id, u.email, a.name AS activity_name, COALESCE(c.name, 'Mastatine') AS committee_name,
       a.starts_at, a.location, a.allow_unsubscribe, s.price_cents, s.choices
     FROM claimed s
-    JOIN activities a ON a.id = s.activity_id JOIN committees c ON c.id = a.committee_id JOIN "user" u ON u.id = s.user_id
+    JOIN activities a ON a.id = s.activity_id LEFT JOIN committees c ON c.id = a.committee_id JOIN "user" u ON u.id = s.user_id
   `;
 
   let sent = 0;

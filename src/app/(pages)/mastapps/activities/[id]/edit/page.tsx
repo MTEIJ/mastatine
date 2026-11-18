@@ -16,7 +16,8 @@ export default async function EditActivityPage(props: { params: Promise<{ id: st
   const { id } = await props.params;
   const activity = /^[0-9a-f-]{36}$/i.test(id) ? await getActivity(id, user.id) : null;
   const committees = await getCommitteesFor(user);
-  if (!activity || !committees.some((c) => c.id === activity.committee_id)) notFound();
+  // An activity whose committee was deleted has no committee: admins can edit it and pick a new one.
+  if (!activity || (activity.committee_id ? !committees.some((c) => c.id === activity.committee_id) : user.role !== "admin")) notFound();
 
   return (
     <AppFrame title={`Edit ${activity.name}`}>

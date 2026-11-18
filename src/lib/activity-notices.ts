@@ -32,7 +32,7 @@ function subscribersOf(activityId: string) {
   return sql<SubscriptionMail[]>`
     SELECT ${mailColumns()}
     FROM activity_subscriptions s
-    JOIN activities a ON a.id = s.activity_id JOIN committees c ON c.id = a.committee_id JOIN "user" u ON u.id = s.user_id
+    JOIN activities a ON a.id = s.activity_id LEFT JOIN committees c ON c.id = a.committee_id JOIN "user" u ON u.id = s.user_id
     WHERE s.activity_id = ${activityId} AND NOT u.banned
   `;
 }

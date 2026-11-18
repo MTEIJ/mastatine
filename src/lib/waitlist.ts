@@ -58,9 +58,9 @@ export async function notifyWaitlist(activityId: string): Promise<number> {
   if (picked.length === 0) return 0;
 
   const rows = await sql<SubscriptionMail[]>`
-    SELECT a.id AS activity_id, u.id AS user_id, u.email, a.name AS activity_name, c.name AS committee_name,
+    SELECT a.id AS activity_id, u.id AS user_id, u.email, a.name AS activity_name, COALESCE(c.name, 'Mastatine') AS committee_name,
       a.starts_at, a.location, FALSE AS allow_unsubscribe, NULL::int AS price_cents, '[]'::jsonb AS choices
-    FROM activities a JOIN committees c ON c.id = a.committee_id JOIN "user" u ON u.id IN ${sql(picked.map((p) => p.user_id))}
+    FROM activities a LEFT JOIN committees c ON c.id = a.committee_id JOIN "user" u ON u.id IN ${sql(picked.map((p) => p.user_id))}
     WHERE a.id = ${activityId} AND NOT u.banned
   `;
   for (const row of rows) {

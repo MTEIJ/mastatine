@@ -3,7 +3,7 @@ import type { SignupGroup, SignupPick } from "@/lib/signup-options";
 
 export interface Activity {
   id: string;
-  committee_id: string;
+  committee_id: string | null;
   committee_name: string;
   name: string;
   description: string;
@@ -39,7 +39,7 @@ type Viewer = { id: string; role?: string | null };
 
 /** `userId` is null for visitors who are not signed in: nothing is flagged as subscribed. */
 const columns = (userId: string | null) => sql`
-  a.*, c.name AS committee_name,
+  a.*, COALESCE(c.name, 'Mastatine') AS committee_name,
   (SELECT COUNT(*) FROM activity_subscriptions s WHERE s.activity_id = a.id)::int AS participants,
   EXISTS (SELECT 1 FROM activity_subscriptions s WHERE s.activity_id = a.id AND s.user_id = ${userId}) AS subscribed,
   (SELECT s.choices FROM activity_subscriptions s WHERE s.activity_id = a.id AND s.user_id = ${userId}) AS my_choices,
@@ -99,7 +99,7 @@ export function getActivities(userId: string | null, isMember: boolean, filters:
   const where = [sql`a.is_visible`, audience(isMember), sql`${endsAt()} > NOW()`, ...filterConditions(userId, filters)]
     .reduce((all, condition) => sql`${all} AND ${condition}`);
   return sql<Activity[]>`
-    SELECT ${columns(userId)} FROM activities a JOIN committees c ON c.id = a.committee_id
+    SELECT ${columns(userId)} FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
     WHERE ${where} ORDER BY a.starts_at LIMIT 200
   `;
 }
@@ -109,7 +109,7 @@ export function getPastActivities(userId: string | null, isMember: boolean, filt
   const where = [sql`a.is_visible`, audience(isMember), sql`${endsAt()} <= NOW()`, ...filterConditions(userId, filters)]
     .reduce((all, condition) => sql`${all} AND ${condition}`);
   return sql<Activity[]>`
-    SELECT ${columns(userId)} FROM activities a JOIN committees c ON c.id = a.committee_id
+    SELECT ${columns(userId)} FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
     WHERE ${where} ORDER BY a.starts_at DESC LIMIT ${limit}
   `;
 }
@@ -131,8 +131,8 @@ export interface UpcomingActivity {
 /** The next visible activities that have not ended yet, for the homepage and sidebar. */
 export function getUpcomingActivities(limit: number, isMember: boolean) {
   return sql<UpcomingActivity[]>`
-    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name
-    FROM activities a JOIN committees c ON c.id = a.committee_id
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, COALESCE(c.name, 'Mastatine') AS committee_name
+    FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
     WHERE a.is_visible AND ${audience(isMember)} AND COALESCE(a.ends_at, a.starts_at + INTERVAL '3 hours') > NOW()
     ORDER BY a.starts_at LIMIT ${limit}
   `;
@@ -149,8 +149,8 @@ const cardCounts = () => sql`a.subscription_limit, (SELECT COUNT(*) FROM activit
 /** The next visible activities that have not ended yet, with their posters, for the homepage cards. */
 export function getUpcomingActivityCards(limit: number, isMember: boolean) {
   return sql<UpcomingActivityCard[]>`
-    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name, a.poster_url, a.members_only, ${cardCounts()}
-    FROM activities a JOIN committees c ON c.id = a.committee_id
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, COALESCE(c.name, 'Mastatine') AS committee_name, a.poster_url, a.members_only, ${cardCounts()}
+    FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
     WHERE a.is_visible AND ${audience(isMember)} AND COALESCE(a.ends_at, a.starts_at + INTERVAL '3 hours') > NOW()
     ORDER BY a.starts_at LIMIT ${limit}
   `;
@@ -159,9 +159,9 @@ export function getUpcomingActivityCards(limit: number, isMember: boolean) {
 /** The soonest activity the user is going to that has not ended yet, or null. */
 export async function getMyNextActivity(userId: string): Promise<UpcomingActivityCard | null> {
   const [row] = await sql<UpcomingActivityCard[]>`
-    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name, a.poster_url, a.members_only, ${cardCounts()}
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, COALESCE(c.name, 'Mastatine') AS committee_name, a.poster_url, a.members_only, ${cardCounts()}
     FROM activity_subscriptions s
-    JOIN activities a ON a.id = s.activity_id JOIN committees c ON c.id = a.committee_id
+    JOIN activities a ON a.id = s.activity_id LEFT JOIN committees c ON c.id = a.committee_id
     WHERE s.user_id = ${userId} AND a.is_visible AND ${endsAt()} > NOW()
     ORDER BY a.starts_at LIMIT 1
   `;
@@ -180,8 +180,8 @@ export async function getSubscribedIds(userId: string, activityIds: string[]): P
 /** Public activities from the last 60 days onwards, for the public calendar feed (never members-only ones). */
 export function getCalendarActivities() {
   return sql<UpcomingActivity[]>`
-    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name
-    FROM activities a JOIN committees c ON c.id = a.committee_id
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, COALESCE(c.name, 'Mastatine') AS committee_name
+    FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
     WHERE a.is_visible AND NOT a.members_only AND a.starts_at > NOW() - INTERVAL '60 days'
     ORDER BY a.starts_at LIMIT 500
   `;
@@ -190,8 +190,8 @@ export function getCalendarActivities() {
 /** One activity in calendar form, or null when it does not exist, is hidden, or is members-only and the viewer is not a member. */
 export async function getCalendarActivity(id: string, isMember: boolean): Promise<UpcomingActivity | null> {
   const [row] = await sql<UpcomingActivity[]>`
-    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, c.name AS committee_name
-    FROM activities a JOIN committees c ON c.id = a.committee_id
+    SELECT a.id, a.name, a.location, a.starts_at, a.ends_at, COALESCE(c.name, 'Mastatine') AS committee_name
+    FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
     WHERE a.id = ${id} AND a.is_visible AND ${audience(isMember)}
   `;
   return row ?? null;
@@ -199,7 +199,7 @@ export async function getCalendarActivity(id: string, isMember: boolean): Promis
 
 export async function getActivity(id: string, userId: string | null): Promise<Activity | null> {
   const [row] = await sql<Activity[]>`
-    SELECT ${columns(userId)} FROM activities a JOIN committees c ON c.id = a.committee_id WHERE a.id = ${id}
+    SELECT ${columns(userId)} FROM activities a LEFT JOIN committees c ON c.id = a.committee_id WHERE a.id = ${id}
   `;
   return row ?? null;
 }
@@ -208,7 +208,7 @@ export async function getActivity(id: string, userId: string | null): Promise<Ac
 export function getManagedActivities(user: Viewer) {
   const scope = user.role === "admin" ? sql`TRUE` : sql`a.committee_id IN (SELECT committee_id FROM committee_members WHERE user_id = ${user.id})`;
   return sql<Activity[]>`
-    SELECT ${columns(user.id)} FROM activities a JOIN committees c ON c.id = a.committee_id
+    SELECT ${columns(user.id)} FROM activities a LEFT JOIN committees c ON c.id = a.committee_id
     WHERE ${scope} ORDER BY a.starts_at DESC LIMIT 200
   `;
 }
