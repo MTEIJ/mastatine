@@ -39,10 +39,10 @@ export async function addPlugin(formData: FormData): Promise<void> {
   if (!limiter.allow(session.user.id)) return;
   if (!(await getPluginViewer(activityId.data)).isManager) return;
   if ((await getInstances(activityId.data)).length >= MAX_PLUGINS_PER_ACTIVITY) return;
-  await createInstance(activityId.data, plugin.id, plugin.defaultConfig as Record<string, unknown>);
+  const instance = await createInstance(activityId.data, plugin.id, plugin.defaultConfig as Record<string, unknown>);
   refresh(activityId.data);
-  // The new plugin starts with default settings: take the organiser straight to them.
-  redirect(`/mastapps/activities/${activityId.data}/plugins`);
+  // The new plugin starts with default settings: take the organiser straight to them, already unfolded.
+  redirect(`/mastapps/activities/${activityId.data}/plugins?new=${instance.id}#plugin-${instance.id}`);
 }
 
 export interface SettingsState {
