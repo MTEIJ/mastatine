@@ -7,7 +7,8 @@ import AdventPage from "./AdventPage";
 import { DEFAULT_CONFIG, MAX_DAYS, adventConfigSchema, currentDay, placeWalkers, progressDay, type AdventConfig } from "./logic";
 import Manage from "./Manage";
 import { todayInAmsterdam } from "./today";
-import { addSubscriber, getWalkers, importSubscribers } from "./store";
+import { deletePhoto } from "./photos";
+import { addSubscriber, getWalkers, importSubscribers, removeSignedOff, removeSubscriber } from "./store";
 
 
 /** Where the calendar stands today, and everyone placed on the map accordingly (see placeWalkers). */
@@ -79,20 +80,26 @@ export default definePlugin({
 
       <label className="flex items-start gap-2 text-sm">
         <input type="checkbox" name="autoAddSubscribers" defaultChecked={config.autoAddSubscribers} className="mt-1" />
-        <span><strong>Add everyone who subscribes.</strong> People who subscribe now and later are added by first name. Someone you remove stays off, unless they subscribe again.</span>
+        <span><strong>Keep in sync with the sign-ups.</strong> Everyone who signed up, and everyone who signs up later, is added by first name; whoever signs off (or is removed from the activity) is taken off the map again. Players you add by hand stay. Someone you remove yourself stays off, unless they sign up again.</span>
       </label>
     </div>
   ),
 
   Manage,
 
+  // With the sync on (stored as autoAddSubscribers), the map follows the participant list.
   onEvent: async ({ instance, config, event, userId }) => {
-    if (config.autoAddSubscribers && event === "subscribed" && userId) await addSubscriber(instance.id, userId);
+    if (!config.autoAddSubscribers || !userId) return;
+    if (event === "subscribed") await addSubscriber(instance.id, userId);
+    if (event === "unsubscribed") await deletePhoto(await removeSubscriber(instance.id, userId));
   },
 
-  // Switching the option on picks up the people who subscribed before.
+  // Switching the sync on brings the map up to date: everyone signed up is added, everyone signed off taken off.
   onSaved: async ({ instance, config, previous }) => {
-    if (config.autoAddSubscribers && !previous.autoAddSubscribers) await importSubscribers(instance.id, instance.activity_id, "subscription");
+    if (!config.autoAddSubscribers || previous.autoAddSubscribers) return;
+    const photos = await removeSignedOff(instance.id, instance.activity_id);
+    await Promise.all(photos.map(deletePhoto));
+    await importSubscribers(instance.id, instance.activity_id, "subscription");
   },
 
   // Names are first names of people who signed up. The activity page only shows "Who is going" to signed-in visitors,

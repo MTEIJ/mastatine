@@ -57,6 +57,15 @@ export interface Walker {
 }
 
 
+/**
+ * Keeping the map in sync with the sign-ups: the players that were added for someone who is no longer signed up.
+ * Players added by hand (no userId) are never part of the sync.
+ */
+export function signedOffWalkers(rows: readonly { key: string; userId: string | null }[], participantIds: readonly string[]): string[] {
+  const signedUp = new Set(participantIds);
+  return rows.filter((row) => row.userId !== null && !signedUp.has(row.userId)).map((row) => row.key);
+}
+
 /** Only our own processed uploads count as a photo; anything else in the data is ignored rather than put in a page. */
 const PHOTO_URL = /^\/uploads\/[a-z0-9-]+\.webp$/;
 

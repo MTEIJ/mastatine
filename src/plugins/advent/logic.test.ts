@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { buildTiles, canChangePhoto, canFailOn, canMove, lastFailDay, placeWalkers, progressDay, currentDay, initials, parseConfig, safePhoto, standings, tokenHue } from "./logic";
+import { buildTiles, canChangePhoto, canFailOn, canMove, lastFailDay, placeWalkers, progressDay, currentDay, initials, parseConfig, safePhoto, signedOffWalkers, standings, tokenHue } from "./logic";
 
 const walker = (id: string, name: string, day: number, diedOn: number | null = null) => ({ id, name, day, diedOn });
 
@@ -123,3 +123,20 @@ describe("photos", () => {
   });
 });
 
+
+describe("signedOffWalkers", () => {
+  const rows = [
+    { key: "a", userId: "u1" },
+    { key: "b", userId: "u2" },
+    { key: "c", userId: null },
+  ];
+  it("picks the players linked to people who are no longer signed up", () => {
+    assert.deepEqual(signedOffWalkers(rows, ["u1"]), ["b"]);
+  });
+  it("never picks players added by hand", () => {
+    assert.deepEqual(signedOffWalkers(rows, []), ["a", "b"]);
+  });
+  it("picks nobody when everyone is still signed up", () => {
+    assert.deepEqual(signedOffWalkers(rows, ["u1", "u2", "u3"]), []);
+  });
+});

@@ -251,7 +251,7 @@ export async function unsubscribe(formData: FormData) {
   if (removed.length > 0) {
     // The freed spot goes to the next person on the waitlist.
     after(async () => {
-      await logActivityEvent(id, "unsubscribed");
+      await logActivityEvent(id, "unsubscribed", session.user.id);
       await notifyWaitlist(id);
     });
   }
@@ -276,7 +276,7 @@ export async function removeParticipant(formData: FormData) {
   const removed = await sql`DELETE FROM activity_subscriptions WHERE activity_id = ${id} AND user_id = ${userId} RETURNING activity_id`;
   if (removed.length > 0) {
     after(async () => {
-      await logActivityEvent(id, "unsubscribed");
+      await logActivityEvent(id, "unsubscribed", userId);
       await notifyWaitlist(id);
     });
   }

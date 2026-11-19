@@ -2,7 +2,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import sql from "@/lib/db";
 import { getParticipants } from "@/lib/activities";
 import { firstName, playerIdForUser } from "../scoreboard/logic";
-import { MAX_WALKERS, type Walker } from "./logic";
+import { MAX_WALKERS, signedOffWalkers, type Walker } from "./logic";
 
 /** Advent calendar data lives in the plugin store: one "walker" row per person, holding where they stand and whether they died. */
 const WALKERS = "walker";
@@ -117,6 +117,29 @@ export async function reviveWalker(instanceId: string, walkerId: string): Promis
     UPDATE plugin_data SET value = value - 'diedOn'
     WHERE instance_id = ${instanceId} AND collection = ${WALKERS} AND key = ${walkerId}
   `;
+}
+
+/** Takes off the player that was added for this person, if any. Returns the address of their photo, so the caller can delete the file. */
+export function removeSubscriber(instanceId: string, userId: string): Promise<string | null> {
+  return removeWalker(instanceId, playerIdForUser(instanceId, userId));
+}
+
+/**
+ * Takes off every player that was added for someone who is no longer signed up (players added by hand stay).
+ * Returns the addresses of their photos, so the caller can delete the files.
+ */
+export async function removeSignedOff(instanceId: string, activityId: string): Promise<string[]> {
+  const [rows, participants] = await Promise.all([
+    sql<{ key: string; user_id: string | null }[]>`SELECT key, value->>'userId' AS user_id FROM plugin_data WHERE instance_id = ${instanceId} AND collection = ${WALKERS}`,
+    getParticipants(activityId),
+  ]);
+  const keys = signedOffWalkers(rows.map((r) => ({ key: r.key, userId: r.user_id })), participants.map((p) => p.id));
+  if (keys.length === 0) return [];
+  const removed = await sql<{ photo: string | null }[]>`
+    DELETE FROM plugin_data WHERE instance_id = ${instanceId} AND collection = ${WALKERS} AND key IN ${sql(keys)}
+    RETURNING value->>'photo' AS photo
+  `;
+  return removed.map((r) => r.photo).filter((p): p is string => p !== null);
 }
 
 /** Adds everyone subscribed to the activity (first names) who is not on the map yet. Returns how many were added. */
