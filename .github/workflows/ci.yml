@@ -63,3 +63,13 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      # Tell Komodo to pull the new image and redeploy right away (only on master pushes)
+      - name: Deploy via Komodo
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        continue-on-error: true
+        run: |
+          curl -fsS --max-time 30 -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-Gitlab-Token: ${{ secrets.KOMODO_WEBHOOK_SECRET }}" \
+            --data '{"ref":"refs/heads/main"}' \
+            https://komodo.mteij.nl/listener/gitlab/stack/mastatine/deploy
