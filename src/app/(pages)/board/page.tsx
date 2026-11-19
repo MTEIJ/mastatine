@@ -25,12 +25,14 @@ export default function BoardPage() {
       />
       <div className="container-page">
         <h2 className="text-2xl font-bold">Roles</h2>
-        <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-5 divide-y divide-line border-y border-line">
           {BOARD.map((role) => (
-            <li key={role.key} className="card p-6">
-              <h3 className="text-xl font-extrabold">{role.title}</h3>
-              {role.portfolio && <p className="text-base font-bold text-accent-text">{role.portfolio}</p>}
-              <p className="mt-3 text-base text-muted">{role.summary}</p>
+            <li key={role.key} className="grid gap-1 py-5 sm:grid-cols-[minmax(0,20rem)_1fr] sm:gap-8">
+              <div>
+                <h3 className="text-lg font-bold">{role.title}</h3>
+                {role.portfolio && <p className="text-sm text-muted">{role.portfolio}</p>}
+              </div>
+              <p className="text-base text-muted">{role.summary}</p>
             </li>
           ))}
         </ul>

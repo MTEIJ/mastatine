@@ -28,13 +28,13 @@ export const BOARD: Role[] = [
     key: "chair",
     title: "Chairmast",
     portfolio: "Chair",
-    summary: "Leads the board and the general meeting, represents the association and keeps the whole structure standing.",
+    summary: "Leads the board, chairs the general members meeting and represents the association.",
   },
   {
     key: "secretary",
     title: "Sexytary",
     portfolio: "Secretary",
-    summary: "Keeps the minutes, the member administration and the archive. Makes paperwork look good.",
+    summary: "Keeps the minutes, the member administration and the archive.",
   },
   {
     key: "treasurer",
@@ -46,19 +46,19 @@ export const BOARD: Role[] = [
     key: "external",
     title: "Commastioner of External Affairs",
     portfolio: "External Affairs",
-    summary: "Builds contacts with companies, sponsors and other associations.",
+    summary: "Maintains contacts with companies, sponsors and other associations.",
   },
   {
     key: "internal",
     title: "Commastioner of Internal Affairs",
     portfolio: "Internal Affairs",
-    summary: "Looks after the members and the committees, and makes sure everyone feels at home.",
+    summary: "Looks after the members and supports the committees.",
   },
   {
     key: "awareness",
     title: "Mastermind",
     portfolio: "General Board Member",
-    summary: "Spreads mast awareness, everywhere, always. No fixed tasks: helps out wherever the board needs it and makes sure nobody walks past a mast without looking up.",
+    summary: "Promotes mast awareness and supports the board wherever needed.",
   },
 ];
 
