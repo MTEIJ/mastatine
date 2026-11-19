@@ -80,15 +80,7 @@ export const BOARD_CALL = {
     { value: "9-15", label: "9 to 15 hours (full reception)" },
     { value: "16+", label: "16+ hours (I live in the mast now)" },
   ] satisfies Choice[],
-  mastSpirits: [
-    { value: "lattice", label: "Lattice tower: sturdy, reliable, a little see-through" },
-    { value: "monopole", label: "Monopole: simple, straight to the point" },
-    { value: "guyed", label: "Guyed mast: I need support, and that is okay" },
-    { value: "tree", label: "Disguised as a tree: fooling absolutely no one" },
-    { value: "steeple", label: "Church steeple: holy on the outside, 5G on the inside" },
-    { value: "rooftop", label: "Rooftop antenna: small, but always on top of things" },
-  ] satisfies Choice[],
-  promise: "I solemnly swear I will never actually climb a mast.",
+  promise: "I solemnly swear I will never mast in public.",
 } as const;
 
 export interface Pillar {

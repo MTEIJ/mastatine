@@ -8,11 +8,10 @@ function form(overrides: Record<string, string> = {}): FormData {
     first_choice: "chair",
     second_choice: "",
     motivation: "I have loved masts since I was a small antenna myself.",
+    ambitions: "A mast excursion every month and a member in every mast.",
     study: "Data Science, year 2",
     hours_per_week: "4-8",
     mast_location: "Behind the Randwyck station",
-    mast_spirit: "guyed",
-    crate_hours: "6",
     superpower: "Can smell 5G",
     promise: "on",
   };
@@ -26,7 +25,6 @@ describe("parseBoardApplication", () => {
     assert.ok(result.ok);
     assert.equal(result.data.first_choice, "chair");
     assert.equal(result.data.second_choice, null);
-    assert.equal(result.data.crate_hours, 6);
   });
 
   it("keeps a second choice that differs from the first", () => {
@@ -40,8 +38,8 @@ describe("parseBoardApplication", () => {
     assert.equal(result.ok, false);
   });
 
-  it("refuses roles, hours and mast spirits that are not on the list", () => {
-    const cases: Record<string, string>[] = [{ first_choice: "king" }, { hours_per_week: "40" }, { mast_spirit: "eiffel" }];
+  it("refuses roles and hours that are not on the list", () => {
+    const cases: Record<string, string>[] = [{ first_choice: "king" }, { hours_per_week: "40" }];
     for (const bad of cases) {
       assert.equal(parseBoardApplication(form(bad)).ok, false, JSON.stringify(bad));
     }
@@ -54,10 +52,12 @@ describe("parseBoardApplication", () => {
     assert.equal(parseBoardApplication(form({ motivation: "pls" })).ok, false);
   });
 
-  it("keeps crate hours within a humane range", () => {
-    assert.equal(parseBoardApplication(form({ crate_hours: "73" })).ok, false);
-    assert.equal(parseBoardApplication(form({ crate_hours: "-1" })).ok, false);
-    assert.equal(parseBoardApplication(form({ crate_hours: "2.5" })).ok, false);
+  it("requires real ambitions and keeps them", () => {
+    assert.equal(parseBoardApplication(form({ ambitions: "" })).ok, false);
+    assert.equal(parseBoardApplication(form({ ambitions: "win" })).ok, false);
+    const result = parseBoardApplication(form());
+    assert.ok(result.ok);
+    assert.equal(result.data.ambitions, "A mast excursion every month and a member in every mast.");
   });
 });
 

@@ -9,12 +9,11 @@ export interface SavedApplication {
   first_choice: string;
   second_choice: string | null;
   motivation: string;
+  ambitions: string;
   study: string;
   hours_per_week: string;
   mast_photo: string;
   mast_location: string;
-  mast_spirit: string;
-  crate_hours: number;
   superpower: string;
 }
 
@@ -72,6 +71,20 @@ export default function BoardApplicationForm({ saved }: BoardApplicationFormProp
           />
           <p id="motivation-hint" className="hint">Why do you want to be on the board, and what would you bring to Mastatine?</p>
         </div>
+        <div>
+          <label className="label" htmlFor="ambitions">Ambitions</label>
+          <textarea
+            id="ambitions"
+            name="ambitions"
+            className="input min-h-32"
+            required
+            minLength={20}
+            maxLength={4000}
+            defaultValue={saved?.ambitions}
+            aria-describedby="ambitions-hint"
+          />
+          <p id="ambitions-hint" className="hint">What do you want to achieve in your board year of M.A. Mastatine? What are your ambitions?</p>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="study">Study and year <span className="font-normal text-muted">(optional)</span></label>
@@ -117,27 +130,9 @@ export default function BoardApplicationForm({ saved }: BoardApplicationFormProp
           <input id="mast_location" name="mast_location" className="input" maxLength={120} placeholder="e.g. next to the A2, the one with the red light" defaultValue={saved?.mast_location} />
         </div>
 
-        <div role="radiogroup" aria-labelledby="mast-spirit-label">
-          <p id="mast-spirit-label" className="label">If you were a mast, which one would you be?</p>
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">
-            {BOARD_CALL.mastSpirits.map((spirit, i) => (
-              <label key={spirit.value} className="flex cursor-pointer items-start gap-2 rounded-xl border border-line p-3 has-[:checked]:border-accent has-[:checked]:bg-accent-soft">
-                <input type="radio" name="mast_spirit" value={spirit.value} required={i === 0} defaultChecked={saved?.mast_spirit === spirit.value} className="mt-1" />
-                <span className="text-sm">{spirit.label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="label" htmlFor="crate_hours">How many hours can you sit on a crate?</label>
-            <input id="crate_hours" name="crate_hours" type="number" inputMode="numeric" min={0} max={72} step={1} className="input" required defaultValue={saved?.crate_hours} />
-          </div>
-          <div>
-            <label className="label" htmlFor="superpower">Your board superpower <span className="font-normal text-muted">(optional)</span></label>
-            <input id="superpower" name="superpower" className="input" maxLength={150} placeholder="e.g. I can find 4G in a basement" defaultValue={saved?.superpower} />
-          </div>
+        <div>
+          <label className="label" htmlFor="superpower">Your board superpower <span className="font-normal text-muted">(optional)</span></label>
+          <input id="superpower" name="superpower" className="input" maxLength={150} placeholder="e.g. I can find 4G in a basement" defaultValue={saved?.superpower} />
         </div>
 
         <label className="flex items-start gap-2 text-sm font-semibold">

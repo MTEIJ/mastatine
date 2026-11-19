@@ -65,8 +65,8 @@ async function Application() {
   }
 
   const [saved] = await sql<(SavedApplication & { updated_at: Date })[]>`
-    SELECT first_choice, second_choice, motivation, study, hours_per_week, mast_photo, mast_location, mast_spirit,
-      crate_hours, superpower, updated_at
+    SELECT first_choice, second_choice, motivation, ambitions, study, hours_per_week, mast_photo, mast_location,
+      superpower, updated_at
     FROM board_applications WHERE user_id = ${session.user.id}
   `;
 

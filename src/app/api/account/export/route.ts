@@ -19,7 +19,7 @@ export async function GET() {
     sql`SELECT body, author, said_on, created_at FROM quotes WHERE created_by = ${user.id} ORDER BY created_at DESC`,
     sql`SELECT quote_id, score, created_at FROM quote_votes WHERE user_id = ${user.id} ORDER BY created_at DESC`,
     sql`SELECT tower_id, direction, created_at FROM votes WHERE voter_id = ${accountVoterId(user.id)} ORDER BY created_at DESC`,
-    sql`SELECT first_choice, second_choice, motivation, study, hours_per_week, mast_photo, mast_location, mast_spirit, crate_hours, superpower, created_at, updated_at FROM board_applications WHERE user_id = ${user.id}`,
+    sql`SELECT first_choice, second_choice, motivation, ambitions, study, hours_per_week, mast_photo, mast_location, superpower, created_at, updated_at FROM board_applications WHERE user_id = ${user.id}`,
   ]);
 
   const payload = {

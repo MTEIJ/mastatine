@@ -42,14 +42,14 @@ export async function applyForBoard(_prev: BoardApplicationState, formData: Form
 
   const d = parsed.data;
   await sql`
-    INSERT INTO board_applications (user_id, first_choice, second_choice, motivation, study, hours_per_week, mast_photo,
-      mast_location, mast_spirit, crate_hours, superpower)
-    VALUES (${user.id}, ${d.first_choice}, ${d.second_choice}, ${d.motivation}, ${d.study}, ${d.hours_per_week}, ${mastPhoto},
-      ${d.mast_location}, ${d.mast_spirit}, ${d.crate_hours}, ${d.superpower})
+    INSERT INTO board_applications (user_id, first_choice, second_choice, motivation, ambitions, study, hours_per_week, mast_photo,
+      mast_location, superpower)
+    VALUES (${user.id}, ${d.first_choice}, ${d.second_choice}, ${d.motivation}, ${d.ambitions}, ${d.study}, ${d.hours_per_week}, ${mastPhoto},
+      ${d.mast_location}, ${d.superpower})
     ON CONFLICT (user_id) DO UPDATE SET first_choice = EXCLUDED.first_choice, second_choice = EXCLUDED.second_choice,
-      motivation = EXCLUDED.motivation, study = EXCLUDED.study, hours_per_week = EXCLUDED.hours_per_week,
-      mast_photo = EXCLUDED.mast_photo, mast_location = EXCLUDED.mast_location, mast_spirit = EXCLUDED.mast_spirit,
-      crate_hours = EXCLUDED.crate_hours, superpower = EXCLUDED.superpower, updated_at = NOW()
+      motivation = EXCLUDED.motivation, ambitions = EXCLUDED.ambitions, study = EXCLUDED.study, hours_per_week = EXCLUDED.hours_per_week,
+      mast_photo = EXCLUDED.mast_photo, mast_location = EXCLUDED.mast_location,
+      superpower = EXCLUDED.superpower, updated_at = NOW()
   `;
 
   const message = boardApplicationEmail({

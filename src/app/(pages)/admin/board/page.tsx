@@ -12,12 +12,11 @@ interface ApplicationRow {
   first_choice: string;
   second_choice: string | null;
   motivation: string;
+  ambitions: string;
   study: string;
   hours_per_week: string;
   mast_photo: string;
   mast_location: string;
-  mast_spirit: string;
-  crate_hours: number;
   superpower: string;
   updated_at: Date;
 }
@@ -28,8 +27,8 @@ export default async function AdminBoard() {
   // Layouts do not re-run on client navigation, so each admin page checks the role itself.
   await requireAdmin();
   const applications = await sql<ApplicationRow[]>`
-    SELECT a.user_id, u.name, u.email, a.first_choice, a.second_choice, a.motivation, a.study, a.hours_per_week,
-      a.mast_photo, a.mast_location, a.mast_spirit, a.crate_hours, a.superpower, a.updated_at
+    SELECT a.user_id, u.name, u.email, a.first_choice, a.second_choice, a.motivation, a.ambitions, a.study, a.hours_per_week,
+      a.mast_photo, a.mast_location, a.superpower, a.updated_at
     FROM board_applications a JOIN "user" u ON u.id = a.user_id
     ORDER BY a.created_at
   `;
@@ -94,11 +93,16 @@ export default async function AdminBoard() {
                   {" · "}
                   {choiceLabel(BOARD_CALL.hoursPerWeek, a.hours_per_week)}
                 </p>
+                <p className="font-semibold">Motivation</p>
                 <p className="whitespace-pre-wrap rounded-xl bg-soft p-3">{a.motivation}</p>
+                {a.ambitions && (
+                  <>
+                    <p className="font-semibold">Ambitions</p>
+                    <p className="whitespace-pre-wrap rounded-xl bg-soft p-3">{a.ambitions}</p>
+                  </>
+                )}
                 <dl className="grid gap-x-4 gap-y-1 text-muted sm:grid-cols-[auto_1fr]">
-                  <dt>Mast spirit</dt><dd className="text-ink">{choiceLabel(BOARD_CALL.mastSpirits, a.mast_spirit)}</dd>
                   {a.mast_location && <><dt>Mast location</dt><dd className="text-ink">{a.mast_location}</dd></>}
-                  <dt>Crate stamina</dt><dd className="text-ink">{a.crate_hours} {a.crate_hours === 1 ? "hour" : "hours"}</dd>
                   {a.superpower && <><dt>Superpower</dt><dd className="text-ink">{a.superpower}</dd></>}
                 </dl>
               </div>
