@@ -221,7 +221,7 @@ export default function Sidebar({ agenda }: { /** Upcoming activities, rendered 
         {/* Mobile close */}
         <button
           className="lg:hidden absolute top-1 right-1 h-11 w-11 text-2xl leading-none"
-          style={{ color: "#555", background: "none", border: "none", cursor: "pointer" }}
+          style={{ color: "var(--text-mid)", background: "none", border: "none", cursor: "pointer" }}
           onClick={() => setMobileOpen(false)}
           aria-label="Close menu"
           id="nav-cancel"

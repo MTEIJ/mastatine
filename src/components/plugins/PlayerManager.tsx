@@ -1,4 +1,6 @@
 import CopyField from "./CopyField";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
 
 export interface PlayerRow {
   id: string;
@@ -33,14 +35,14 @@ export default function PlayerManager({ instanceId, rows, max, maxName, addActio
         <h3 className="font-extrabold">Players <span className="font-normal text-muted">({rows.length}/{max})</span></h3>
         <form action={importAction}>
           <input type="hidden" name="instance" value={instanceId} />
-          <button className="btn btn-secondary btn-sm" type="submit">Add everyone who subscribed</button>
+          <Button variant="secondary" size="sm" type="submit">Add everyone who subscribed</Button>
         </form>
       </div>
 
       <form action={addAction} className="flex gap-2">
         <input type="hidden" name="instance" value={instanceId} />
-        <input className="input min-w-0 flex-1" name="name" maxLength={maxName} required autoComplete="off" placeholder="Name of a new player" aria-label="Name of a new player" />
-        <button className="btn btn-secondary btn-sm shrink-0" type="submit">Add</button>
+        <Input className="min-w-0 flex-1" name="name" maxLength={maxName} required autoComplete="off" placeholder="Name of a new player" aria-label="Name of a new player" />
+        <Button variant="secondary" size="sm" className="shrink-0" type="submit">Add</Button>
       </form>
 
       {rows.length > 0 && (
@@ -54,7 +56,7 @@ export default function PlayerManager({ instanceId, rows, max, maxName, addActio
               <form action={removeAction}>
                 <input type="hidden" name="instance" value={instanceId} />
                 <input type="hidden" name={removeField} value={row.id} />
-                <button className="btn btn-secondary btn-sm" type="submit" aria-label={`Remove ${row.name}`}>Remove</button>
+                <Button variant="secondary" size="sm" type="submit" aria-label={`Remove ${row.name}`}>Remove</Button>
               </form>
             </li>
           ))}

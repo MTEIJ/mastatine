@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
 
 export interface AgendaDraftItem {
   level: 0 | 1;
@@ -102,13 +104,13 @@ export default function AgendaEditor({ initialItems, name = "agenda" }: AgendaEd
       <input type="hidden" name={name} value={serialise(rows)} />
 
       {rows.length === 0 ? (
-        <p className="rounded-xl bg-soft px-4 py-3 text-sm text-muted">No items yet. Add the first one below.</p>
+        <p className="rounded-md bg-soft px-4 py-3 text-sm text-muted">No items yet. Add the first one below.</p>
       ) : (
         <ol className="space-y-2">
           {rows.map((row, index) => (
             <li key={row.key} className={`flex items-center gap-2 ${row.level === 1 ? "ml-8 sm:ml-10" : ""}`}>
               <span className="w-8 shrink-0 text-right text-sm font-bold tabular-nums text-muted">{labels[index]}</span>
-              <input
+              <Input
                 ref={(el) => {
                   if (el) {
                     inputs.current.set(row.key, el);
@@ -120,7 +122,7 @@ export default function AgendaEditor({ initialItems, name = "agenda" }: AgendaEd
                     inputs.current.delete(row.key);
                   }
                 }}
-                className="input min-w-0 flex-1"
+                className="min-w-0 flex-1"
                 value={row.title}
                 maxLength={MAX_TITLE}
                 placeholder={row.level === 1 ? "Sub-item" : "Item"}
@@ -164,13 +166,13 @@ export default function AgendaEditor({ initialItems, name = "agenda" }: AgendaEd
       )}
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" className="btn btn-secondary btn-sm" onClick={() => addAfter(-1, 0)} disabled={rows.length >= MAX_ITEMS}>
+        <Button type="button" variant="secondary" size="sm" onClick={() => addAfter(-1, 0)} disabled={rows.length >= MAX_ITEMS}>
           + Add item
-        </button>
+        </Button>
         {rows.length > 0 && (
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => addAfter(-1, 1)} disabled={rows.length >= MAX_ITEMS}>
+          <Button type="button" variant="ghost" size="sm" onClick={() => addAfter(-1, 1)} disabled={rows.length >= MAX_ITEMS}>
             + Add sub-item
-          </button>
+          </Button>
         )}
       </div>
     </div>

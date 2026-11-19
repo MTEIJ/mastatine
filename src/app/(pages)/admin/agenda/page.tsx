@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAllEvents } from "@/lib/calendar-events";
 import { formatDateTime } from "@/lib/datetime";
 import { requireAdmin } from "@/lib/session";
+import { buttonClass } from "@/components/ui/classes";
 
 const NOTICES: Record<string, { text: string; tone: "ok" | "bad" }> = {
   created: { text: "Agenda item added.", tone: "ok" },
@@ -22,7 +23,7 @@ export default async function AdminAgenda(props: { searchParams: Promise<{ notic
   return (
     <div className="space-y-4">
       {message && (
-        <p role="status" className={`rounded-xl px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
+        <p role="status" className={`rounded-md px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
           {message.text}
         </p>
       )}
@@ -31,7 +32,7 @@ export default async function AdminAgenda(props: { searchParams: Promise<{ notic
           <h2 className="text-base font-extrabold">Agenda items</h2>
           <p className="text-sm text-muted">Things for the calendar that are not activities. They show up in the subscribable calendar feed.</p>
         </div>
-        <Link href="/admin/agenda/new" className="btn btn-primary btn-sm">New item</Link>
+        <Link href="/admin/agenda/new" className={buttonClass({ variant: "primary", size: "sm" })}>New item</Link>
       </div>
       <div className="table-wrap">
         <table className="table table-stack">
@@ -42,7 +43,7 @@ export default async function AdminAgenda(props: { searchParams: Promise<{ notic
                 <td data-primary className="font-medium">{e.title}</td>
                 <td data-label="When" className="whitespace-nowrap text-muted">{formatDateTime(e.starts_at)}</td>
                 <td data-label="Feed" className="text-muted">{e.is_visible ? "Shown" : "Hidden"}</td>
-                <td className="text-right"><Link href={`/admin/agenda/${e.id}`} className="btn btn-secondary btn-sm">Edit</Link></td>
+                <td className="text-right"><Link href={`/admin/agenda/${e.id}`} className={buttonClass({ variant: "secondary", size: "sm" })}>Edit</Link></td>
               </tr>
             ))}
             {events.length === 0 && <tr><td colSpan={4} className="py-6 text-center text-muted">No agenda items yet.</td></tr>}

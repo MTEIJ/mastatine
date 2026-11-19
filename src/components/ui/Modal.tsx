@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef } from "react";
+import { buttonClass } from "./classes";
 
 interface ModalProps {
   /** Text of the button that opens the dialog. */
@@ -16,7 +17,7 @@ interface ModalProps {
 }
 
 /** A button that opens its children in a native modal dialog: focus is trapped, Esc and a click outside close it. */
-export default function Modal({ label, title, description, triggerLabel, triggerClassName = "btn btn-secondary btn-sm", dialogClassName, children }: ModalProps) {
+export default function Modal({ label, title, description, triggerLabel, triggerClassName = buttonClass({ variant: "secondary", size: "sm" }), dialogClassName, children }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 

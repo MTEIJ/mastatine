@@ -6,6 +6,7 @@ import { getEvent } from "@/lib/calendar-events";
 import { requireAdmin } from "@/lib/session";
 import { deleteEvent, saveEvent } from "../actions";
 import EventForm from "../EventForm";
+import { buttonClass } from "@/components/ui/classes";
 
 export const instant = false;
 
@@ -24,7 +25,7 @@ export default async function EditEventPage(props: { params: Promise<{ id: strin
       <EventForm action={saveEvent} event={event} submitLabel="Save changes" />
       <form action={deleteEvent} className="mt-4">
         <input type="hidden" name="id" value={event.id} />
-        <ConfirmButton message={`Delete “${event.title}”? This cannot be undone.`} className="btn btn-danger btn-sm">Delete item</ConfirmButton>
+        <ConfirmButton message={`Delete “${event.title}”? This cannot be undone.`} className={buttonClass({ variant: "danger", size: "sm" })}>Delete item</ConfirmButton>
       </form>
     </div>
   );

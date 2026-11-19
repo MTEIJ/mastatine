@@ -7,6 +7,9 @@ import { formatDayMonth } from "@/lib/datetime";
 import { requireUser } from "@/lib/session";
 import { PLUGINS, getPlugin } from "@/plugins/registry";
 import { addPlugin } from "../activities/[id]/plugins/actions";
+import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Field";
+import { buttonClass, cardClass, labelClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Plugin library", robots: { index: false } };
 
@@ -40,7 +43,7 @@ export default async function PluginLibraryPage(props: { searchParams: Promise<{
         ) : (
           <ul className="space-y-3">
             {installed.map((item) => (
-              <li key={item.id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
+              <li key={item.id} className={cardClass("flex flex-wrap items-center justify-between gap-3 p-4")}>
                 <div className="min-w-0">
                   <p className="font-extrabold">
                     {getPlugin(item.plugin_id)?.name ?? `Unknown plugin (${item.plugin_id})`}
@@ -48,7 +51,7 @@ export default async function PluginLibraryPage(props: { searchParams: Promise<{
                   </p>
                   <p className="text-sm text-muted">{item.activity_name} · {formatDayMonth(item.starts_at)}</p>
                 </div>
-                <Link href={`/mastapps/activities/${item.activity_id}/plugins/${item.id}`} className="btn btn-secondary btn-sm">Manage</Link>
+                <Link href={`/mastapps/activities/${item.activity_id}/plugins/${item.id}`} className={buttonClass({ variant: "secondary", size: "sm" })}>Manage</Link>
               </li>
             ))}
           </ul>
@@ -58,7 +61,7 @@ export default async function PluginLibraryPage(props: { searchParams: Promise<{
           {PLUGINS.map((plugin) => {
             const used = usage.get(plugin.id) ?? 0;
             return (
-              <li key={plugin.id} className="card space-y-3 p-5">
+              <li key={plugin.id} className={cardClass("space-y-3 p-5")}>
                 <h2 className="text-xl font-extrabold">{plugin.name}</h2>
                 <p className="text-sm">{plugin.description}</p>
                 <ul className="flex flex-wrap gap-2 text-sm font-bold">
@@ -70,12 +73,12 @@ export default async function PluginLibraryPage(props: { searchParams: Promise<{
                   <form action={addPlugin} className="flex flex-wrap items-end gap-2">
                     <input type="hidden" name="plugin" value={plugin.id} />
                     <label className="block min-w-0 flex-1">
-                      <span className="label">Add to</span>
-                      <select name="activity" className="input" required>
+                      <span className={labelClass()}>Add to</span>
+                      <Select name="activity" required>
                         {upcoming.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-                      </select>
+                      </Select>
                     </label>
-                    <button className="btn btn-primary btn-sm" type="submit">Add</button>
+                    <Button variant="primary" size="sm" type="submit">Add</Button>
                   </form>
                 ) : (
                   <p className="text-sm text-muted">You do not organise an activity yet.</p>

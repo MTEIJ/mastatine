@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/Field";
 
 interface Person {
   id: string;
@@ -50,17 +51,16 @@ export default function MemberSearch({ committeeId, committeeName, action }: Mem
 
   return (
     <div>
-      <input
+      <Input
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         aria-label={`Find someone to add to ${committeeName}`}
         placeholder="Add someone: type a name or email"
-        className="input"
         autoComplete="off"
       />
       {searched && (
-        <ul className="mt-1 divide-y divide-line rounded-lg border border-line" aria-live="polite">
+        <ul className="mt-1 divide-y divide-line rounded-sm border border-line" aria-live="polite">
           {state === "error" && <li className="px-2 py-1.5 text-danger">Search failed. Try again.</li>}
           {state !== "error" && people.length === 0 && <li className="px-2 py-1.5 text-muted">{state === "loading" ? "Searching…" : "No one found."}</li>}
           {people.map((p) => (

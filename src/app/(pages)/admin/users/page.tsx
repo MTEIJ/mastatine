@@ -6,6 +6,10 @@ import type { MemberStatus } from "@/lib/membership";
 import MembershipEndForm from "@/components/admin/MembershipEndForm";
 import SortHeader, { parseSort, SortLink } from "@/components/admin/SortHeader";
 import { addCommitteeMember, approveMember, banUser, declineMember, removeCommitteeMember, removeUser, revokeMember, setUserRole, unbanUser } from "../actions";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Card";
+import { Input, Select } from "@/components/ui/Field";
+import { badgeClass, buttonClass, cardClass } from "@/components/ui/classes";
 
 const PAGE_SIZE = 100;
 
@@ -83,7 +87,7 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
   return (
     <>
       {pendingCount > 0 && !requestsOnly && !query && (
-        <section aria-labelledby="requests-title" className="card mb-4 !p-3">
+        <section aria-labelledby="requests-title" className={cardClass("mb-4 !p-3")}>
           <h2 id="requests-title" className="text-sm font-extrabold">
             Membership requests <span className="ml-1 rounded-full bg-navy px-2 py-0.5 text-xs text-white">{pendingCount}</span>
           </h2>
@@ -96,7 +100,7 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
                 <div className="flex flex-wrap items-center gap-2">
                   <form action={approveMember}>
                     <input type="hidden" name="userId" value={p.id} />
-                    <button className="btn btn-primary btn-sm" type="submit">Approve</button>
+                    <Button variant="primary" size="sm" type="submit">Approve</Button>
                   </form>
                   <MembershipEndForm action={declineMember} userId={p.id} label="Decline" confirm={`Decline the request from ${p.email}?`} />
                 </div>
@@ -118,8 +122,8 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
           <input type="hidden" name="sort" value={sort.column} />
           <input type="hidden" name="dir" value={sort.dir} />
           <label className="sr-only" htmlFor="user-search">Search users</label>
-          <input id="user-search" name="q" defaultValue={query} placeholder="Search name or email" className="input min-w-0 flex-1" />
-          <button className="btn btn-secondary btn-sm" type="submit">Search</button>
+          <Input id="user-search" name="q" defaultValue={query} placeholder="Search name or email" className="min-w-0 flex-1" />
+          <Button variant="secondary" size="sm" type="submit">Search</Button>
         </form>
       </div>
 
@@ -154,18 +158,18 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
                 <tr key={u.id}>
                   <td data-primary className="font-medium">
                     {u.name || "No name"}
-                    {isMe && <span className="badge ml-2">You</span>}
+                    {isMe && <Badge className="ml-2">You</Badge>}
                   </td>
                   <td data-label="Email" className="text-muted sm:max-w-[16rem] sm:truncate" title={u.email}>{u.email}</td>
                   <td data-label="Status">
                     <div className="flex flex-wrap justify-end gap-1 sm:justify-start">
-                      {u.member_status === "approved" && !u.lapsed && <span className="badge">Member</span>}
-                      {u.lapsed && <span className="badge !bg-soft !text-muted">Lapsed</span>}
-                      {u.member_status === "pending" && <span className="badge !bg-navy !text-white">Requested</span>}
-                      {u.member_status === "declined" && <span className="badge !bg-soft !text-muted">Declined</span>}
-                      {u.member_status === "revoked" && <span className="badge !bg-soft !text-muted">Removed</span>}
-                      {u.role === "admin" && <span className="badge !bg-navy !text-white">Admin</span>}
-                      {u.banned && <span className="badge !bg-danger/10 !text-danger">Banned</span>}
+                      {u.member_status === "approved" && !u.lapsed && <Badge>Member</Badge>}
+                      {u.lapsed && <Badge className="!bg-soft !text-muted">Lapsed</Badge>}
+                      {u.member_status === "pending" && <Badge className="!bg-navy !text-white">Requested</Badge>}
+                      {u.member_status === "declined" && <Badge className="!bg-soft !text-muted">Declined</Badge>}
+                      {u.member_status === "revoked" && <Badge className="!bg-soft !text-muted">Removed</Badge>}
+                      {u.role === "admin" && <Badge className="!bg-navy !text-white">Admin</Badge>}
+                      {u.banned && <Badge className="!bg-danger/10 !text-danger">Banned</Badge>}
                     </div>
                   </td>
                   <td data-label="Committees" className="text-xs text-muted">{u.committees.length > 0 ? u.committees.map((c) => c.name).join(", ") : "–"}</td>
@@ -175,11 +179,11 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
                       {u.member_status === "pending" && (
                         <form action={approveMember}>
                           <input type="hidden" name="userId" value={u.id} />
-                          <button className="btn btn-primary btn-sm" type="submit">Approve</button>
+                          <Button variant="primary" size="sm" type="submit">Approve</Button>
                         </form>
                       )}
                       <details className="popover max-sm:w-full">
-                        <summary className="btn btn-secondary btn-sm max-sm:w-full" aria-label={`Edit ${u.name || u.email}`} title="Edit"><span className="sm:hidden">Edit</span><span aria-hidden="true" className="max-sm:hidden text-base leading-none">⋯</span></summary>
+                        <summary className={buttonClass({ variant: "secondary", size: "sm" }, "max-sm:w-full")} aria-label={`Edit ${u.name || u.email}`} title="Edit"><span className="sm:hidden">Edit</span><span aria-hidden="true" className="max-sm:hidden text-base leading-none">⋯</span></summary>
                         <div className="popover__panel space-y-3 text-sm">
                           <section aria-label="Membership" className="space-y-1.5">
                             <h3 className="text-xs font-bold uppercase tracking-wide text-muted">Membership</h3>
@@ -195,7 +199,7 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
                               {(u.member_status !== "approved" || u.lapsed) && u.member_status !== "pending" && (
                                 <form action={approveMember}>
                                   <input type="hidden" name="userId" value={u.id} />
-                                  <button className="btn btn-primary btn-sm" type="submit">Approve</button>
+                                  <Button variant="primary" size="sm" type="submit">Approve</Button>
                                 </form>
                               )}
                               {u.member_status === "pending" && (
@@ -215,7 +219,7 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
                                   <form key={c.id} action={removeCommitteeMember}>
                                     <input type="hidden" name="committeeId" value={c.id} />
                                     <input type="hidden" name="userId" value={u.id} />
-                                    <button type="submit" className="badge cursor-pointer" title={`Remove from ${c.name}`}>{c.name} ×</button>
+                                    <button type="submit" className={badgeClass("cursor-pointer")} title={`Remove from ${c.name}`}>{c.name} ×</button>
                                   </form>
                                 ))}
                               </div>
@@ -223,11 +227,11 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
                             {open.length > 0 && (
                               <form action={addCommitteeMember} className="flex gap-1.5">
                                 <input type="hidden" name="userId" value={u.id} />
-                                <select name="committeeId" aria-label={`Add ${u.email} to a committee`} className="input min-w-0 flex-1" required defaultValue="">
+                                <Select name="committeeId" aria-label={`Add ${u.email} to a committee`} className="min-w-0 flex-1" required defaultValue="">
                                   <option value="" disabled>Add to committee…</option>
                                   {open.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                </select>
-                                <button className="btn btn-secondary btn-sm" type="submit">Add</button>
+                                </Select>
+                                <Button variant="secondary" size="sm" type="submit">Add</Button>
                               </form>
                             )}
                           </section>
@@ -239,17 +243,17 @@ export default async function AdminUsers(props: { searchParams: Promise<{ q?: st
                                 <form action={setUserRole}>
                                   <input type="hidden" name="userId" value={u.id} />
                                   <input type="hidden" name="role" value={u.role === "admin" ? "user" : "admin"} />
-                                  <button className="btn btn-secondary btn-sm" type="submit">{u.role === "admin" ? "Remove admin" : "Make admin"}</button>
+                                  <Button variant="secondary" size="sm" type="submit">{u.role === "admin" ? "Remove admin" : "Make admin"}</Button>
                                 </form>
                                 <form action={u.banned ? unbanUser : banUser}>
                                   <input type="hidden" name="userId" value={u.id} />
-                                  <ConfirmButton message={u.banned ? "Lift this ban?" : `Ban ${u.email}? They will be signed out and unable to sign in.`} className="btn btn-secondary btn-sm">
+                                  <ConfirmButton message={u.banned ? "Lift this ban?" : `Ban ${u.email}? They will be signed out and unable to sign in.`} className={buttonClass({ variant: "secondary", size: "sm" })}>
                                     {u.banned ? "Unban" : "Ban"}
                                   </ConfirmButton>
                                 </form>
                                 <form action={removeUser}>
                                   <input type="hidden" name="userId" value={u.id} />
-                                  <ConfirmButton message={`Permanently delete ${u.email}?`} className="btn btn-danger btn-sm">Delete</ConfirmButton>
+                                  <ConfirmButton message={`Permanently delete ${u.email}?`} className={buttonClass({ variant: "danger", size: "sm" })}>Delete</ConfirmButton>
                                 </form>
                               </div>
                             </section>

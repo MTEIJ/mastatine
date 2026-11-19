@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { MAX_CHOICES, MAX_GROUPS, type SignupGroup } from "@/lib/signup-options";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
+import { labelClass } from "@/components/ui/classes";
 
 /** Editable copy of a group: prices are text while typing ("2,50"), and become cents when serialised. */
 interface DraftChoice { id: string; label: string; price: string }
@@ -49,7 +52,7 @@ export default function SignupOptionsEditor({ initial }: { initial: SignupGroup[
 
   return (
     <fieldset className="space-y-4">
-      <legend className="label">Signup options</legend>
+      <legend className={labelClass()}>Signup options</legend>
       <p className="text-sm text-muted">
         Let people choose when they subscribe, for example alcohol or alcohol-free, or meat, vegetarian and vegan.
         Each option can change the price: leave it empty for no change, or enter an amount to add (use a minus to subtract).
@@ -58,11 +61,11 @@ export default function SignupOptionsEditor({ initial }: { initial: SignupGroup[
       <input type="hidden" name="signup_options" value={serialise(groups)} />
 
       {groups.map((group) => (
-        <div key={group.id} className="space-y-3 rounded-xl border border-line bg-soft p-3 sm:p-4">
+        <div key={group.id} className="space-y-3 rounded-md border border-line bg-soft p-3 sm:p-4">
           <div className="flex flex-wrap items-center gap-3">
-            <input
+            <Input
               aria-label="Name of this choice, such as Drinks"
-              className="input min-w-0 flex-1"
+              className="min-w-0 flex-1"
               maxLength={60}
               placeholder="Name, such as Drinks"
               value={group.label}
@@ -72,17 +75,17 @@ export default function SignupOptionsEditor({ initial }: { initial: SignupGroup[
               <input type="checkbox" checked={group.required} onChange={(e) => updateGroup(group.id, { required: e.target.checked })} />
               Required
             </label>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => setGroups((all) => all.filter((g) => g.id !== group.id))}>
+            <Button type="button" variant="secondary" size="sm" onClick={() => setGroups((all) => all.filter((g) => g.id !== group.id))}>
               Remove
-            </button>
+            </Button>
           </div>
 
           <ul className="space-y-2">
             {group.choices.map((choice) => (
               <li key={choice.id} className="grid grid-cols-[1fr_5.5rem_auto] items-center gap-2">
-                <input
+                <Input
                   aria-label="Option name"
-                  className="input min-w-0"
+                  className="min-w-0"
                   maxLength={60}
                   placeholder="Option, such as Vegetarian"
                   value={choice.label}
@@ -90,9 +93,9 @@ export default function SignupOptionsEditor({ initial }: { initial: SignupGroup[
                 />
                 <label className="flex items-center gap-1 text-sm">
                   <span aria-hidden>€</span>
-                  <input
+                  <Input
                     aria-label={`Price change for ${choice.label || "this option"} in euros`}
-                    className="input min-w-0"
+                    className="min-w-0"
                     inputMode="decimal"
                     pattern="-?[0-9]+([.,][0-9]{1,2})?"
                     placeholder="+ 0,00"
@@ -100,39 +103,39 @@ export default function SignupOptionsEditor({ initial }: { initial: SignupGroup[
                     onChange={(e) => updateChoice(group.id, choice.id, { price: e.target.value })}
                   />
                 </label>
-                <button
+                <Button
                   type="button"
-                  className="btn btn-secondary btn-sm"
+                  variant="secondary" size="sm"
                   disabled={group.choices.length <= 1}
                   onClick={() => updateGroup(group.id, { choices: group.choices.filter((c) => c.id !== choice.id) })}
                 >
                   <span aria-hidden>×</span>
                   <span className="sr-only">Remove option</span>
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
 
-          <button
+          <Button
             type="button"
-            className="btn btn-secondary btn-sm"
+            variant="secondary" size="sm"
             disabled={group.choices.length >= MAX_CHOICES}
             onClick={() => updateGroup(group.id, { choices: [...group.choices, { id: newId(), label: "", price: "" }] })}
           >
             Add option
-          </button>
+          </Button>
         </div>
       ))}
 
       {groups.length < MAX_GROUPS && (
         <div className="flex flex-wrap gap-2">
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setGroups((all) => [...all, { id: newId(), label: "", required: true, choices: [{ id: newId(), label: "", price: "" }] }])}>
+          <Button type="button" variant="secondary" size="sm" onClick={() => setGroups((all) => [...all, { id: newId(), label: "", required: true, choices: [{ id: newId(), label: "", price: "" }] }])}>
             Add a choice
-          </button>
+          </Button>
           {PRESETS.map((preset) => (
-            <button key={preset.name} type="button" className="btn btn-secondary btn-sm" onClick={() => setGroups((all) => [...all, preset.group()])}>
+            <Button key={preset.name} type="button" variant="secondary" size="sm" onClick={() => setGroups((all) => [...all, preset.group()])}>
               Add {preset.name.toLowerCase()}
-            </button>
+            </Button>
           ))}
         </div>
       )}

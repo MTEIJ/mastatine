@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import Markdown from "@/components/Markdown";
+import { inputClass } from "@/components/ui/classes";
 import { BUTTON_COLOURS, BUTTON_TONES, BUTTON_TONE_LABELS, buttonTitle } from "@/lib/markdown-button";
 import { button, link, prefixLines, wrap, type Edit } from "@/lib/markdown-edit";
 
@@ -15,7 +16,7 @@ interface MarkdownEditorProps {
   heightClass?: string;
 }
 
-const toolClass = "grid h-8 min-w-8 place-items-center rounded px-2 text-sm font-bold text-muted hover:bg-soft hover:text-ink";
+const toolClass = "grid h-8 min-w-8 place-items-center rounded-xs px-2 text-sm font-bold text-muted hover:bg-soft hover:text-ink";
 
 function ToolButton({ label, title, onClick, className = "" }: { label: string; title: string; onClick: () => void; className?: string }) {
   return (
@@ -92,7 +93,7 @@ export default function MarkdownEditor({ id, name, defaultValue = "", maxLength,
         <button
           type="button"
           aria-pressed={preview}
-          className="ml-auto rounded px-2 py-1 text-xs font-bold text-muted hover:bg-soft hover:text-ink aria-pressed:bg-soft aria-pressed:text-ink"
+          className="ml-auto rounded-xs px-2 py-1 text-xs font-bold text-muted hover:bg-soft hover:text-ink aria-pressed:bg-soft aria-pressed:text-ink"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => setPreview((p) => !p)}
         >
@@ -100,7 +101,7 @@ export default function MarkdownEditor({ id, name, defaultValue = "", maxLength,
         </button>
       </div>
       {preview && (
-        <div className="min-h-32 rounded-lg border border-line bg-surface px-3 py-2">
+        <div className="min-h-32 rounded-sm border border-line bg-surface px-3 py-2">
           {value.trim() ? <Markdown large>{value}</Markdown> : <p className="text-muted">Nothing to preview yet.</p>}
         </div>
       )}
@@ -108,7 +109,7 @@ export default function MarkdownEditor({ id, name, defaultValue = "", maxLength,
         ref={area}
         id={id}
         name={name}
-        className={`input ${heightClass}`}
+        className={inputClass(heightClass)}
         required={required}
         maxLength={maxLength}
         hidden={preview}

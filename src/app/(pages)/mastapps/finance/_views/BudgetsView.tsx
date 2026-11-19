@@ -5,9 +5,12 @@ import { getActivityLines, getUnassigned } from "@/lib/finance";
 import type { FinanceAccess } from "@/lib/finance-access";
 import { budgetStatus, centsToDecimal, formatCents, suggestedExpenseCents } from "@/lib/finance-money";
 import { setBudget } from "../actions";
+import { Button } from "@/components/ui/Button";
+import { Input, Label } from "@/components/ui/Field";
+import { buttonClass } from "@/components/ui/classes";
 
 const STATE_LABEL = { "no-budget": "No budget", "on-track": "On track", "near-limit": "Near limit", over: "Over budget" } as const;
-const STATE_CLASS = { "no-budget": "text-muted", "on-track": "text-accent-text", "near-limit": "text-amber-700", over: "text-danger" } as const;
+const STATE_CLASS = { "no-budget": "text-muted", "on-track": "text-accent-text", "near-limit": "text-warning", over: "text-danger" } as const;
 
 export default async function BudgetsView({ access }: { access: FinanceAccess }) {
   const [lines, unassigned] = await Promise.all([getActivityLines(), getUnassigned()]);
@@ -60,7 +63,7 @@ export default async function BudgetsView({ access }: { access: FinanceAccess })
                       <Link href={`/mastapps/finance?view=mutations&activity=${line.id}`} className="hover:text-accent-text">{line.name}</Link>
                       <span className="block text-xs font-normal text-muted">
                         {line.committee_name} · {formatDateTime(line.starts_at)}
-                        {line.uses_budget && line.planned_expense_cents === 0 && <strong className="font-medium text-amber-700"> · budget not set</strong>}
+                        {line.uses_budget && line.planned_expense_cents === 0 && <strong className="font-medium text-warning"> · budget not set</strong>}
                       </span>
                     </td>
                     <td data-label="Budget" className="whitespace-nowrap text-right tabular-nums">{line.planned_expense_cents === 0 ? "–" : formatCents(line.planned_expense_cents)}</td>
@@ -77,19 +80,19 @@ export default async function BudgetsView({ access }: { access: FinanceAccess })
                     </td>
                     {access.canWrite && (
                       <td>
-                        <Modal label="Set budget" triggerLabel={`Set budget for ${line.name}`} title="Set budget" description={line.name} triggerClassName="btn btn-secondary btn-sm max-sm:w-full">
+                        <Modal label="Set budget" triggerLabel={`Set budget for ${line.name}`} title="Set budget" description={line.name} triggerClassName={buttonClass({ variant: "secondary", size: "sm" }, "max-sm:w-full")}>
                           <form action={setBudget} className="space-y-3">
                             <input type="hidden" name="activity_id" value={line.id} />
                             <div>
-                              <label className="label" htmlFor={`exp-${line.id}`}>Planned spending (€)</label>
-                              <input id={`exp-${line.id}`} name="planned_expense" inputMode="decimal" className="input" placeholder={suggestion ? centsToDecimal(suggestion) : "0,00"} defaultValue={line.planned_expense_cents ? centsToDecimal(line.planned_expense_cents) : ""} />
+                              <Label htmlFor={`exp-${line.id}`}>Planned spending (€)</Label>
+                              <Input id={`exp-${line.id}`} name="planned_expense" inputMode="decimal" placeholder={suggestion ? centsToDecimal(suggestion) : "0,00"} defaultValue={line.planned_expense_cents ? centsToDecimal(line.planned_expense_cents) : ""} />
                               {suggestion != null && suggestion > 0 && <p className="mt-1 text-xs text-muted">Suggestion {formatCents(suggestion)}: cost per person × expected attendees.</p>}
                             </div>
                             <div>
-                              <label className="label" htmlFor={`inc-${line.id}`}>Planned income (€)</label>
-                              <input id={`inc-${line.id}`} name="planned_income" inputMode="decimal" className="input" placeholder="0,00" defaultValue={line.planned_income_cents ? centsToDecimal(line.planned_income_cents) : ""} />
+                              <Label htmlFor={`inc-${line.id}`}>Planned income (€)</Label>
+                              <Input id={`inc-${line.id}`} name="planned_income" inputMode="decimal" placeholder="0,00" defaultValue={line.planned_income_cents ? centsToDecimal(line.planned_income_cents) : ""} />
                             </div>
-                            <button className="btn btn-primary" type="submit">Save budget</button>
+                            <Button variant="primary" type="submit">Save budget</Button>
                           </form>
                         </Modal>
                       </td>

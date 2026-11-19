@@ -4,6 +4,7 @@ import FileManager from "@/components/documents/FileManager";
 import PageHeader from "@/components/ui/PageHeader";
 import { getDocuments } from "@/lib/documents";
 import { getSession } from "@/lib/session";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = {
   title: "Documents",
@@ -28,7 +29,7 @@ export default async function DocumentsPage() {
       />
       <div className="container-page pb-12">
         {!signedIn && (
-          <p className="card mb-6 p-4 text-base">
+          <p className={cardClass("mb-6 p-4 text-base")}>
             Most documents are for members only.{" "}
             <Link href="/login?next=/documents" className="font-semibold text-accent-text underline underline-offset-2">Sign in</Link> to see them all.
           </p>

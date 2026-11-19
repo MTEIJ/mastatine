@@ -12,6 +12,9 @@ import { getMembership } from "@/lib/membership";
 import { getSession } from "@/lib/session";
 import { parseSignupGroups, priceLabel } from "@/lib/signup-options";
 import { CheckIcon } from "@/components/ui/icons";
+import { Badge } from "@/components/ui/Card";
+import { Select } from "@/components/ui/Field";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Activities", description: "Everything the committees organise." };
 
@@ -42,7 +45,7 @@ const CUE_CLASS: Record<JoinCue["tone"], string> = {
 };
 
 function MembersBadge() {
-  return <span className="badge ml-2 align-middle">Members only</span>;
+  return <Badge className="ml-2 align-middle">Members only</Badge>;
 }
 
 function CueBadge({ cue }: { cue: JoinCue }) {
@@ -106,16 +109,16 @@ export default async function ActivitiesPage(props: { searchParams: Promise<Reco
         </div>
         <div className={`mt-2 flex-wrap items-center gap-2 ${filtered ? "flex" : "hidden group-focus-within:flex"}`}>
           <label className="sr-only" htmlFor="activity-committee">Committee</label>
-          <select id="activity-committee" name="committee" defaultValue={filters.committeeId} className="input filter-select">
+          <Select id="activity-committee" name="committee" defaultValue={filters.committeeId} className="filter-select">
             <option value="">All committees</option>
             {committees.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
+          </Select>
           <label className="sr-only" htmlFor="activity-when">When</label>
-          <select id="activity-when" name="when" defaultValue={filters.when} className="input filter-select">
+          <Select id="activity-when" name="when" defaultValue={filters.when} className="filter-select">
             <option value="">Upcoming and past</option>
             <option value="upcoming">Upcoming only</option>
             <option value="past">Past only</option>
-          </select>
+          </Select>
           {session && (
             <label className="flex items-center gap-2 text-sm font-semibold">
               <input type="checkbox" name="mine" value="1" defaultChecked={filters.mine} />
@@ -134,7 +137,7 @@ export default async function ActivitiesPage(props: { searchParams: Promise<Reco
       </div>
 
       {filtered && activities.length + past.length === 0 && (
-        <p className="card p-8 text-center text-muted" role="status">
+        <p className={cardClass("p-8 text-center text-muted")} role="status">
           No activities found. <Link href={PAGE} className="font-bold text-accent-text underline">Clear the filters</Link>
         </p>
       )}
@@ -148,11 +151,11 @@ export default async function ActivitiesPage(props: { searchParams: Promise<Reco
             const price = priceLabel(a.cost_cents, parseSignupGroups(a.signup_options));
             return (
               <li key={a.id}>
-                <Link href={`/mastapps/activities/${a.id}`} className={`card block h-full overflow-hidden text-ink hover:text-ink ${a.subscribed ? "!border-success" : ""}`}>
+                <Link href={`/mastapps/activities/${a.id}`} className={cardClass(`block h-full overflow-hidden text-ink hover:text-ink ${a.subscribed ? "!border-success" : ""}`)}>
                   {/* Phones: a compact row with a thumbnail, the essentials and a clear call to action. */}
                   <div className="flex gap-3 p-3 sm:hidden">
                     {a.poster_url ? (
-                      <Image src={a.poster_url} alt="" width={176} height={224} sizes="88px" className="h-28 w-[5.5rem] shrink-0 rounded-lg object-cover" />
+                      <Image src={a.poster_url} alt="" width={176} height={224} sizes="88px" className="h-28 w-[5.5rem] shrink-0 rounded-sm object-cover" />
                     ) : (
                       <time dateTime={a.starts_at.toISOString()} className="agenda__date !h-28 !w-[5.5rem] shrink-0 justify-center">
                         <span className="agenda__day !text-3xl">{formatDayNumber(a.starts_at)}</span>
@@ -196,7 +199,7 @@ export default async function ActivitiesPage(props: { searchParams: Promise<Reco
                         </span>
                       )}
                       {a.poster_url && (
-                        <time dateTime={a.starts_at.toISOString()} className="absolute left-3 top-3 rounded-xl bg-white/95 px-2.5 py-1 text-center font-extrabold leading-tight text-ink shadow">
+                        <time dateTime={a.starts_at.toISOString()} className="absolute left-3 top-3 rounded-md bg-white/95 px-2.5 py-1 text-center font-extrabold leading-tight text-ink shadow">
                           <span className="block text-xl">{formatDayNumber(a.starts_at)}</span>
                           <span className="block text-xs uppercase text-accent-text">{formatMonthShort(a.starts_at)}</span>
                         </time>
@@ -222,14 +225,14 @@ export default async function ActivitiesPage(props: { searchParams: Promise<Reco
       {past.length > 0 && (
         <section className="mt-8" aria-labelledby="past-activities">
           <h2 id="past-activities" className="mb-2 text-sm font-extrabold uppercase tracking-wide text-muted">Past activities</h2>
-          <ul className="card divide-y divide-line overflow-hidden">
+          <ul className={cardClass("divide-y divide-line overflow-hidden")}>
             {past.map((a) => (
               <li key={a.id}>
                 <Link href={`/mastapps/activities/${a.id}`} className="flex items-center gap-3 px-3 py-2 text-ink hover:bg-soft hover:text-ink">
                   {a.poster_url ? (
-                    <Image src={a.poster_url} alt="" width={80} height={100} sizes="40px" className="h-12 w-10 shrink-0 rounded object-cover" />
+                    <Image src={a.poster_url} alt="" width={80} height={100} sizes="40px" className="h-12 w-10 shrink-0 rounded-xs object-cover" />
                   ) : (
-                    <time dateTime={a.starts_at.toISOString()} className="flex h-12 w-10 shrink-0 flex-col items-center justify-center rounded bg-soft font-extrabold leading-none text-accent-text">
+                    <time dateTime={a.starts_at.toISOString()} className="flex h-12 w-10 shrink-0 flex-col items-center justify-center rounded-xs bg-soft font-extrabold leading-none text-accent-text">
                       <span className="text-base">{formatDayNumber(a.starts_at)}</span>
                       <span className="text-[0.65rem] uppercase">{formatMonthShort(a.starts_at)}</span>
                     </time>

@@ -5,6 +5,7 @@ import { getCommitteesFor } from "@/lib/committees";
 import { requireUser } from "@/lib/session";
 import ActivityForm from "../ActivityForm";
 import { emptyActivityValues } from "../formValues";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "New activity", robots: { index: false } };
 
@@ -17,7 +18,7 @@ export default async function NewActivityPage() {
   return (
     <AppFrame title="New activity" hideTitle>
       {committees.length === 0 ? (
-        <p className="card p-6">
+        <p className={cardClass("p-6")}>
           Only committee members can create activities. Ask an admin to add you to your committee, or <Link href="/contact" className="underline">get in touch</Link>.
         </p>
       ) : (

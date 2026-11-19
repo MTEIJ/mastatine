@@ -5,6 +5,9 @@ import { getCommitteesFor } from "@/lib/committees";
 import { hasMeetingFilters, parseMeetingFilters, searchMeetings, type MeetingFilters } from "@/lib/meetings";
 import { requireUser } from "@/lib/session";
 import MeetingRow from "../MeetingRow";
+import { Button } from "@/components/ui/Button";
+import { Input, Label, Select } from "@/components/ui/Field";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Meetings", robots: { index: false } };
 
@@ -24,56 +27,56 @@ export default async function MeetingsPage(props: { searchParams: Promise<Record
 
   return (
     <AppFrame title="Meetings" hideTitle>
-      <Link href="/mastapps/minutes/meetings/new" className="btn btn-primary mb-4">New meeting</Link>
+      <Link href="/mastapps/minutes/meetings/new" className={buttonClass({ variant: "primary" }, "mb-4")}>New meeting</Link>
 
-      <form action={PAGE} role="search" className="admin-compact card mb-4 p-3">
+      <form action={PAGE} role="search" className={cardClass("admin-compact mb-4 p-3")}>
         <div className="flex flex-wrap gap-2">
           <label className="sr-only" htmlFor="meeting-q">Search meetings</label>
-          <input id="meeting-q" name="q" defaultValue={filters.q} placeholder="Search title, place, agenda or minutes" className="input min-w-0 flex-1 basis-60" />
-          <button type="submit" className="btn btn-primary btn-sm">Search</button>
+          <Input id="meeting-q" name="q" defaultValue={filters.q} placeholder="Search title, place, agenda or minutes" className="min-w-0 flex-1 basis-60" />
+          <Button type="submit" variant="primary" size="sm">Search</Button>
         </div>
 
         <details className="mt-2" open={hasAdvanced(filters)}>
           <summary className="cursor-pointer text-sm font-bold text-accent-text">Advanced filters</summary>
           <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <label className="label" htmlFor="meeting-committee">Committee</label>
-              <select id="meeting-committee" name="committee" defaultValue={filters.committeeId} className="input">
+              <Label htmlFor="meeting-committee">Committee</Label>
+              <Select id="meeting-committee" name="committee" defaultValue={filters.committeeId}>
                 <option value="">All committees</option>
                 {committees.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
+              </Select>
             </div>
             <div>
-              <label className="label" htmlFor="meeting-status">Minutes status</label>
-              <select id="meeting-status" name="status" defaultValue={filters.status} className="input">
+              <Label htmlFor="meeting-status">Minutes status</Label>
+              <Select id="meeting-status" name="status" defaultValue={filters.status}>
                 <option value="">Any status</option>
                 <option value="open">Open</option>
                 <option value="done">Done</option>
                 <option value="locked">Locked</option>
-              </select>
+              </Select>
             </div>
             <div>
-              <label className="label" htmlFor="meeting-when">When</label>
-              <select id="meeting-when" name="when" defaultValue={filters.when} className="input">
+              <Label htmlFor="meeting-when">When</Label>
+              <Select id="meeting-when" name="when" defaultValue={filters.when}>
                 <option value="">Past and upcoming</option>
                 <option value="upcoming">Today and upcoming</option>
                 <option value="past">Past only</option>
-              </select>
+              </Select>
             </div>
             <div>
-              <label className="label" htmlFor="meeting-from">From</label>
-              <input id="meeting-from" name="from" type="date" defaultValue={filters.from} className="input" />
+              <Label htmlFor="meeting-from">From</Label>
+              <Input id="meeting-from" name="from" type="date" defaultValue={filters.from} />
             </div>
             <div>
-              <label className="label" htmlFor="meeting-to">Until</label>
-              <input id="meeting-to" name="to" type="date" defaultValue={filters.to} className="input" />
+              <Label htmlFor="meeting-to">Until</Label>
+              <Input id="meeting-to" name="to" type="date" defaultValue={filters.to} />
             </div>
             <div>
-              <label className="label" htmlFor="meeting-sort">Order</label>
-              <select id="meeting-sort" name="sort" defaultValue={filters.sort} className="input">
+              <Label htmlFor="meeting-sort">Order</Label>
+              <Select id="meeting-sort" name="sort" defaultValue={filters.sort}>
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
-              </select>
+              </Select>
             </div>
           </div>
           <label className="mt-3 flex items-center gap-2 text-sm font-semibold">
@@ -81,8 +84,8 @@ export default async function MeetingsPage(props: { searchParams: Promise<Record
             Only meetings with open action points
           </label>
           <div className="mt-3 flex gap-2">
-            <button type="submit" className="btn btn-primary btn-sm">Apply filters</button>
-            {filtered && <Link href={PAGE} className="btn btn-ghost btn-sm">Clear all</Link>}
+            <Button type="submit" variant="primary" size="sm">Apply filters</Button>
+            {filtered && <Link href={PAGE} className={buttonClass({ variant: "ghost", size: "sm" })}>Clear all</Link>}
           </div>
         </details>
       </form>
@@ -91,7 +94,7 @@ export default async function MeetingsPage(props: { searchParams: Promise<Record
         {meetings.length === 0 ? "No meetings found." : `${meetings.length}${meetings.length === MAX_RESULTS ? "+" : ""} meeting${meetings.length === 1 ? "" : "s"}`}
         {filtered && meetings.length === 0 && <> <Link href={PAGE} className="font-bold text-accent-text underline">Clear the filters</Link></>}
       </p>
-      {meetings.length > 0 && <ul className="card divide-y divide-line">{meetings.map((m) => <MeetingRow key={m.id} meeting={m} />)}</ul>}
+      {meetings.length > 0 && <ul className={cardClass("divide-y divide-line")}>{meetings.map((m) => <MeetingRow key={m.id} meeting={m} />)}</ul>}
     </AppFrame>
   );
 }

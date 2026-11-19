@@ -8,6 +8,10 @@ import DetailsDialog from "./DetailsDialog";
 import { DownloadIcon, EditIcon, FileIcon, FolderIcon, GlobeIcon, LockIcon, SearchIcon } from "./FileIcons";
 import PreviewDialog from "./PreviewDialog";
 import UploadZone from "./UploadZone";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input, Select } from "@/components/ui/Field";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 type Folder = DocumentCategory | "all";
 type SortKey = "name" | "date" | "size";
@@ -122,7 +126,7 @@ export default function FileManager({ files, canManage }: FileManagerProps) {
           event.preventDefault();
           move(JSON.parse(raw) as string[], value);
         }}
-        className={`flex w-full items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-soft aria-[current=true]:bg-accent-soft aria-[current=true]:font-bold aria-[current=true]:text-accent-text ${dropTarget === value ? "bg-accent-soft ring-2 ring-accent" : ""}`}
+        className={`flex w-full items-center gap-2 whitespace-nowrap rounded-sm px-3 py-2 text-left text-sm transition-colors hover:bg-soft aria-[current=true]:bg-accent-soft aria-[current=true]:font-bold aria-[current=true]:text-accent-text ${dropTarget === value ? "bg-accent-soft ring-2 ring-accent" : ""}`}
       >
         <FolderIcon size={17} className="shrink-0" />
         <span className="min-w-0 flex-1 truncate">{label}</span>
@@ -154,35 +158,35 @@ export default function FileManager({ files, canManage }: FileManagerProps) {
           <label className="relative block min-w-0 flex-1 sm:max-w-xs sm:flex-none">
             <span className="sr-only">Search files</span>
             <SearchIcon size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search files" className="input !pl-9" autoComplete="off" />
+            <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search files" className="!pl-9" autoComplete="off" />
           </label>
         </div>
 
         {canManage && <UploadZone folder={uploadFolder} onFinished={() => router.refresh()} />}
 
         {canManage && selected.size > 0 && (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-accent-soft px-3 py-2 text-sm">
+          <div className="flex flex-wrap items-center gap-2 rounded-md bg-accent-soft px-3 py-2 text-sm">
             <span className="font-bold">{selected.size} selected</span>
             <label className="flex items-center gap-1.5">
               <span className="sr-only">Move selected files to</span>
-              <select className="input !min-h-9 !py-1" value="" onChange={(e) => e.target.value && move([...selected], e.target.value as DocumentCategory)}>
+              <Select className="!min-h-9 !py-1" value="" onChange={(e) => e.target.value && move([...selected], e.target.value as DocumentCategory)}>
                 <option value="">Move to…</option>
                 {DOCUMENT_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-              </select>
+              </Select>
             </label>
-            <button type="button" className="btn btn-secondary btn-sm !min-h-9" onClick={() => remove([...selected], `${selected.size} selected ${selected.size === 1 ? "file" : "files"}`)}>Delete</button>
-            <button type="button" className="btn btn-ghost btn-sm !min-h-9" onClick={() => setSelected(new Set())}>Clear</button>
+            <Button type="button" variant="secondary" size="sm" className="!min-h-9" onClick={() => remove([...selected], `${selected.size} selected ${selected.size === 1 ? "file" : "files"}`)}>Delete</Button>
+            <Button type="button" variant="ghost" size="sm" className="!min-h-9" onClick={() => setSelected(new Set())}>Clear</Button>
           </div>
         )}
 
         <p role="status" className="min-h-5 text-sm text-muted" aria-live="polite">{pending ? "Working…" : status}</p>
 
         {visible.length === 0 ? (
-          <p className="card p-6 text-center text-muted">
+          <p className={cardClass("p-6 text-center text-muted")}>
             {query ? "No files match your search." : folder === "all" ? "No documents yet." : "This folder is empty."}
           </p>
         ) : (
-          <div className="card overflow-x-auto">
+          <Card className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-line">
                 <tr>
@@ -245,9 +249,9 @@ export default function FileManager({ files, canManage }: FileManagerProps) {
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex justify-end gap-1">
-                        <a href={`/documents/${f.id}?download=1`} className="btn btn-ghost btn-sm !min-h-9 !px-2" aria-label={`Download ${f.title}`} title="Download"><DownloadIcon size={17} /></a>
+                        <a href={`/documents/${f.id}?download=1`} className={buttonClass({ variant: "ghost", size: "sm" }, "!min-h-9 !px-2")} aria-label={`Download ${f.title}`} title="Download"><DownloadIcon size={17} /></a>
                         {canManage && (
-                          <button type="button" className="btn btn-ghost btn-sm !min-h-9 !px-2" aria-label={`Details of ${f.title}`} title="Details" onClick={() => setDetailsId(f.id)}><EditIcon size={17} /></button>
+                          <Button type="button" variant="ghost" size="sm" className="!min-h-9 !px-2" aria-label={`Details of ${f.title}`} title="Details" onClick={() => setDetailsId(f.id)}><EditIcon size={17} /></Button>
                         )}
                       </div>
                     </td>
@@ -255,7 +259,7 @@ export default function FileManager({ files, canManage }: FileManagerProps) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </Card>
         )}
         <p className="text-xs text-muted">
           {visible.length} {visible.length === 1 ? "file" : "files"}

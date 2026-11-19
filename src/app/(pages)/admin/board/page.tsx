@@ -4,6 +4,9 @@ import sql from "@/lib/db";
 import { formatDateTime } from "@/lib/datetime";
 import { requireAdmin } from "@/lib/session";
 import { clearBoardApplications } from "./actions";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { cardClass } from "@/components/ui/classes";
 
 interface ApplicationRow {
   user_id: string;
@@ -46,7 +49,7 @@ export default async function AdminBoard() {
         <h2 id="interest-title" className="text-base font-extrabold">
           Board applications <span className="font-normal text-muted">({applications.length}{BOARD_CALL.open ? ", form open" : ", form closed"})</span>
         </h2>
-        <div className="card mt-2 overflow-x-auto p-0">
+        <Card className="mt-2 overflow-x-auto p-0">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-muted">
@@ -65,7 +68,7 @@ export default async function AdminBoard() {
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       </section>
 
       {applications.length === 0 ? (
@@ -73,10 +76,10 @@ export default async function AdminBoard() {
       ) : (
         <ul className="space-y-4">
           {applications.map((a) => (
-            <li key={a.user_id} className="card grid gap-4 p-4 sm:grid-cols-[12rem_1fr]">
+            <li key={a.user_id} className={cardClass("grid gap-4 p-4 sm:grid-cols-[12rem_1fr]")}>
               <a href={a.mast_photo} target="_blank" rel="noreferrer" className="block">
                 {/* eslint-disable-next-line @next/next/no-img-element -- /uploads image, already re-encoded */}
-                <img src={a.mast_photo} alt={`Favourite mast of ${a.name}`} className="max-h-56 w-full rounded-xl border border-line object-cover" />
+                <img src={a.mast_photo} alt={`Favourite mast of ${a.name}`} className="max-h-56 w-full rounded-md border border-line object-cover" />
               </a>
               <div className="min-w-0 space-y-2 text-sm">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -94,11 +97,11 @@ export default async function AdminBoard() {
                   {choiceLabel(BOARD_CALL.hoursPerWeek, a.hours_per_week)}
                 </p>
                 <p className="font-semibold">Motivation</p>
-                <p className="whitespace-pre-wrap rounded-xl bg-soft p-3">{a.motivation}</p>
+                <p className="whitespace-pre-wrap rounded-md bg-soft p-3">{a.motivation}</p>
                 {a.ambitions && (
                   <>
                     <p className="font-semibold">Ambitions</p>
-                    <p className="whitespace-pre-wrap rounded-xl bg-soft p-3">{a.ambitions}</p>
+                    <p className="whitespace-pre-wrap rounded-md bg-soft p-3">{a.ambitions}</p>
                   </>
                 )}
                 <dl className="grid gap-x-4 gap-y-1 text-muted sm:grid-cols-[auto_1fr]">
@@ -112,7 +115,7 @@ export default async function AdminBoard() {
       )}
 
       {applications.length > 0 && (
-        <form action={clearBoardApplications} className="card max-w-2xl space-y-3 p-4">
+        <form action={clearBoardApplications} className={cardClass("max-w-2xl space-y-3 p-4")}>
           <h2 className="text-base font-extrabold">Board chosen?</h2>
           <p className="text-sm text-muted">
             The privacy statement promises applications are removed once the board is chosen. This deletes all of them, and their
@@ -122,7 +125,7 @@ export default async function AdminBoard() {
             <input type="checkbox" name="confirm" required className="mt-1" />
             <span>Yes, delete all {applications.length} applications.</span>
           </label>
-          <button type="submit" className="btn btn-secondary text-danger">Delete all applications</button>
+          <Button type="submit" variant="secondary" className="text-danger">Delete all applications</Button>
         </form>
       )}
     </div>

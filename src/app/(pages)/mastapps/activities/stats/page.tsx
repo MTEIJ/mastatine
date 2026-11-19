@@ -4,6 +4,8 @@ import AppFrame from "@/components/ui/AppFrame";
 import { getActivityStats, summarise, type ActivityStat } from "@/lib/activity-stats";
 import { formatDateTime } from "@/lib/datetime";
 import { requireUser } from "@/lib/session";
+import { Card } from "@/components/ui/Card";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Activity statistics", robots: { index: false } };
 
@@ -11,11 +13,11 @@ const percent = (share: number | null) => (share === null ? "–" : `${Math.roun
 
 function Tile({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
-    <div className="card p-4">
+    <Card className="p-4">
       <p className="text-sm font-bold text-muted">{label}</p>
       <p className="mt-1 text-3xl font-extrabold tabular-nums">{value}</p>
       {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
-    </div>
+    </Card>
   );
 }
 
@@ -63,7 +65,7 @@ export default async function ActivityStatsPage() {
   return (
     <AppFrame title="Activity statistics" tagline="How people sign up for your committees' activities. Only counts, never names.">
       {stats.length === 0 ? (
-        <p className="card p-8 text-center text-muted">Nothing to count yet. <Link href="/mastapps/activities/new" className="font-bold text-accent-text underline">Create an activity</Link>.</p>
+        <p className={cardClass("p-8 text-center text-muted")}>Nothing to count yet. <Link href="/mastapps/activities/new" className="font-bold text-accent-text underline">Create an activity</Link>.</p>
       ) : (
         <div className="space-y-8">
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

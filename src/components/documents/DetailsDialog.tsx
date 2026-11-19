@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { DOCUMENT_CATEGORIES, formatSize, type DocumentRow } from "@/lib/document-folders";
+import { Button } from "@/components/ui/Button";
+import { Input, Label, Select } from "@/components/ui/Field";
 
 interface DetailsDialogProps {
   doc: DocumentRow | null;
@@ -74,44 +76,44 @@ export default function DetailsDialog({ doc, onClose, onSaved, onDelete }: Detai
           >
             <input type="hidden" name="id" value={doc.id} />
             <div>
-              <label className="label" htmlFor="d-title">Name</label>
-              <input id="d-title" name="title" className="input" required maxLength={160} defaultValue={doc.title} />
+              <Label htmlFor="d-title">Name</Label>
+              <Input id="d-title" name="title" required maxLength={160} defaultValue={doc.title} />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="label" htmlFor="d-category">Folder</label>
-                <select id="d-category" name="category" className="input" defaultValue={doc.category}>
+                <Label htmlFor="d-category">Folder</Label>
+                <Select id="d-category" name="category" defaultValue={doc.category}>
                   {DOCUMENT_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="label" htmlFor="d-visibility">Who can read it</label>
-                <select id="d-visibility" name="visibility" className="input" defaultValue={doc.visibility}>
+                <Label htmlFor="d-visibility">Who can read it</Label>
+                <Select id="d-visibility" name="visibility" defaultValue={doc.visibility}>
                   <option value="members">Signed-in members</option>
                   <option value="public">Anyone</option>
-                </select>
+                </Select>
               </div>
               <div>
-                <label className="label" htmlFor="d-date">Date</label>
-                <input id="d-date" name="document_date" type="date" className="input" required defaultValue={doc.document_date} />
+                <Label htmlFor="d-date">Date</Label>
+                <Input id="d-date" name="document_date" type="date" required defaultValue={doc.document_date} />
               </div>
               <div>
-                <label className="label" htmlFor="d-version">Version</label>
-                <input id="d-version" name="version_label" className="input" maxLength={40} placeholder="v1.0" defaultValue={doc.version_label} />
+                <Label htmlFor="d-version">Version</Label>
+                <Input id="d-version" name="version_label" maxLength={40} placeholder="v1.0" defaultValue={doc.version_label} />
               </div>
             </div>
             <div>
-              <label className="label" htmlFor="d-description">Description (optional)</label>
-              <input id="d-description" name="description" className="input" maxLength={600} defaultValue={doc.description} />
+              <Label htmlFor="d-description">Description (optional)</Label>
+              <Input id="d-description" name="description" maxLength={600} defaultValue={doc.description} />
             </div>
             <div>
-              <label className="label" htmlFor="d-file">Replace the PDF (optional)</label>
-              <input id="d-file" name="file" type="file" accept="application/pdf,.pdf" className="input" />
+              <Label htmlFor="d-file">Replace the PDF (optional)</Label>
+              <Input id="d-file" name="file" type="file" accept="application/pdf,.pdf" />
             </div>
             {error && <p role="alert" className="text-sm text-danger">{error}</p>}
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-              <button type="button" className="btn btn-secondary btn-sm" onClick={() => onDelete(doc)}>Delete</button>
-              <button type="submit" className="btn btn-primary btn-sm" disabled={saving}>{saving ? "Saving…" : "Save"}</button>
+              <Button type="button" variant="secondary" size="sm" onClick={() => onDelete(doc)}>Delete</Button>
+              <Button type="submit" variant="primary" size="sm" disabled={saving}>{saving ? "Saving…" : "Save"}</Button>
             </div>
           </form>
         </div>

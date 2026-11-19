@@ -4,6 +4,7 @@ import ConfirmButton from "@/components/admin/ConfirmButton";
 import { AUDIENCE_LABEL, parseAudience } from "@/lib/newsletter-audience";
 import { removeSubscriber } from "../actions";
 import { requireAdmin } from "@/lib/session";
+import { badgeClass, buttonClass } from "@/components/ui/classes";
 
 interface Issue {
   id: string;
@@ -23,7 +24,7 @@ interface Subscriber {
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  confirmed: "badge",
+  confirmed: badgeClass(),
   pending: "text-muted",
   unsubscribed: "text-muted line-through",
 };
@@ -49,7 +50,7 @@ export default async function AdminNewsletter() {
       <section aria-labelledby="issues-title">
         <div className="mb-2 flex items-center justify-between">
           <h2 id="issues-title" className="text-base font-extrabold">Issues</h2>
-          <Link href="/admin/newsletter/new" className="btn btn-primary btn-sm">New issue</Link>
+          <Link href="/admin/newsletter/new" className={buttonClass({ variant: "primary", size: "sm" })}>New issue</Link>
         </div>
         <div className="table-wrap">
           <table className="table table-stack">
@@ -59,7 +60,7 @@ export default async function AdminNewsletter() {
                 <tr key={issue.id}>
                   <td data-primary><Link href={`/admin/newsletter/${issue.id}`} className="font-medium hover:text-accent-text">{issue.subject}</Link></td>
                   <td data-label="To" className="whitespace-nowrap text-sm text-muted">{AUDIENCE_LABEL[parseAudience(issue.audience)]}</td>
-                  <td data-label="Status"><span className={issue.status === "draft" ? "text-muted" : "badge"}>{issue.status}</span></td>
+                  <td data-label="Status"><span className={issue.status === "draft" ? "text-muted" : badgeClass()}>{issue.status}</span></td>
                   <td data-label="Delivered" className="text-right tabular-nums">{issue.sent}</td>
                   <td data-label="Created" className="whitespace-nowrap text-muted">{new Date(issue.created_at).toLocaleDateString("en-GB")}</td>
                 </tr>
@@ -87,7 +88,7 @@ export default async function AdminNewsletter() {
                   <td className="text-right">
                     <form action={removeSubscriber}>
                       <input type="hidden" name="id" value={s.id} />
-                      <ConfirmButton message={`Permanently remove ${s.email}?`} className="btn btn-danger btn-sm">Remove</ConfirmButton>
+                      <ConfirmButton message={`Permanently remove ${s.email}?`} className={buttonClass({ variant: "danger", size: "sm" })}>Remove</ConfirmButton>
                     </form>
                   </td>
                 </tr>

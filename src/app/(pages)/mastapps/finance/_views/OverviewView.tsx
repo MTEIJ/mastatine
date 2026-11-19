@@ -4,6 +4,7 @@ import { envFinanceEmails } from "@/lib/finance-access";
 import { formatCents } from "@/lib/finance-money";
 import { listRoles, recentAccessChanges } from "@/lib/finance-roles";
 import { formatDate } from "@/lib/news";
+import { cardClass } from "@/components/ui/classes";
 
 const monthName = (month: number) => new Date(2000, month - 1, 1).toLocaleString("en-GB", { month: "long" });
 const negative = (cents: number) => (cents < 0 ? "text-danger" : "");
@@ -134,7 +135,7 @@ export default async function OverviewView({ year }: { year: number }) {
         </div>
       </section>
 
-      <section aria-label="Books integrity and access" className="card divide-y divide-line !p-0 text-sm">
+      <section aria-label="Books integrity and access" className={cardClass("divide-y divide-line !p-0 text-sm")}>
         <details open={!chain.ok}>
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-2.5">
             <span className="flex items-center gap-2 font-medium">

@@ -8,6 +8,12 @@
 
 /* ───── tokens ───── */
 
+/* Decoration colour for the Advent theme. */
+.sb-board,
+.sb-page {
+  --sb-glow: #ffc857;
+}
+
 .sb-board {
   --sb-ink: var(--ink, #111);
   --sb-muted: var(--muted, #4a4a4a);
@@ -100,7 +106,7 @@
 
 /* Advent decoration: centred head, gold title, snow and stars. */
 .sb-page[data-sb-theme="advent"] .sb-head { text-align: center; margin-bottom: 1.75rem; }
-.sb-page[data-sb-theme="advent"] .sb-eyebrow { color: #ffc857; }
+.sb-page[data-sb-theme="advent"] .sb-eyebrow { color: var(--sb-glow); }
 .sb-page[data-sb-theme="advent"] .sb-title { font-size: clamp(2rem, 7vw, 3.25rem); text-shadow: 0 2px 24px rgb(0 0 0 / 0.35); }
 .sb-page[data-sb-theme="advent"] .sb-head::after {
   content: "";
@@ -109,7 +115,7 @@
   height: 4px;
   margin: 0.9rem auto 0;
   border-radius: 99px;
-  background: linear-gradient(90deg, transparent, #ffc857, #f57f20, #ffc857, transparent);
+  background: linear-gradient(90deg, transparent, var(--sb-glow), var(--md-brand), var(--sb-glow), transparent);
 }
 .sb-page[data-sb-theme="advent"] .sb-foot { text-align: center; }
 
@@ -123,7 +129,7 @@
 }
 .sb-page[data-sb-theme="advent"]::before {
   background-image:
-    radial-gradient(2px 2px at 20px 30px, #fff 50%, transparent 52%),
+    radial-gradient(2px 2px at 20px 30px, white 50%, transparent 52%),
     radial-gradient(1.5px 1.5px at 90px 80px, rgb(255 255 255 / 0.8) 50%, transparent 52%),
     radial-gradient(2px 2px at 160px 20px, rgb(255 255 255 / 0.9) 50%, transparent 52%),
     radial-gradient(1px 1px at 55px 130px, rgb(255 255 255 / 0.7) 50%, transparent 52%),

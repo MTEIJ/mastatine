@@ -85,7 +85,7 @@ export default function SubmitModal() {
           >
             <div
               style={{
-                background: "#fff",
+                background: "var(--surface)",
                 maxWidth: 580,
                 width: "100%",
                 padding: "2em",
@@ -109,7 +109,7 @@ export default function SubmitModal() {
                   fontSize: "1.8em",
                   lineHeight: 1,
                   cursor: "pointer",
-                  color: "#555",
+                  color: "var(--text-mid)",
                 }}
               >
                 ×
@@ -125,7 +125,7 @@ export default function SubmitModal() {
                   textAlign: "center",
                   margin: "0 0 1.5em",
                   paddingBottom: "0.75em",
-                  borderBottom: "1px solid #eee",
+                  borderBottom: "1px solid var(--border)",
                   letterSpacing: "0.05em",
                 }}
               >

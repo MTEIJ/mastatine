@@ -8,6 +8,9 @@ import ImportableAgenda from "../../ImportableAgenda";
 import { formatDayMonth } from "@/lib/datetime";
 import { getPreviousAgendas } from "@/lib/meetings";
 import MeetingFields from "../MeetingFields";
+import { Button } from "@/components/ui/Button";
+import { Hint, Label, Select } from "@/components/ui/Field";
+import { cardClass, labelClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "New meeting", robots: { index: false } };
 
@@ -36,23 +39,23 @@ export default async function NewMeetingPage() {
   return (
     <AppFrame title="New meeting" hideTitle>
       {committees.length === 0 ? (
-        <p className="card p-6">Only committee members can add meetings. Ask an admin to add you to your committee.</p>
+        <p className={cardClass("p-6")}>Only committee members can add meetings. Ask an admin to add you to your committee.</p>
       ) : (
-        <form action={createMeeting} className="card space-y-5 p-6 sm:p-8">
+        <form action={createMeeting} className={cardClass("space-y-5 p-6 sm:p-8")}>
           <div>
-            <label className="label" htmlFor="committee_id">Committee</label>
-            <select id="committee_id" name="committee_id" className="input sm:max-w-xs" required defaultValue={committees.length === 1 ? committees[0].id : ""}>
+            <Label htmlFor="committee_id">Committee</Label>
+            <Select id="committee_id" name="committee_id" className="sm:max-w-xs" required defaultValue={committees.length === 1 ? committees[0].id : ""}>
               <option value="" disabled>Choose a committee</option>
               {committees.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            </Select>
           </div>
           <MeetingFields />
           <div>
-            <p className="label">Agenda</p>
+            <p className={labelClass()}>Agenda</p>
             <ImportableAgenda initialItems={DEFAULT_AGENDA} previous={previous} />
-            <p className="hint mt-3 text-muted">Press Enter to add the next item. Pick a committee to import its previous agenda. You can change the agenda again later.</p>
+            <Hint className="mt-3 text-muted">Press Enter to add the next item. Pick a committee to import its previous agenda. You can change the agenda again later.</Hint>
           </div>
-          <button type="submit" className="btn btn-primary">Create meeting</button>
+          <Button type="submit" variant="primary">Create meeting</Button>
         </form>
       )}
     </AppFrame>

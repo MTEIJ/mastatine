@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { buttonClass } from "@/components/ui/classes";
 
 export default function RouteError({ error, unstable_retry }: { error: Error & { digest?: string }; unstable_retry: () => void }) {
   return (
@@ -11,10 +13,10 @@ export default function RouteError({ error, unstable_retry }: { error: Error & {
         <p className="mt-3 text-muted">The mast swayed more than we planned. Please try again in a moment.</p>
         {error.digest && <p className="mt-2 text-sm text-muted">Reference: {error.digest}</p>}
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <button type="button" className="btn btn-primary" onClick={() => unstable_retry()}>
+          <Button type="button" variant="primary" onClick={() => unstable_retry()}>
             Try again
-          </button>
-          <Link href="/" className="btn btn-secondary">
+          </Button>
+          <Link href="/" className={buttonClass({ variant: "secondary" })}>
             Back to the masts
           </Link>
         </div>

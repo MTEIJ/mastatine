@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { requestMembership } from "@/app/(pages)/membership/actions";
 import type { Membership } from "@/lib/membership";
+import { Button } from "@/components/ui/Button";
+import { buttonClass } from "@/components/ui/classes";
 
 interface MembershipRequestProps {
   membership: Membership;
@@ -14,14 +16,14 @@ export default function MembershipRequest({ membership, next }: MembershipReques
 
   if (!membership.signedIn) {
     return (
-      <Link href={`/login?next=${encodeURIComponent(next)}`} className="btn btn-primary">
+      <Link href={`/login?next=${encodeURIComponent(next)}`} className={buttonClass({ variant: "primary" })}>
         Sign in to request membership
       </Link>
     );
   }
 
   if (membership.status === "pending") {
-    return <p className="rounded-xl bg-soft px-4 py-3 text-sm">Your request is waiting for an admin to approve it. You will have access as soon as they do.</p>;
+    return <p className="rounded-md bg-soft px-4 py-3 text-sm">Your request is waiting for an admin to approve it. You will have access as soon as they do.</p>;
   }
 
   const waitFor = membership.retryAfter?.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
@@ -34,14 +36,14 @@ export default function MembershipRequest({ membership, next }: MembershipReques
         : null;
 
   if (waitFor) {
-    return <p className="rounded-xl bg-soft px-4 py-3 text-sm">{explanation} You can ask again after {waitFor}.</p>;
+    return <p className="rounded-md bg-soft px-4 py-3 text-sm">{explanation} You can ask again after {waitFor}.</p>;
   }
 
   return (
     <div className="space-y-3">
-      {explanation && <p className="rounded-xl bg-soft px-4 py-3 text-sm">{explanation}</p>}
+      {explanation && <p className="rounded-md bg-soft px-4 py-3 text-sm">{explanation}</p>}
       <form action={requestMembership}>
-        <button type="submit" className="btn btn-primary">Request membership</button>
+        <Button type="submit" variant="primary">Request membership</Button>
       </form>
     </div>
   );

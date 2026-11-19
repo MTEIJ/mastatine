@@ -7,6 +7,10 @@ import { formatCents } from "@/lib/finance-money";
 import { formatDate } from "@/lib/news";
 import { addEntry, deleteEntry, reverseEntry, updateEntry } from "../actions";
 import EntryFields from "./EntryFields";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Card";
+import { Input, Label, Select } from "@/components/ui/Field";
+import { buttonClass } from "@/components/ui/classes";
 
 export interface MutationParams {
   page: number;
@@ -36,12 +40,12 @@ export default async function MutationsView({ access, params }: { access: Financ
           <p>Every mutation can be corrected or deleted until its book year is closed. After that only a reversal can fix it.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <a href="/mastapps/finance/export" className="btn btn-secondary btn-sm" download>Download CSV</a>
+          <a href="/mastapps/finance/export" className={buttonClass({ variant: "secondary", size: "sm" })} download>Download CSV</a>
           {access.canWrite && (
-            <Modal label="New mutation" title="New mutation" description="You can correct or delete it until its book year is closed. Donor names are personal data: only note what you need." triggerClassName="btn btn-primary btn-sm">
+            <Modal label="New mutation" title="New mutation" description="You can correct or delete it until its book year is closed. Donor names are personal data: only note what you need." triggerClassName={buttonClass({ variant: "primary", size: "sm" })}>
               <form action={addEntry} className="space-y-4">
                 <EntryFields idPrefix="add" activities={activities} />
-                <button type="submit" className="btn btn-primary w-full sm:w-auto">Book mutation</button>
+                <Button type="submit" variant="primary" className="w-full sm:w-auto">Book mutation</Button>
               </form>
             </Modal>
           )}
@@ -52,20 +56,20 @@ export default async function MutationsView({ access, params }: { access: Financ
         <input type="hidden" name="view" value="mutations" />
         <input type="hidden" name="year" value={year ?? "all"} />
         <div>
-          <label className="label" htmlFor="f-category">Category</label>
-          <select id="f-category" name="category" className="input" defaultValue={category ?? ""}>
+          <Label htmlFor="f-category">Category</Label>
+          <Select id="f-category" name="category" defaultValue={category ?? ""}>
             <option value="">All</option>
             {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div>
-          <label className="label" htmlFor="f-activity">Activity</label>
-          <select id="f-activity" name="activity" className="input" defaultValue={activityId ?? ""}>
+          <Label htmlFor="f-activity">Activity</Label>
+          <Select id="f-activity" name="activity" defaultValue={activityId ?? ""}>
             <option value="">All</option>
             {activities.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-          </select>
+          </Select>
         </div>
-        <button className="btn btn-secondary btn-sm col-span-2 sm:col-span-1" type="submit">Filter</button>
+        <Button variant="secondary" size="sm" className="col-span-2 sm:col-span-1" type="submit">Filter</Button>
         {(category || activityId) && <Link href={`/mastapps/finance?view=mutations&year=${year ?? "all"}`} className="col-span-2 self-center text-sm text-muted hover:text-accent-text sm:col-span-1">Clear filters</Link>}
       </form>
 
@@ -85,7 +89,7 @@ export default async function MutationsView({ access, params }: { access: Financ
               return (
                 <tr key={e.id} className={cancelled ? "text-muted line-through decoration-1" : undefined}>
                   <td data-label="No." className="tabular-nums text-muted">
-                    {e.seq ?? <span className="badge !bg-soft !font-medium !text-muted no-underline" title={`Open: can still be changed until ${e.book_year} is closed`}>open</span>}
+                    {e.seq ?? <Badge className="!bg-soft !font-medium !text-muted no-underline" title={`Open: can still be changed until ${e.book_year} is closed`}>open</Badge>}
                   </td>
                   <td data-label="Date" className="whitespace-nowrap">{formatDate(e.occurred_on)}</td>
                   <td data-primary>
@@ -113,34 +117,34 @@ export default async function MutationsView({ access, params }: { access: Financ
                       {cancelled && <span className="text-xs">reversed</span>}
                       {e.reverses_id != null && <span className="text-xs">reversal</span>}
                       {!cancelled && e.reverses_id == null && (
-                        <Modal label="Manage" triggerLabel={`Manage mutation ${e.seq ?? "(open)"}`} title={e.seq ? `Mutation ${e.seq}` : "Open mutation"} description={e.open ? `You can still change this until book year ${e.book_year} is closed.` : e.description} triggerClassName="btn btn-secondary btn-sm max-sm:w-full">
+                        <Modal label="Manage" triggerLabel={`Manage mutation ${e.seq ?? "(open)"}`} title={e.seq ? `Mutation ${e.seq}` : "Open mutation"} description={e.open ? `You can still change this until book year ${e.book_year} is closed.` : e.description} triggerClassName={buttonClass({ variant: "secondary", size: "sm" }, "max-sm:w-full")}>
                           <div className="space-y-5 text-sm">
                             {e.open && (
                               <form action={updateEntry} className="space-y-4">
                                 <input type="hidden" name="id" value={e.id} />
                                 <EntryFields idPrefix={`edit-${e.id}`} activities={activities} entry={e} />
-                                <button className="btn btn-primary btn-sm" type="submit">Save changes</button>
+                                <Button variant="primary" size="sm" type="submit">Save changes</Button>
                               </form>
                             )}
                             <form action="/mastapps/finance/receipts" method="post" encType="multipart/form-data" className={`space-y-2 ${e.open ? "border-t border-line pt-5" : ""}`}>
                               <input type="hidden" name="entry_id" value={e.id} />
-                              <label className="label" htmlFor={`file-${e.id}`}>Attach a receipt</label>
+                              <Label htmlFor={`file-${e.id}`}>Attach a receipt</Label>
                               <input id={`file-${e.id}`} name="file" type="file" required accept="image/*,application/pdf" className="w-full text-sm" />
-                              <button className="btn btn-secondary btn-sm" type="submit">Attach</button>
+                              <Button variant="secondary" size="sm" type="submit">Attach</Button>
                             </form>
                             {e.open ? (
                               <form action={deleteEntry} className="space-y-2 border-t border-line pt-5">
                                 <input type="hidden" name="id" value={e.id} />
                                 <p className="text-muted">Deleting removes the mutation completely (it stays in the audit log). Mutations with receipts cannot be deleted.</p>
-                                <ConfirmButton className="btn btn-danger btn-sm" message="Delete this mutation? This cannot be undone.">Delete mutation</ConfirmButton>
+                                <ConfirmButton className={buttonClass({ variant: "danger", size: "sm" })} message="Delete this mutation? This cannot be undone.">Delete mutation</ConfirmButton>
                               </form>
                             ) : (
                               <form action={reverseEntry} className="space-y-2 border-t border-line pt-5">
                                 <input type="hidden" name="id" value={e.id} />
-                                <label className="label" htmlFor={`why-${e.id}`}>Reverse this mutation</label>
-                                <input id={`why-${e.id}`} name="reason" className="input" required maxLength={200} placeholder="Reason" />
+                                <Label htmlFor={`why-${e.id}`}>Reverse this mutation</Label>
+                                <Input id={`why-${e.id}`} name="reason" required maxLength={200} placeholder="Reason" />
                                 <p className="text-muted">The original stays. A cancelling mutation dated today is booked.</p>
-                                <ConfirmButton className="btn btn-danger btn-sm" message="Reverse this mutation? The original stays and a cancelling mutation is booked today.">Reverse</ConfirmButton>
+                                <ConfirmButton className={buttonClass({ variant: "danger", size: "sm" })} message="Reverse this mutation? The original stays and a cancelling mutation is booked today.">Reverse</ConfirmButton>
                               </form>
                             )}
                           </div>
@@ -168,8 +172,8 @@ export default async function MutationsView({ access, params }: { access: Financ
 
       {(page > 1 || hasMore) && (
         <nav className="flex items-center justify-between text-sm" aria-label="Pages">
-          {page > 1 ? <Link href={link(page - 1)} className="btn btn-secondary btn-sm">Newer</Link> : <span />}
-          {hasMore && <Link href={link(page + 1)} className="btn btn-secondary btn-sm">Older</Link>}
+          {page > 1 ? <Link href={link(page - 1)} className={buttonClass({ variant: "secondary", size: "sm" })}>Newer</Link> : <span />}
+          {hasMore && <Link href={link(page + 1)} className={buttonClass({ variant: "secondary", size: "sm" })}>Older</Link>}
         </nav>
       )}
     </section>

@@ -6,6 +6,9 @@ import { useActionState } from "react";
 import type { SignupGroup } from "@/lib/signup-options";
 import { saveActivity, type ActivityFormState } from "./actions";
 import SignupOptionsEditor from "./SignupOptionsEditor";
+import { Button } from "@/components/ui/Button";
+import { Input, Label, Select, Textarea } from "@/components/ui/Field";
+import { cardClass, labelClass } from "@/components/ui/classes";
 
 export interface ActivityFormValues {
   id?: string;
@@ -41,7 +44,7 @@ interface ActivityFormProps {
 function YesNo({ name, label, value }: { name: string; label: string; value: boolean }) {
   return (
     <fieldset>
-      <legend className="label">{label}</legend>
+      <legend className={labelClass()}>{label}</legend>
       <div className="flex gap-2">
         <label className="choice-row"><input type="radio" name={name} value="yes" defaultChecked={value} /> Yes</label>
         <label className="choice-row"><input type="radio" name={name} value="no" defaultChecked={!value} /> No</label>
@@ -53,7 +56,7 @@ function YesNo({ name, label, value }: { name: string; label: string; value: boo
 function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="label" htmlFor={id}>{label}</label>
+      <Label htmlFor={id}>{label}</Label>
       {children}
     </div>
   );
@@ -82,19 +85,19 @@ export default function ActivityForm({ values: v, committees }: ActivityFormProp
   const [state, action, pending] = useActionState<ActivityFormState, FormData>(saveActivity, {});
 
   return (
-    <form action={action} className="card space-y-8 p-4 sm:p-8">
+    <form action={action} className={cardClass("space-y-8 p-4 sm:p-8")}>
       {v.id && <input type="hidden" name="id" value={v.id} />}
 
       <Section title="The basics">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field id="name" label="Name">
-            <input id="name" name="name" className="input" required maxLength={120} defaultValue={v.name} />
+            <Input id="name" name="name" required maxLength={120} defaultValue={v.name} />
           </Field>
           <Field id="committee_id" label="Committee">
-            <select id="committee_id" name="committee_id" className="input" required defaultValue={v.committee_id ?? ""}>
+            <Select id="committee_id" name="committee_id" required defaultValue={v.committee_id ?? ""}>
               <option value="" disabled>Choose a committee</option>
               {committees.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            </Select>
           </Field>
         </div>
         <Field id="description" label="Description">
@@ -102,21 +105,21 @@ export default function ActivityForm({ values: v, committees }: ActivityFormProp
         </Field>
         <Field id="poster" label="Poster">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {v.poster_url && <img src={v.poster_url} alt="Current poster" className="mb-3 max-h-48 rounded-xl" />}
-          <input id="poster" name="poster" type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="input" />
+          {v.poster_url && <img src={v.poster_url} alt="Current poster" className="mb-3 max-h-48 rounded-md" />}
+          <Input id="poster" name="poster" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
         </Field>
       </Section>
 
       <Section title="When and where">
         <Field id="location" label="Location">
-          <input id="location" name="location" className="input" maxLength={200} defaultValue={v.location} />
+          <Input id="location" name="location" maxLength={200} defaultValue={v.location} />
         </Field>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field id="starts_at" label="Start date and time">
-            <input id="starts_at" name="starts_at" type="datetime-local" className="input" required defaultValue={v.starts_at} />
+            <Input id="starts_at" name="starts_at" type="datetime-local" required defaultValue={v.starts_at} />
           </Field>
           <Field id="ends_at" label="Estimated end date and time">
-            <input id="ends_at" name="ends_at" type="datetime-local" className="input" defaultValue={v.ends_at} />
+            <Input id="ends_at" name="ends_at" type="datetime-local" defaultValue={v.ends_at} />
           </Field>
         </div>
       </Section>
@@ -124,16 +127,16 @@ export default function ActivityForm({ values: v, committees }: ActivityFormProp
       <Section title="Price and subscribing">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field id="cost" label="Base cost (€, empty is free)">
-            <input id="cost" name="cost" className="input" inputMode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?" defaultValue={v.cost} />
+            <Input id="cost" name="cost" inputMode="decimal" pattern="[0-9]+([.,][0-9]{1,2})?" defaultValue={v.cost} />
           </Field>
           <Field id="subscription_limit" label="Subscription limit">
-            <input id="subscription_limit" name="subscription_limit" type="number" min={1} className="input" defaultValue={v.subscription_limit} placeholder="No limit" />
+            <Input id="subscription_limit" name="subscription_limit" type="number" min={1} defaultValue={v.subscription_limit} placeholder="No limit" />
           </Field>
           <Field id="subscription_opens_at" label="Subscription opens">
-            <input id="subscription_opens_at" name="subscription_opens_at" type="datetime-local" className="input" defaultValue={v.subscription_opens_at} />
+            <Input id="subscription_opens_at" name="subscription_opens_at" type="datetime-local" defaultValue={v.subscription_opens_at} />
           </Field>
           <Field id="subscription_closes_at" label="Subscription closes (empty: at the start)">
-            <input id="subscription_closes_at" name="subscription_closes_at" type="datetime-local" className="input" defaultValue={v.subscription_closes_at} />
+            <Input id="subscription_closes_at" name="subscription_closes_at" type="datetime-local" defaultValue={v.subscription_closes_at} />
           </Field>
         </div>
         <label className="choice-row"><input type="checkbox" name="allow_unsubscribe" defaultChecked={v.allow_unsubscribe} /> Allow unsubscribe</label>
@@ -151,7 +154,7 @@ export default function ActivityForm({ values: v, committees }: ActivityFormProp
       <Section title="Organisation">
         <Fold title="Attendance, EROs and budget">
           <Field id="estimated_attendees" label="Estimated number of attendees">
-            <input id="estimated_attendees" name="estimated_attendees" type="number" min={0} className="input" defaultValue={v.estimated_attendees} />
+            <Input id="estimated_attendees" name="estimated_attendees" type="number" min={0} defaultValue={v.estimated_attendees} />
           </Field>
           <YesNo name="needs_ero" label="Does this activity need EROs/BHV'ers?" value={v.needs_ero} />
           <YesNo name="uses_budget" label="Does this activity use the association budget?" value={v.uses_budget} />
@@ -164,13 +167,13 @@ export default function ActivityForm({ values: v, committees }: ActivityFormProp
             They take care of everything behind the bar, but they will <em>not</em> provide snacks for you. If you have a special request, describe it here.
             Also tell us in advance if you are going to hand out free drink coupons.
           </p>
-          <textarea name="boss_note" aria-label="Notes for the BarCie" className="input min-h-24" maxLength={2000} defaultValue={v.boss_note} />
+          <Textarea name="boss_note" aria-label="Notes for the BarCie" className="min-h-24" maxLength={2000} defaultValue={v.boss_note} />
         </Fold>
 
         <Fold title="Invite the PhotoCie" open={v.invite_flitcie}>
           <label className="choice-row font-bold"><input type="checkbox" name="invite_flitcie" defaultChecked={v.invite_flitcie} /> Invite the PhotoCie</label>
           <p className="text-sm text-muted">The PhotoCie can take pictures of your activity and upload them afterwards. If you have special requests, describe them here.</p>
-          <textarea name="flitcie_note" aria-label="Notes for the PhotoCie" className="input min-h-24" maxLength={2000} defaultValue={v.flitcie_note} />
+          <Textarea name="flitcie_note" aria-label="Notes for the PhotoCie" className="min-h-24" maxLength={2000} defaultValue={v.flitcie_note} />
         </Fold>
       </Section>
 
@@ -178,13 +181,13 @@ export default function ActivityForm({ values: v, committees }: ActivityFormProp
         <Section title="Tell the participants">
           <label className="choice-row font-bold"><input type="checkbox" name="notify_changes" /> Email the participants about this change</label>
           <p className="px-2 text-sm text-muted">Only if the name, time, place or price changed (or you add a note). Leave it off for small edits such as typos. {FORMAT_HINT}</p>
-          <textarea name="change_note" aria-label="Note for the participants" className="input min-h-20" maxLength={1000} placeholder="Optional note, e.g. why it moved" />
+          <Textarea name="change_note" aria-label="Note for the participants" className="min-h-20" maxLength={1000} placeholder="Optional note, e.g. why it moved" />
         </Section>
       )}
 
-      {state.error && <p role="alert" className="rounded-xl bg-danger/10 px-4 py-3 text-sm text-danger">{state.error}</p>}
+      {state.error && <p role="alert" className="rounded-md bg-danger/10 px-4 py-3 text-sm text-danger">{state.error}</p>}
       <div className="savebar">
-        <button type="submit" className="btn btn-primary" disabled={pending}>{pending ? "Saving…" : v.id ? "Save changes" : "Save activity"}</button>
+        <Button type="submit" variant="primary" disabled={pending}>{pending ? "Saving…" : v.id ? "Save changes" : "Save activity"}</Button>
         <p className="min-w-0 flex-1 text-sm text-muted">{pending ? "Saving can take a few seconds. Please wait." : "Saving can take a few seconds."}</p>
       </div>
     </form>

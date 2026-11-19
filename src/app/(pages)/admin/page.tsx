@@ -2,6 +2,8 @@ import Link from "next/link";
 import sql from "@/lib/db";
 import { formatDateTime } from "@/lib/datetime";
 import { requireAdmin } from "@/lib/session";
+import { Card } from "@/components/ui/Card";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 const WEEKS = 8;
 
@@ -75,11 +77,11 @@ export default async function AdminOverview() {
   return (
     <div className="space-y-6">
       {stats.member_requests > 0 && (
-        <Link href="/admin/users?filter=requests" className="card flex flex-wrap items-center justify-between gap-2 !p-3 hover:bg-accent-soft">
+        <Link href="/admin/users?filter=requests" className={cardClass("flex flex-wrap items-center justify-between gap-2 !p-3 hover:bg-accent-soft")}>
           <span className="text-sm font-semibold">
             {stats.member_requests} membership {stats.member_requests === 1 ? "request is" : "requests are"} waiting for you
           </span>
-          <span className="btn btn-primary btn-sm">Review</span>
+          <span className={buttonClass({ variant: "primary", size: "sm" })}>Review</span>
         </Link>
       )}
 
@@ -171,16 +173,16 @@ export default async function AdminOverview() {
 
         <section aria-labelledby="signups-title" className="@3xl:col-span-2">
           <h2 id="signups-title" className="mb-2 text-sm font-semibold">New users, last {WEEKS} weeks</h2>
-          <div className="card !p-3">
+          <Card className="!p-3">
             <ol className="flex h-24 items-end gap-2" aria-label="New users per week, oldest first">
               {weekly.map((w) => (
                 <li key={w.week.toISOString()} className="flex h-full flex-1 flex-col justify-end text-center" title={`Week of ${w.week.toLocaleDateString("en-GB")}: ${w.n}`}>
                   <span className="text-xs tabular-nums text-muted">{w.n}</span>
-                  <span className="block rounded-t-md bg-accent" style={{ height: `${Math.max(4, (w.n / peak) * 100)}%` }} />
+                  <span className="block rounded-t-sm bg-accent" style={{ height: `${Math.max(4, (w.n / peak) * 100)}%` }} />
                 </li>
               ))}
             </ol>
-          </div>
+          </Card>
         </section>
       </div>
     </div>

@@ -3,6 +3,9 @@ import { getAnnouncementSettings } from "@/lib/announcement";
 import { formatDate, getNews } from "@/lib/news";
 import { requireAdmin } from "@/lib/session";
 import { saveAnnouncement } from "./actions";
+import { Button } from "@/components/ui/Button";
+import { Input, Label } from "@/components/ui/Field";
+import { buttonClass, cardClass, labelClass } from "@/components/ui/classes";
 
 const NOTICES: Record<string, { text: string; tone: "ok" | "bad" }> = {
   published: { text: "Post published.", tone: "ok" },
@@ -30,16 +33,16 @@ export default async function AdminNews(props: { searchParams: Promise<{ notice?
   return (
     <div className="space-y-5">
       {message && (
-        <p role="status" className={`rounded-xl px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
+        <p role="status" className={`rounded-md px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
           {message.text}
         </p>
       )}
 
       <section aria-labelledby="bar-title">
         <h2 id="bar-title" className="text-base font-extrabold">Announcement bar</h2>
-        <form action={saveAnnouncement} className="card mt-2 max-w-2xl space-y-3 p-4">
+        <form action={saveAnnouncement} className={cardClass("mt-2 max-w-2xl space-y-3 p-4")}>
           <fieldset className="space-y-1">
-            <legend className="label">What it shows</legend>
+            <legend className={labelClass()}>What it shows</legend>
             {MODES.map((mode) => (
               <label key={mode.value} className="choice-row">
                 <input type="radio" name="mode" value={mode.value} defaultChecked={announcement.mode === mode.value} className="mt-0" />
@@ -48,25 +51,25 @@ export default async function AdminNews(props: { searchParams: Promise<{ notice?
             ))}
           </fieldset>
           <div>
-            <label className="label" htmlFor="ann-title">Custom message</label>
-            <input id="ann-title" name="title" className="input" maxLength={120} defaultValue={announcement.title} placeholder="Borrel this Friday!" />
+            <Label htmlFor="ann-title">Custom message</Label>
+            <Input id="ann-title" name="title" maxLength={120} defaultValue={announcement.title} placeholder="Borrel this Friday!" />
           </div>
           <div>
-            <label className="label" htmlFor="ann-summary">Extra line (optional)</label>
-            <input id="ann-summary" name="summary" className="input" maxLength={200} defaultValue={announcement.summary} />
+            <Label htmlFor="ann-summary">Extra line (optional)</Label>
+            <Input id="ann-summary" name="summary" maxLength={200} defaultValue={announcement.summary} />
           </div>
           <div>
-            <label className="label" htmlFor="ann-link">Link (optional)</label>
-            <input id="ann-link" name="link" className="input" maxLength={500} defaultValue={announcement.link} placeholder="/mastapps/activities or https://…" />
+            <Label htmlFor="ann-link">Link (optional)</Label>
+            <Input id="ann-link" name="link" maxLength={500} defaultValue={announcement.link} placeholder="/mastapps/activities or https://…" />
           </div>
-          <button type="submit" className="btn btn-primary btn-sm">Save announcement bar</button>
+          <Button type="submit" variant="primary" size="sm">Save announcement bar</Button>
         </form>
       </section>
 
       <section aria-labelledby="posts-title">
         <div className="mb-2 flex items-center justify-between gap-3">
           <h2 id="posts-title" className="text-base font-extrabold">News posts</h2>
-          <Link href="/admin/news/new" className="btn btn-primary btn-sm">New post</Link>
+          <Link href="/admin/news/new" className={buttonClass({ variant: "primary", size: "sm" })}>New post</Link>
         </div>
         <div className="table-wrap">
           <table className="table table-stack">
@@ -79,7 +82,7 @@ export default async function AdminNews(props: { searchParams: Promise<{ notice?
                   </td>
                   <td data-label="Date" className="whitespace-nowrap text-muted">{formatDate(post.date)}</td>
                   <td className="text-right">
-                    <Link href={`/admin/news/${post.id}`} className="btn btn-secondary btn-sm">Edit</Link>
+                    <Link href={`/admin/news/${post.id}`} className={buttonClass({ variant: "secondary", size: "sm" })}>Edit</Link>
                   </td>
                 </tr>
               ))}

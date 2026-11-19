@@ -25,7 +25,7 @@ export default function Notice({ code }: { code?: string }) {
   const message = code ? NOTICES[code] : undefined;
   if (!message) return null;
   return (
-    <p role="status" className={`mb-4 rounded-xl px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
+    <p role="status" className={`mb-4 rounded-md px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
       {message.text}
     </p>
   );

@@ -4,6 +4,7 @@ import { hasDisplayName } from "@/lib/profile";
 import { safeNextPath } from "@/lib/safe-redirect";
 import { requireUser } from "@/lib/session";
 import DisplayNameForm from "./DisplayNameForm";
+import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = { title: "Choose a display name", robots: { index: false } };
 
@@ -24,9 +25,9 @@ export default async function DisplayNamePage(props: { searchParams: Promise<{ n
           This is how other members see you, for example next to your quotes and in the list of who is going to an activity.
           Your email address stays private.
         </p>
-        <div className="card mt-8 p-6 sm:p-8">
+        <Card className="mt-8 p-6 sm:p-8">
           <DisplayNameForm initialName={hasDisplayName(user.name) ? user.name : ""} next={target} />
-        </div>
+        </Card>
       </div>
     </div>
   );

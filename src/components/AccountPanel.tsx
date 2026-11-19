@@ -4,6 +4,10 @@ import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { NAME_MAX, validateDisplayName } from "@/lib/profile";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input, Label } from "@/components/ui/Field";
+import { cardClass } from "@/components/ui/classes";
 
 export default function AccountPanel({ initialName, email }: { initialName: string; email: string }) {
   const id = useId();
@@ -61,31 +65,31 @@ export default function AccountPanel({ initialName, email }: { initialName: stri
 
   return (
     <div className="space-y-4">
-      <div className="card divide-y divide-line">
+      <Card className="divide-y divide-line">
       <form onSubmit={saveName} className="p-4">
-        <label htmlFor={`${id}-name`} className="label">Display name</label>
+        <Label htmlFor={`${id}-name`}>Display name</Label>
         <div className="flex gap-2">
-          <input id={`${id}-name`} className="input min-w-0 flex-1" value={name} maxLength={NAME_MAX} onChange={(e) => { setName(e.target.value); setSaved(false); }} />
-          <button type="submit" className="btn btn-primary" disabled={!name.trim() || name.trim() === initialName}>Save</button>
+          <Input id={`${id}-name`} className="min-w-0 flex-1" value={name} maxLength={NAME_MAX} onChange={(e) => { setName(e.target.value); setSaved(false); }} />
+          <Button type="submit" variant="primary" disabled={!name.trim() || name.trim() === initialName}>Save</Button>
         </div>
         {saved && <p role="status" className="mt-2 text-sm text-success">Saved</p>}
       </form>
 
       <form onSubmit={changeEmail} className="p-4">
-        <label htmlFor={`${id}-email`} className="label">Email address</label>
+        <Label htmlFor={`${id}-email`}>Email address</Label>
         <p className="mb-2 break-all text-sm text-muted">Now: {email}</p>
         <div className="flex gap-2">
-          <input
+          <Input
             id={`${id}-email`}
             type="email"
-            className="input min-w-0 flex-1"
+            className="min-w-0 flex-1"
             placeholder="New email address"
             autoComplete="email"
             maxLength={254}
             value={newEmail}
             onChange={(e) => { setNewEmail(e.target.value); setEmailSent(false); }}
           />
-          <button type="submit" className="btn btn-secondary" disabled={!newEmail.trim() || changingEmail}>{changingEmail ? "Sending…" : "Change"}</button>
+          <Button type="submit" variant="secondary" disabled={!newEmail.trim() || changingEmail}>{changingEmail ? "Sending…" : "Change"}</Button>
         </div>
         {emailSent && (
           <p role="status" className="mt-2 text-sm text-success">
@@ -93,15 +97,15 @@ export default function AccountPanel({ initialName, email }: { initialName: stri
           </p>
         )}
       </form>
-      </div>
+      </Card>
 
-      {error && <p role="alert" className="rounded-xl bg-danger/10 px-4 py-3 text-sm text-danger">{error}</p>}
+      {error && <p role="alert" className="rounded-md bg-danger/10 px-4 py-3 text-sm text-danger">{error}</p>}
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-1">
         <a href="/api/account/export" download className="text-sm font-semibold text-accent-text underline underline-offset-2">Download my data</a>
       </div>
 
-      <details className="card border-danger/30 p-4">
+      <details className={cardClass("border-danger/30 p-4")}>
         <summary className="cursor-pointer text-sm font-bold text-danger">Delete account</summary>
         <p className="mt-3 text-sm text-muted">
           Removes your account and your newsletter subscription. Masts you submitted stay in the gallery; ask us if you want them removed too.
@@ -109,11 +113,11 @@ export default function AccountPanel({ initialName, email }: { initialName: stri
         <div className="mt-3">
           {confirmingDelete ? (
             <div className="flex flex-wrap gap-3">
-              <button type="button" className="btn btn-danger btn-sm" onClick={deleteAccount}>Yes, delete my account</button>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setConfirmingDelete(false)}>Cancel</button>
+              <Button type="button" variant="danger" size="sm" onClick={deleteAccount}>Yes, delete my account</Button>
+              <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmingDelete(false)}>Cancel</Button>
             </div>
           ) : (
-            <button type="button" className="btn btn-danger btn-sm" onClick={() => setConfirmingDelete(true)}>Delete my account</button>
+            <Button type="button" variant="danger" size="sm" onClick={() => setConfirmingDelete(true)}>Delete my account</Button>
           )}
         </div>
       </details>

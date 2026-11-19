@@ -1,0 +1,875 @@
+/*
+ * The original homepage stylesheet (Verbosa), kept as it was in the `legacy` layer, which ranks below `components` and
+ * `utilities`, so utility classes and the design-system controls always win over its global element rules.
+ * New styles do not go here. Its palette names (--orange, --text, ...) are aliases defined in tokens.css.
+ */
+@layer legacy {
+/* ── Verbosa colour palette ── */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-family: Lato, Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.8;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-size: 1em;
+  color: var(--text);
+  background-color: var(--orange);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Links — exact Verbosa defaults ── */
+a:link, a:visited { text-decoration: none; }
+a { color: var(--accent-text); }
+a:hover { color: var(--blue); }
+
+/* ── Headings ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: Lato, Arial, sans-serif;
+  font-weight: 500;
+  clear: both;
+}
+h1 { font-size: 2.3em; }
+h2 { font-size: 2em; }
+h3 { font-size: 1.7em; }
+h4 { font-size: 1.4em; }
+h5 { font-size: 1.1em; }
+h6 { font-size: 0.8em; }
+
+/* ── Layout ── */
+#content { margin: 0 auto; max-width: 1460px; padding-bottom: 2em; }
+#container { margin: 0 auto; width: 100%; position: relative; }
+.main { margin-bottom: 0; min-height: 400px; overflow: hidden; }
+#container.two-columns-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 3%;
+}
+#container.two-columns-left #sidebar {
+  flex-shrink: 0;
+  position: sticky;
+  top: var(--announce-h, 0px); /* JS lowers this by the slider height (homepage) */
+}
+#container.two-columns-left .main {
+  flex: 1;
+  min-width: 0;
+  margin-top: 15px;
+}
+
+/* ── Sidebar ── */
+#sidebar {
+  position: relative;
+  padding: 2em 3em 1.5em;
+  background-color: #fff;
+  width: 380px;
+  min-width: 380px;
+}
+
+/* ── Mobile layout ── */
+@media (max-width: 1023px) {
+  #container.two-columns-left {
+    gap: 0;
+  }
+  #container.two-columns-left .main {
+    padding-top: 0;
+    margin-top: 0;
+  }
+  .lp-text-inside {
+    padding-left: 1em;
+    padding-right: 0;
+  }
+  .main > article.hentry {
+    padding-top: 0;
+    padding-right: 0;
+  }
+  .content-masonry {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+  }
+  .hero-carousel {
+    aspect-ratio: auto !important;
+    height: 340px;
+    max-height: none !important;
+  }
+  .hero-carousel__badge { top: 0.75rem !important; left: 0.75rem !important; font-size: 0.7em !important; }
+  .hero-carousel__caption span:first-child { font-size: 1.2em !important; line-height: 1.2; }
+  .hero-carousel__caption span:last-child { font-size: 0.9em !important; }
+}
+
+/* ── Branding / header in sidebar ── */
+#branding {
+  display: block;
+  clear: both;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.identity {
+  display: block;
+  float: none;
+  margin: 0 auto;
+  overflow: hidden;
+  text-align: center;
+}
+
+a#logo {
+  display: table;
+  float: none;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#site-title {
+  display: table;
+  float: none;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 1.3;
+  text-transform: uppercase;
+  font-family: Lato, Arial, sans-serif;
+  font-size: 200%;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+#site-title a {
+  display: block;
+  text-decoration: none;
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  text-transform: uppercase;
+  color: var(--orange);
+  border-color: var(--orange);
+  padding: 0.15em 0;
+  transition: all .5s ease-in-out;
+}
+#site-title a:hover { border-color: transparent; color: var(--orange); }
+
+#site-description {
+  display: block;
+  float: none;
+  margin: 0.5em auto;
+  text-align: center;
+  line-height: 1.3;
+  font-family: Lato, Arial, sans-serif;
+  font-size: 120%;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* ── Nav (#access) ── */
+#access {
+  display: block;
+  float: none;
+  margin: 1.25rem auto 2em; /* the same gap above the menu as above the account pill */
+}
+
+#access a {
+  display: inline-block;
+  text-decoration: none;
+  line-height: 3;
+  font-family: Lato, Arial, sans-serif;
+  font-size: 110%;
+  font-weight: 700;
+  color: #000;
+}
+#access a:hover { color: var(--orange); }
+
+#access a span {
+  display: block;
+  position: relative;
+  line-height: 1.5;
+  padding: .75em 0;
+  word-break: break-word;
+  transition: all .5s ease-in-out;
+}
+#access a:hover span { padding-left: .3em; }
+
+#access ul li {
+  position: relative;
+  display: block;
+  float: none;
+  clear: both;
+  word-break: break-all;
+}
+
+/* ── Widget titles ── */
+.widget-title {
+  font-family: Lato, Arial, sans-serif;
+  font-size: 100%;
+  font-weight: 400;
+  text-transform: uppercase;
+  text-align: center;
+  position: relative;
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+}
+.widget-title::after {
+  content: "";
+  display: block;
+  height: 1px;
+  background-color: var(--border);
+  position: absolute;
+  bottom: 0;
+  left: -3em;
+  right: -3em;
+}
+.widget-title span {
+  display: inline-block;
+  height: 100%;
+  position: relative;
+  z-index: 99;
+  background-color: #fff;
+  padding: 0 0.5em;
+}
+.widget-container {
+  font-family: Lato, Arial, sans-serif;
+  font-size: 110%;
+  font-weight: 500;
+}
+
+/* ── Entry (article) ── */
+article.hentry {
+  background-color: #fff;
+}
+
+/* Standard (single column) articles */
+.main > article.hentry {
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-top: 2em;
+  padding-bottom: 2em;
+  margin-bottom: 0;
+}
+
+/* ── Entry title ── */
+.entry-title,
+#reply-title {
+  font-family: Lato, Arial, sans-serif;
+  color: var(--navy);
+  font-size: 170%;
+  font-weight: 500;
+}
+
+.entry-title a {
+  color: var(--navy);
+  background-image: linear-gradient(to bottom, var(--navy) 0%, var(--navy) 100%);
+  background-repeat: no-repeat;
+  background-size: 0 2px;
+  background-position: left bottom;
+  transition: background-size 0.3s ease;
+}
+.entry-title a:hover {
+  color: var(--navy);
+  background-size: 100% 2px;
+}
+
+/* ── Entry header ── */
+.verbosa-magazine-two .entry-header {
+  margin-bottom: 1em;
+}
+
+/* ── Entry meta ── */
+.entry-meta span,
+.entry-meta time,
+.entry-meta a {
+  color: var(--text);
+  font-family: Lato, Arial, sans-serif;
+  font-size: 100%;
+  font-weight: 400;
+}
+.entry-meta a {
+  background-image: linear-gradient(to bottom, var(--blue) 0%, var(--blue) 100%);
+}
+
+/* ── Entry content ── */
+.verbosa-magazine-two .entry-content,
+.verbosa-magazine-two .entry-summary {
+  padding-top: 1.3em;
+  flex: 1;
+}
+
+/* Paragraph margins inside main */
+.main p, .main ul, .main ol, .main dd, .main pre, .main hr {
+  margin-bottom: 0.6em;
+}
+.main p { text-indent: 0em; }
+
+/* ── Featured bar — hidden unless there's a thumbnail ── */
+.featured-bar {
+  position: relative;
+  display: none;
+  float: none;
+  margin: 0 -1em 1em;
+  width: calc(100% + 2em);
+  height: 5px;
+  background-color: var(--blue);
+  transition: background-color 0.3s ease;
+}
+.post-thumbnail-container + .featured-bar {
+  display: block;
+}
+.featured-bar::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%; width: 100%;
+  background-color: var(--orange);
+  opacity: 0;
+  transition: 0.3s opacity ease;
+}
+article.hentry:hover .featured-bar::before {
+  opacity: 1;
+}
+
+/* ── Continue reading link / vote button ── */
+a.continue-reading-link,
+button.continue-reading-link {
+  display: inline-block;
+  background-color: var(--blue);
+  color: #fff;
+  font-family: Lato, Arial, sans-serif;
+  font-size: 100%;
+  font-weight: 400;
+  padding: 0.4em 1em;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  margin-top: 0.5em;
+}
+a.continue-reading-link:hover,
+button.continue-reading-link:hover:not(:disabled) {
+  background-color: var(--orange);
+  color: #fff;
+}
+button.continue-reading-link {
+  border: none;
+  cursor: pointer;
+}
+button.continue-reading-link:disabled {
+  cursor: default;
+}
+
+/* ── lp-text intro section ── */
+.lp-text {
+  position: relative;
+  display: block;
+  float: none;
+  clear: both;
+  width: 100%;
+  background-color: #fff;
+  margin-bottom: 2em;
+  padding: 2em 0;
+}
+.lp-text-inside {
+  position: relative;
+  z-index: 3;
+  padding: 1em 3em;
+  max-width: 1460px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+.main .lp-text-title {
+  font-weight: bold;
+  margin-top: 0;
+  display: none;
+}
+.lp-text-content {
+  margin-top: 2em;
+  font-size: 1em;
+}
+.lp-text-content h5 {
+  font-size: 1.1em;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+/* ── lp-slider ── */
+.lp-slider-overlay {
+  position: relative;
+  overflow: hidden;
+  max-height: 100vh;
+}
+
+/* ── lp-posts masonry ── */
+#lp-posts {
+  display: block;
+  float: none;
+  clear: both;
+  background-color: var(--orange);
+  margin-bottom: 0; /* flows directly into #towers */
+}
+#towers {
+  background-color: var(--orange);
+}
+.lp-posts-inside {
+  max-width: 1460px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+#content-masonry,
+.content-masonry {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5em;
+  margin-left: 0;
+  margin-right: 0;
+  clear: both;
+}
+/* Compact, clean card design */
+.verbosa-magazine-two #content-masonry article.hentry,
+.verbosa-magazine-two .content-masonry article.hentry {
+  width: 100%;
+  height: 420px;
+  padding: 1em;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0,0,0,0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.verbosa-magazine-two #content-masonry article.hentry:hover,
+.verbosa-magazine-two .content-masonry article.hentry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* First post (News) is now standard size to match the mast cards */
+@media (max-width: 650px) {
+  #content-masonry,
+  .content-masonry {
+    /* minmax(0, …): a long nowrap title must not stretch the column past the screen and clip the card's right edge. */
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.content-masonry > * { min-width: 0; }
+
+/* News card: multiple posts stacked in one box, scroll to reveal older ones */
+.news-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+.news-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.news-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* ── Post thumbnail (tower photo posts) ── */
+article.hentry .post-thumbnail-container {
+  display: block;
+  overflow: hidden;
+  /* bleed past the article padding: top=1em, sides=1em */
+  margin: -1em -1em 0.5em;
+  width: calc(100% + 2em);
+  height: 55%;
+  flex-shrink: 0;
+  border-radius: 6px 6px 0 0;
+}
+article.hentry .post-thumbnail-container img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+article.hentry:hover .post-thumbnail-container img {
+  transform: scale(1.03);
+}
+
+/* ── Footer (inside sidebar — #footer) ── */
+#footer {
+  display: block;
+  overflow: visible;
+  width: 100%;
+  border-top: 1px solid var(--border);
+  margin-top: 1.5em;
+}
+#footer-inside {
+  display: block;
+  float: none;
+  padding: 1.5em 0;
+  overflow: hidden;
+  position: relative;
+}
+#footer a { color: var(--accent-text); }
+#footer a:hover { color: var(--blue); }
+#site-copyright {
+  display: block;
+  float: none;
+  font-style: italic;
+  font-size: .85em;
+  line-height: 1.5;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1em;
+  margin-bottom: 0.5em;
+}
+#site-copyright:empty { display: none; }
+
+/* ── Socials (circular icon links in sidebar footer) ── */
+#sidebar .socials {
+  display: flex;
+  justify-content: center;
+  gap: 0.8em;
+  margin: 0 auto 1em;
+}
+.socials a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 2px solid var(--orange);
+  border-radius: 100px;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  width: 2.5em;
+  height: 2.5em;
+  color: var(--orange);
+  text-decoration: none;
+}
+.socials a span { display: none; }
+.socials a svg {
+  width: 1.25em;
+  height: 1.25em;
+  fill: currentColor;
+}
+.socials a svg.stroke-icon {
+  fill: none;
+  stroke: currentColor;
+}
+.socials a:hover {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+/* ── Colophon (full-width 3-column footer below #content) ── */
+#colophon {
+  display: block;
+  background-color: #fff;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+}
+#colophon:empty { display: none; }
+#colophon-inside {
+  max-width: 1460px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1em;
+  overflow: hidden;
+}
+#colophon .widget-container {
+  float: left;
+  padding: 2em 2em 2em;
+  box-sizing: border-box;
+}
+.footer-three .widget-container { width: 33.333%; }
+.footer-three .widget-container:nth-child(3n+1) { clear: both; }
+#colophon a { color: var(--accent-text); }
+#colophon a:hover { color: var(--blue); }
+#colophon .widget-title span { background-color: #fff; }
+#colophon .widget-title::after { background-color: var(--border); }
+@media (max-width: 800px) {
+  .footer-three .widget-container {
+    width: 100%;
+    float: none;
+  }
+}
+
+/* ── Searchform ── */
+.searchform {
+  display: flex;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+.searchform input[type="search"] {
+  flex: 1;
+  padding: .7em 1em;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent;
+  outline: none;
+  border-radius: 0;
+}
+.searchform input[type="search"]::-webkit-search-decoration,
+.searchform input[type="search"]::-webkit-search-cancel-button,
+.searchform input[type="search"]::-webkit-search-results-button,
+.searchform input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
+
+/* ── Section heading with orange underline ── */
+.section-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid var(--orange);
+  margin-bottom: 1.25rem;
+  display: inline-block;
+}
+
+/* ── Form inputs ── */
+input[type="submit"],
+input[type="reset"],
+button[type="submit"] {
+  background-color: var(--orange);
+  color: #1a0f05;
+  padding: .7em 1.5em;
+  border: 0;
+  font-family: inherit;
+  font-size: .9em;
+  border-radius: 100px;
+  transition: background-color .3s ease-in-out;
+  cursor: pointer;
+}
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+button[type="submit"]:hover {
+  background-color: var(--blue);
+  color: #ffffff;
+}
+
+textarea,
+select,
+input[type="text"],
+input[type="email"],
+input[type="search"] {
+  max-width: 100%;
+  padding: .7em 1em;
+  border: 1px solid #e9e9e9;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--text);
+  background: transparent;
+  transition: border-color .3s;
+}
+input[type]:focus,
+textarea:focus {
+  border-color: #cdcdcd;
+  outline: none;
+}
+
+/* ── Blockquote ── */
+q, blockquote {
+  font-family: Georgia, "Bitstream Charter", serif;
+  font-size: 1.1em;
+}
+blockquote { quotes: none; }
+blockquote::before, blockquote::after { content: ""; content: none; }
+
+/* ── Tower detail modal ── */
+.tm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 9999;
+  display: flex;
+  align-items: stretch;   /* full-screen on mobile */
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+/* ── Modal box ── */
+.tm-box {
+  background: #fff;
+  width: 100%;
+  /* no max-height on mobile — fills full viewport via stretch */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/* ── Close button ── */
+.tm-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* ── Scrollable area ── */
+.tm-scroll {
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Image ── */
+.tm-img-wrap { position: relative; }
+
+.tm-img {
+  width: 100%;
+  height: 40vh;
+  object-fit: cover;
+  background-color: #111;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ── KLOK badge ── */
+.tm-klok-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--navy);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  padding: 0.3em 0.7em;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* ── Content area ── */
+.tm-content { padding: 1rem 1.25rem 1.25rem; }
+
+/* ── Info row: title left, votes right ── */
+.tm-info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.tm-text { min-width: 0; }
+
+.tm-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.2rem;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.tm-submitter {
+  font-size: 0.88rem;
+  color: var(--text-mid);
+  margin: 0;
+}
+
+/* ── Vote widget ── */
+.tm-votes {
+  display: flex;
+  align-items: stretch;
+  background: #f0f2f5;
+  border-radius: 10px;
+  overflow: hidden;
+  align-self: stretch;
+}
+
+.tm-vote-btn {
+  flex: 1;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.75rem 0;
+  transition: background 0.15s, color 0.15s;
+}
+.tm-vote-btn:disabled { cursor: default; }
+
+.tm-vote-count {
+  flex: 0 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  border-left: 1px solid #dde0e6;
+  border-right: 1px solid #dde0e6;
+}
+
+/* ── Description ── */
+.tm-description {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+.tm-description p { margin: 0; }
+
+/* ── Tablet+ (640px): centred overlay, side-by-side info row ── */
+@media (min-width: 640px) {
+  .tm-backdrop {
+    align-items: center;
+    padding: 1.5rem;
+  }
+  .tm-box {
+    border-radius: 12px;
+    max-width: 680px;
+    max-height: 90vh;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  }
+  .tm-img {
+    height: auto;
+    max-height: 46vh;
+    object-fit: contain;
+  }
+  .tm-klok-badge { font-size: 1rem; }
+  .tm-content { padding: 1.5rem; }
+  .tm-info-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+  }
+  .tm-title { font-size: 1.8rem; margin: 0 0 0.35rem; }
+  .tm-submitter { font-size: 1rem; }
+  .tm-votes {
+    align-self: flex-start;
+    flex-shrink: 0;
+  }
+  .tm-vote-btn { flex: none; padding: 0.5rem 1.1rem; font-size: 1.1rem; }
+  .tm-vote-count { font-size: 1.4rem; flex: 0 0 3.5rem; }
+  .tm-description { font-size: 1.05rem; margin-top: 1.5rem; padding-top: 1.5rem; }
+}
+
+/* ── Desktop (1024px+): larger image, bigger type ── */
+@media (min-width: 1024px) {
+  .tm-backdrop { padding: 2rem; }
+  .tm-box { max-width: 1000px; max-height: 90vh; }
+  .tm-img { max-height: 55vh; }
+  .tm-klok-badge { font-size: 1.25rem; }
+  .tm-content { padding: 2rem; }
+  .tm-title { font-size: 2.4rem; margin: 0 0 0.4rem; }
+  .tm-submitter { font-size: 1.1rem; }
+  .tm-vote-btn { padding: 0.55rem 1.25rem; font-size: 1.2rem; }
+  .tm-vote-count { font-size: 1.5rem; flex: 0 0 4rem; }
+  .tm-description { font-size: 1.1rem; }
+}
+}

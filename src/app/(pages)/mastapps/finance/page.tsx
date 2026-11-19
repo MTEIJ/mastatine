@@ -6,6 +6,8 @@ import BudgetsView from "./_views/BudgetsView";
 import BookYearsView from "./_views/BookYearsView";
 import MutationsView from "./_views/MutationsView";
 import OverviewView from "./_views/OverviewView";
+import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Field";
 
 export const instant = false;
 
@@ -66,13 +68,13 @@ export default async function Finance(props: { searchParams: Promise<SearchParam
           <form className="flex items-center gap-2 text-sm">
             {view !== "overview" && <input type="hidden" name="view" value={view} />}
             <label htmlFor="year" className="text-muted">Book year</label>
-            <select id="year" name="year" className="input !w-auto" defaultValue={allYears ? "all" : String(bookYear)}>
+            <Select id="year" name="year" className="!w-auto" defaultValue={allYears ? "all" : String(bookYear)}>
               {view === "mutations" && <option value="all">All years</option>}
               {[...new Set([...years.map((y) => y.year), bookYear])].sort((x, y) => y - x).map((y) => (
                 <option key={y} value={y}>{y}{years.find((b) => b.year === y)?.closed ? " (closed)" : ""}</option>
               ))}
-            </select>
-            <button className="btn btn-secondary btn-sm" type="submit">Show</button>
+            </Select>
+            <Button variant="secondary" size="sm" type="submit">Show</Button>
           </form>
         )}
       </div>

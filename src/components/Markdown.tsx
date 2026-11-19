@@ -50,7 +50,7 @@ const components: Components = {
     typeof src === "string" && src ? (
       // Uploads are already resized WebP, so next/image would add nothing.
       // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={alt ?? ""} loading="lazy" className="my-2 max-h-96 max-w-full rounded-lg border border-line" />
+      <img src={src} alt={alt ?? ""} loading="lazy" className="my-2 max-h-96 max-w-full rounded-sm border border-line" />
     ) : null,
   hr: () => <hr className="my-3 border-line" />,
 };

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import AppFrame from "@/components/ui/AppFrame";
 import { membersOnlyGate } from "@/components/MembersOnly";
 import { formatGrade, formatQuoteDate, getAuthorStats, getQuoteStats, getTopQuotes, NO_VOTER } from "@/lib/quotes";
+import { Badge, Card } from "@/components/ui/Card";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Quote statistics" };
 
@@ -23,10 +25,10 @@ export default async function QuoteStatisticsPage() {
 
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {tiles.map((t) => (
-          <div key={t.label} className="card p-4 text-center">
+          <Card key={t.label} className="p-4 text-center">
             <dd className="text-3xl font-extrabold tabular-nums text-accent-text">{t.value}</dd>
             <dt className="mt-1 text-sm text-muted">{t.label}</dt>
-          </div>
+          </Card>
         ))}
       </dl>
 
@@ -34,10 +36,10 @@ export default async function QuoteStatisticsPage() {
         <h2 id="top-title" className="text-xl font-bold">Highest graded</h2>
         <ol className="mt-4 space-y-3">
           {top.map((q) => (
-            <li key={q.id} className="card p-4">
+            <li key={q.id} className={cardClass("p-4")}>
               <p className="whitespace-pre-line">{q.body}</p>
               <p className="mt-2 text-sm text-muted">
-                <strong className="text-accent-text">{q.author}</strong> · {formatQuoteDate(q.said_on)} · <span className="badge">{formatGrade(q.average)}</span>
+                <strong className="text-accent-text">{q.author}</strong> · {formatQuoteDate(q.said_on)} · <Badge>{formatGrade(q.average)}</Badge>
               </p>
             </li>
           ))}

@@ -5,6 +5,9 @@ import ConfirmButton from "@/components/admin/ConfirmButton";
 import { SortLink, parseSort } from "@/components/admin/SortHeader";
 import { deleteMast } from "../actions";
 import { requireAdmin } from "@/lib/session";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
+import { buttonClass } from "@/components/ui/classes";
 
 const PAGE_SIZE = 25;
 
@@ -56,8 +59,8 @@ export default async function AdminMasts(props: { searchParams: Promise<{ q?: st
         <input type="hidden" name="sort" value={sort.column} />
         <input type="hidden" name="dir" value={sort.dir} />
         <label className="sr-only" htmlFor="admin-mast-search">Search masts</label>
-        <input id="admin-mast-search" name="q" defaultValue={query} placeholder="Search title or submitter" className="input min-w-0 flex-1 sm:max-w-sm" />
-        <button className="btn btn-secondary" type="submit">Search</button>
+        <Input id="admin-mast-search" name="q" defaultValue={query} placeholder="Search title or submitter" className="min-w-0 flex-1 sm:max-w-sm" />
+        <Button variant="secondary" type="submit">Search</Button>
       </form>
 
       <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
@@ -85,7 +88,7 @@ export default async function AdminMasts(props: { searchParams: Promise<{ q?: st
               <tr key={mast.id}>
                 <td data-primary>
                   <div className="flex items-center gap-3">
-                    <Image src={mast.image_url} alt="" width={96} height={72} quality={60} className="h-10 w-14 rounded-md object-cover" />
+                    <Image src={mast.image_url} alt="" width={96} height={72} quality={60} className="h-10 w-14 rounded-sm object-cover" />
                     <span className="font-medium">{mast.title}</span>
                   </div>
                 </td>
@@ -95,10 +98,10 @@ export default async function AdminMasts(props: { searchParams: Promise<{ q?: st
                 <td data-label="Added" className="whitespace-nowrap text-muted">{new Date(mast.created_at).toLocaleDateString("en-GB")}</td>
                 <td>
                   <div className="flex w-full justify-end gap-2">
-                    <Link href={`/admin/masts/${mast.id}`} className="btn btn-secondary btn-sm">Edit</Link>
+                    <Link href={`/admin/masts/${mast.id}`} className={buttonClass({ variant: "secondary", size: "sm" })}>Edit</Link>
                     <form action={deleteMast}>
                       <input type="hidden" name="id" value={mast.id} />
-                      <ConfirmButton message={`Delete “${mast.title}” and its photo? This cannot be undone.`} className="btn btn-danger btn-sm">Delete</ConfirmButton>
+                      <ConfirmButton message={`Delete “${mast.title}” and its photo? This cannot be undone.`} className={buttonClass({ variant: "danger", size: "sm" })}>Delete</ConfirmButton>
                     </form>
                   </div>
                 </td>
@@ -112,8 +115,8 @@ export default async function AdminMasts(props: { searchParams: Promise<{ q?: st
       </div>
 
       <div className="mt-6 flex justify-between text-sm">
-        {pageNumber > 1 ? <Link href={link(pageNumber - 1)} className="btn btn-secondary btn-sm">&larr; Newer</Link> : <span />}
-        {hasMore && <Link href={link(pageNumber + 1)} className="btn btn-secondary btn-sm">Older &rarr;</Link>}
+        {pageNumber > 1 ? <Link href={link(pageNumber - 1)} className={buttonClass({ variant: "secondary", size: "sm" })}>&larr; Newer</Link> : <span />}
+        {hasMore && <Link href={link(pageNumber + 1)} className={buttonClass({ variant: "secondary", size: "sm" })}>Older &rarr;</Link>}
       </div>
     </>
   );

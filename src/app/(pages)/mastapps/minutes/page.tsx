@@ -6,6 +6,7 @@ import { getCommitteeActions, getMeetings, getMyActions, type ActionPoint, type 
 import { requireUser } from "@/lib/session";
 import ActionList from "./ActionList";
 import MeetingRow from "./MeetingRow";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Minutes", description: "Agendas, minutes and action points.", robots: { index: false } };
 
@@ -16,7 +17,7 @@ function Section({ title, meetings, empty }: { title: string; meetings: Meeting[
       {meetings.length === 0 ? (
         <p className="text-muted">{empty ?? "No meetings found."}</p>
       ) : (
-        <ul className="card divide-y divide-line">{meetings.map((m) => <MeetingRow key={m.id} meeting={m} />)}</ul>
+        <ul className={cardClass("divide-y divide-line")}>{meetings.map((m) => <MeetingRow key={m.id} meeting={m} />)}</ul>
       )}
     </section>
   );
@@ -45,7 +46,7 @@ export default async function MinutesDashboard(props: { searchParams: Promise<{ 
     <AppFrame title="Minutes" hideTitle>
       <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">
         <div>
-          <Link href="/mastapps/minutes/meetings/new" className="btn btn-primary mb-6">New meeting</Link>
+          <Link href="/mastapps/minutes/meetings/new" className={buttonClass({ variant: "primary" }, "mb-6")}>New meeting</Link>
           <Section title="Today" meetings={todays} empty="No meetings today." />
           <Section title="Upcoming" meetings={upcoming} />
           <Section title="Recent" meetings={recent} />
@@ -59,7 +60,7 @@ export default async function MinutesDashboard(props: { searchParams: Promise<{ 
           {actions.length === 0 && <p className="text-muted">{committeeView ? "No open action points." : "Nothing on your plate."}</p>}
           <div className="space-y-5">
             {groupByCommittee(actions).map(([committee, list]) => (
-              <section key={committee} className="card p-5">
+              <section key={committee} className={cardClass("p-5")}>
                 <h3 className="mb-1 text-base font-extrabold text-accent-text">{committee}</h3>
                 <ActionList actions={list} showAssignee={committeeView} canEdit={committeeView} />
               </section>

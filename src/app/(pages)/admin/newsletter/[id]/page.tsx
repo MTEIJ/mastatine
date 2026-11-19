@@ -13,6 +13,10 @@ import { AUDIENCE_LABEL, parseAudience } from "@/lib/newsletter-audience";
 import { issueStats, newsletterActivities } from "@/lib/newsletter";
 import { deleteIssue, saveIssue, sendTest, startSending } from "../../actions";
 import { requireAdmin } from "@/lib/session";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Hint, Input, Label } from "@/components/ui/Field";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 interface Issue {
   id: string;
@@ -59,12 +63,12 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
         <h2 className="mt-3 text-2xl font-bold">{issue.subject}</h2>
 
         {message && (
-          <p role="status" className={`mt-4 rounded-xl px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
+          <p role="status" className={`mt-4 rounded-md px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
             {message.text}
           </p>
         )}
 
-        <div className="card mt-6 p-5">
+        <Card className="mt-6 p-5">
           <p className="text-sm text-muted">Status</p>
           <p className="mt-1 text-lg font-bold capitalize">{issue.status}</p>
           <p className="mt-1 text-sm text-muted">To: <strong className="text-ink">{AUDIENCE_LABEL[audience]}</strong></p>
@@ -73,23 +77,23 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
             <div><dt className="text-muted">Failed</dt><dd className="text-2xl font-bold tabular-nums">{stats.failed}</dd></div>
             <div><dt className="text-muted">Remaining</dt><dd className="text-2xl font-bold tabular-nums">{isDraft ? stats.recipients : stats.pending}</dd></div>
           </dl>
-        </div>
+        </Card>
 
         {isDraft ? (
-          <form action={saveIssue} className="card mt-6 space-y-5 p-6">
+          <form action={saveIssue} className={cardClass("mt-6 space-y-5 p-6")}>
             <input type="hidden" name="id" value={issue.id} />
             <div>
-              <label className="label" htmlFor="subject">Subject</label>
-              <input id="subject" name="subject" className="input" defaultValue={issue.subject} required maxLength={150} />
+              <Label htmlFor="subject">Subject</Label>
+              <Input id="subject" name="subject" defaultValue={issue.subject} required maxLength={150} />
             </div>
             <div>
-              <label className="label" htmlFor="body">Message</label>
+              <Label htmlFor="body">Message</Label>
               <MarkdownEditor id="body" name="body" heightClass="min-h-64" defaultValue={issue.body} required maxLength={20000} />
-              <p className="hint">{FORMAT_HINT}</p>
+              <Hint>{FORMAT_HINT}</Hint>
             </div>
             <ActivitiesField defaultValue={issue.activities_count} />
             <AudienceField defaultValue={audience} />
-            <button type="submit" className="btn btn-secondary">Save draft</button>
+            <Button type="submit" variant="secondary">Save draft</Button>
           </form>
         ) : (
           <p className="mt-6 text-sm text-muted">This issue is {issue.status === "sent" ? "sent" : "being sent"} and can no longer be edited.</p>
@@ -98,13 +102,13 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
         <div className="mt-6 flex flex-wrap gap-3">
           <form action={sendTest}>
             <input type="hidden" name="id" value={issue.id} />
-            <button type="submit" className="btn btn-secondary">Send test to me</button>
+            <Button type="submit" variant="secondary">Send test to me</Button>
           </form>
           {issue.status !== "sent" && (
             <form action={startSending}>
               <input type="hidden" name="id" value={issue.id} />
               <ConfirmButton
-                className="btn btn-primary"
+                className={buttonClass({ variant: "primary" })}
                 message={`Send “${issue.subject}” to ${stats.recipients} ${AUDIENCE_LABEL[audience].toLowerCase()} (${stats.recipients === 1 ? "1 person" : `${stats.recipients} people`})? This cannot be undone.`}
               >
                 {isDraft ? `Send to ${stats.recipients} ${stats.recipients === 1 ? "person" : "people"}` : "Resume sending"}
@@ -114,7 +118,7 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
           {isDraft && (
             <form action={deleteIssue}>
               <input type="hidden" name="id" value={issue.id} />
-              <ConfirmButton message="Delete this draft?" className="btn btn-danger">Delete draft</ConfirmButton>
+              <ConfirmButton message="Delete this draft?" className={buttonClass({ variant: "danger" })}>Delete draft</ConfirmButton>
             </form>
           )}
         </div>
@@ -123,7 +127,7 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
       <div>
         <p className="text-sm font-semibold text-muted">Preview</p>
         {/* The sandbox has no scripts or navigation: the email is shown exactly as built, but cannot act. */}
-        <iframe title="Email preview" sandbox="" srcDoc={preview.html} className="mt-3 h-[44rem] w-full rounded-2xl border border-line bg-white" />
+        <iframe title="Email preview" sandbox="" srcDoc={preview.html} className="mt-3 h-[44rem] w-full rounded-lg border border-line bg-white" />
       </div>
     </div>
   );

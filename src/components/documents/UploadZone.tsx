@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { MAX_DOCUMENT_BYTES, categoryLabel, type DocumentCategory } from "@/lib/document-folders";
 import { UploadIcon } from "./FileIcons";
+import { Button } from "@/components/ui/Button";
 
 interface UploadItem {
   key: number;
@@ -85,13 +86,13 @@ export default function UploadZone({ folder, onFinished }: UploadZoneProps) {
           setDragging(false);
           void upload([...event.dataTransfer.files]);
         }}
-        className={`flex flex-wrap items-center justify-center gap-3 rounded-xl border-2 border-dashed px-4 py-4 text-sm transition-colors ${dragging ? "border-accent bg-accent-soft" : "border-line"}`}
+        className={`flex flex-wrap items-center justify-center gap-3 rounded-md border-2 border-dashed px-4 py-4 text-sm transition-colors ${dragging ? "border-accent bg-accent-soft" : "border-line"}`}
       >
         <UploadIcon className="text-accent-text" />
         <span>
           <span className="font-bold">{label}:</span> drop PDF files here or
         </span>
-        <button type="button" className="btn btn-secondary btn-sm" onClick={() => input.current?.click()}>Browse…</button>
+        <Button type="button" variant="secondary" size="sm" onClick={() => input.current?.click()}>Browse…</Button>
         <input
           ref={input}
           type="file"

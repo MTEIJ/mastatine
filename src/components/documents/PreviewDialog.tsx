@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { buttonClass } from "@/components/ui/classes";
 import { categoryLabel, formatSize, type DocumentRow } from "@/lib/document-folders";
 import { ChevronIcon, CloseIcon, DownloadIcon, EditIcon, ExternalIcon } from "./FileIcons";
 
@@ -37,7 +38,7 @@ export default function PreviewDialog({ doc, index, count, onStep, onClose, onEd
   }, [doc, onStep]);
 
   const base = doc ? `/documents/${doc.id}` : "";
-  const button = "btn btn-secondary btn-sm gap-1.5";
+  const button = buttonClass({ variant: "secondary", size: "sm" }, "gap-1.5");
 
   return (
     <dialog

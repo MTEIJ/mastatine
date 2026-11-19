@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { Input, Label, Textarea } from "@/components/ui/Field";
 
 type FormState = "idle" | "compressing" | "uploading" | "submitting" | "success" | "error";
 
@@ -172,147 +174,93 @@ export default function SubmitForm({ onSuccess }: SubmitFormProps = {}) {
 
   if (state === "success") {
     return (
-      <div className="text-center py-10">
-        <div className="text-5xl mb-4">📡</div>
-        <h2 className="text-xl font-black text-[#1a2332] mb-2">Mast submitted!</h2>
-        <p className="text-slate-500">
-          {onSuccess ? "Closing…" : "Redirecting to the gallery…"}
-        </p>
+      <div className="py-10 text-center">
+        <div className="mb-4 text-5xl">📡</div>
+        <h2 className="mb-2 text-xl font-black text-ink">Mast submitted!</h2>
+        <p className="text-muted">{onSuccess ? "Closing…" : "Redirecting to the gallery…"}</p>
       </div>
     );
   }
 
-  const isLoading =
-    state === "compressing" || state === "uploading" || state === "submitting";
+  const isLoading = state === "compressing" || state === "uploading" || state === "submitting";
+  const optional = <span className="font-normal text-muted">(optional)</span>;
+  const required = <span className="text-danger">*</span>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Name */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          Your name <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          placeholder="e.g. Jan de Vries"
-          className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f57f20] focus:border-transparent"
-        />
+        <Label htmlFor="submit-name">Your name {required}</Label>
+        <Input id="submit-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Jan de Vries" />
       </div>
 
-      {/* Title */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          Mast title <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          placeholder="e.g. The Gerbrandy Tower, IJsselstein"
-          className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f57f20] focus:border-transparent"
-        />
+        <Label htmlFor="submit-title">Mast title {required}</Label>
+        <Input id="submit-title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="e.g. The Gerbrandy Tower, IJsselstein" />
       </div>
 
-      {/* Height */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          Approximated Height (meters){" "}
-          <span className="text-slate-400 font-normal">(optional)</span>
-        </label>
-        <input
-          type="number"
-          value={height}
-          onChange={(e) => setHeight(e.target.value)}
-          placeholder="e.g. 366.8"
-          step="0.1"
-          className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f57f20] focus:border-transparent"
-        />
+        <Label htmlFor="submit-height">Approximated Height (meters) {optional}</Label>
+        <Input id="submit-height" type="number" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="e.g. 366.8" step="0.1" />
       </div>
 
-      {/* Description */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          Description{" "}
-          <span className="text-slate-400 font-normal">(optional)</span>
-        </label>
-        <textarea
+        <Label htmlFor="submit-description">Description {optional}</Label>
+        <Textarea
+          id="submit-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
           placeholder="Tell us something interesting about this mast: height, purpose, location, why it's spectacular…"
-          className="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#f57f20] focus:border-transparent resize-none"
+          className="resize-none"
         />
       </div>
 
-      {/* Photo */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          Photo <span className="text-red-500">*</span>
-        </label>
+        <Label htmlFor="submit-photo">Photo {required}</Label>
         <div
-          className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center cursor-pointer hover:border-[#f57f20] transition-colors"
+          className="cursor-pointer rounded-md border-2 border-dashed border-line p-6 text-center transition-colors hover:border-accent"
           onClick={() => fileRef.current?.click()}
         >
           {preview ? (
             <div className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={preview}
-                alt="Preview"
-                className="max-h-48 mx-auto rounded-lg object-contain"
-              />
+              <img src={preview} alt="Preview" className="mx-auto max-h-48 rounded-sm object-contain" />
             </div>
           ) : (
             <div>
-              <div className="text-3xl mb-2">📷</div>
-              <p className="text-slate-600 font-medium text-sm">Click to select a photo</p>
-              <p className="mt-1 text-sm text-slate-500">JPG, PNG or WebP, up to 20 MB</p>
+              <div className="mb-2 text-3xl">📷</div>
+              <p className="text-sm font-medium text-ink">Click to select a photo</p>
+              <p className="mt-1 text-sm text-muted">JPG, PNG or WebP, up to 20 MB</p>
             </div>
           )}
         </div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="hidden"
-        />
+        <input id="submit-photo" ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       </div>
 
       {isProfane && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm rounded-lg px-4 py-3 font-medium flex items-center gap-2">
+        <div className="flex items-center gap-2 rounded-md border border-accent/40 bg-accent-soft px-4 py-3 text-sm font-medium text-accent-text">
           <span>⚠️</span> Please keep the language clean! Inappropriate words detected.
         </div>
       )}
 
       {errorMsg && !isProfane && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
-          {errorMsg}
-        </div>
+        <div className="rounded-md border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">{errorMsg}</div>
       )}
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         Your name, title, description and photo will be shown publicly. Only upload photos you may share. See the{" "}
         <a href="/privacy" className="underline">privacy page</a> and <a href="/terms" className="underline">site rules</a>.
       </p>
 
-      <button
-        type="submit"
-        disabled={isLoading || isProfane}
-        className="w-full btn-orange py-3 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
-      >
+      <Button type="submit" variant="primary" disabled={isLoading || isProfane} className="w-full">
         {state === "compressing"
           ? "Optimising image…"
           : state === "uploading"
-          ? "Uploading photo…"
-          : state === "submitting"
-          ? "Submitting mast…"
-          : "Submit Mast 📡"}
-      </button>
+            ? "Uploading photo…"
+            : state === "submitting"
+              ? "Submitting mast…"
+              : "Submit Mast 📡"}
+      </Button>
     </form>
   );
 }

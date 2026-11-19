@@ -34,7 +34,7 @@ export default function HeroCarousel({ masts, overlay }: { masts: MastSlide[]; o
       <div
         className="hero-carousel relative w-full overflow-hidden select-none"
         style={{
-          background: "#111a25",
+          background: "var(--md-inverse-surface)",
           aspectRatio: "2/1",
           maxHeight: 600,
           cursor: mast ? "pointer" : "default",
@@ -68,8 +68,8 @@ export default function HeroCarousel({ masts, overlay }: { masts: MastSlide[]; o
                 position: "absolute",
                 top: 16,
                 left: 16,
-                background: "#f57f20",
-                color: "#fff",
+                background: "var(--md-brand)",
+                color: "var(--md-on-brand)",
                 fontFamily: "Lato, Arial, sans-serif",
                 fontWeight: 700,
                 fontSize: "0.78em",

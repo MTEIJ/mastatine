@@ -12,6 +12,7 @@ import { formatDateTime, formatDayNumber, formatMonthShort } from "@/lib/datetim
 import { getMembership } from "@/lib/membership";
 import { APP_HOME } from "@/lib/paths";
 import { getSession, requireUser } from "@/lib/session";
+import { buttonClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Today", robots: { index: false } };
 
@@ -27,7 +28,7 @@ function Welcome() {
       <MastatineLogo size={96} />
       <h1>M.A. Mastatine</h1>
       <p>Sign in to see your activities and use the MastApps.</p>
-      <Link href={`/login?next=${encodeURIComponent(APP_HOME)}`} className="btn btn-primary">Sign in</Link>
+      <Link href={`/login?next=${encodeURIComponent(APP_HOME)}`} className={buttonClass({ variant: "primary" })}>Sign in</Link>
     </div>
   );
 }
@@ -54,7 +55,7 @@ function NextForYou({ activity: a }: { activity: UpcomingActivityCard }) {
         </span>
       </Link>
       <div className="today-next__actions">
-        <a href={`${ACTIVITIES}/${a.id}/event.ics`} className="btn btn-secondary btn-sm">Add to calendar</a>
+        <a href={`${ACTIVITIES}/${a.id}/event.ics`} className={buttonClass({ variant: "secondary", size: "sm" })}>Add to calendar</a>
       </div>
     </article>
   );

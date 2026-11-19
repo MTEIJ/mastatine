@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 import { saveDisplayName, type DisplayNameState } from "../actions";
 import { NAME_MAX } from "@/lib/profile";
+import { Button } from "@/components/ui/Button";
+import { Hint, Input, Label } from "@/components/ui/Field";
 
 interface DisplayNameFormProps {
   initialName: string;
@@ -16,11 +18,10 @@ export default function DisplayNameForm({ initialName, next }: DisplayNameFormPr
     <form action={action} className="space-y-4" noValidate>
       <input type="hidden" name="next" value={next} />
       <div>
-        <label htmlFor="display-name" className="label">Display name</label>
-        <input
+        <Label htmlFor="display-name">Display name</Label>
+        <Input
           id="display-name"
           name="name"
-          className="input"
           defaultValue={initialName}
           maxLength={NAME_MAX}
           autoComplete="name"
@@ -28,10 +29,10 @@ export default function DisplayNameForm({ initialName, next }: DisplayNameFormPr
           required
           aria-describedby="display-name-hint"
         />
-        <p id="display-name-hint" className="hint">Your first name or a nickname is fine. Your email address is never shown to other people.</p>
+        <Hint id="display-name-hint">Your first name or a nickname is fine. Your email address is never shown to other people.</Hint>
       </div>
       {state.error && <p role="alert" className="text-sm text-danger">{state.error}</p>}
-      <button type="submit" className="btn btn-primary w-full py-3" disabled={pending}>{pending ? "Saving…" : "Continue"}</button>
+      <Button type="submit" variant="primary" className="w-full py-3" disabled={pending}>{pending ? "Saving…" : "Continue"}</Button>
     </form>
   );
 }

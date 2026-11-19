@@ -10,7 +10,7 @@
   .today-next__main { display: flex; gap: 1rem; padding: 1rem; color: inherit; }
   .today-next__main:hover { color: inherit; }
   .today-next__thumb { width: 6rem; height: 7.5rem; flex: none; border-radius: var(--shape-lg); object-fit: cover; }
-  .today-next__date { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--md-brand); color: #2a1000; line-height: 1.1; }
+  .today-next__date { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--md-brand); color: var(--md-on-brand); line-height: 1.1; }
   .today-next__date span:first-child { font-size: 2.2rem; font-weight: 900; }
   .today-next__date span:last-child { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
   .today-next__body { display: flex; min-width: 0; flex: 1; flex-direction: column; justify-content: center; gap: 0.25rem; }
@@ -33,19 +33,19 @@
   .account-head__who { min-width: 0; flex: 1 1 12rem; } /* the Sign out button wraps to its own line before the name has to break */
   .account-head__name { margin: 0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.025em; line-height: 1.15; overflow-wrap: anywhere; }
   .account-head__email { margin: 0.1rem 0 0; color: var(--md-on-surface-variant); font-size: 0.95rem; overflow-wrap: anywhere; }
-  .avatar { display: grid; width: 3.5rem; height: 3.5rem; flex: none; place-items: center; border-radius: 999px; background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: 1.5rem; font-weight: 900; }
+  .avatar { display: grid; width: 3.5rem; height: 3.5rem; flex: none; place-items: center; border-radius: var(--shape-full); background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: 1.5rem; font-weight: 900; }
   .account-signout { display: flex; justify-content: center; margin-top: 1.5rem; }
 
   /* Install nudge: a snackbar at the bottom of the screen, so it never pushes page content around. It only shows in a
      browser tab, where the tab bar (app only) is absent, so it sits on the bottom edge. The mast grid's floating
      button lives in the same corner on phones, so it moves up while the snackbar is there. */
   .install-snack { position: fixed; right: 0.75rem; bottom: calc(0.75rem + env(safe-area-inset-bottom)); left: 0.75rem; z-index: 34; display: flex; max-width: 30rem; align-items: center; gap: 0.85rem; margin-inline: auto; padding: 0.8rem 0.6rem 0.8rem 0.8rem; border: 1px solid var(--md-outline-variant); border-radius: var(--shape-xl); background: var(--md-surface-container-lowest); color: var(--md-on-surface); box-shadow: 0 8px 28px rgb(34 26 21 / 0.16), 0 1px 3px rgb(34 26 21 / 0.1); animation: install-snack-in 0.4s var(--ease-emphasized) both; }
-  .install-snack__icon { width: 3rem; height: 3rem; flex: none; border-radius: 0.8rem; }
+  .install-snack__icon { width: 3rem; height: 3rem; flex: none; border-radius: var(--shape-md); }
   .install-snack__body { min-width: 0; flex: 1; }
   .install-snack__title { margin: 0; font-size: 1rem; font-weight: 900; line-height: 1.25; }
   .install-snack__text { margin: 0.1rem 0 0; color: var(--md-on-surface-variant); font-size: 0.85rem; line-height: 1.35; }
   .install-snack__actions { display: flex; flex: none; align-items: center; gap: 0.15rem; }
-  .install-snack__btn { min-height: 2.5rem; padding: 0 0.9rem; border: 0; border-radius: 999px; background: none; color: var(--md-primary); font: inherit; font-size: 0.9rem; font-weight: 800; cursor: pointer; }
+  .install-snack__btn { min-height: 2.5rem; padding: 0 0.9rem; border: 0; border-radius: var(--shape-full); background: none; color: var(--md-primary); font: inherit; font-size: 0.9rem; font-weight: 800; cursor: pointer; }
   .install-snack__btn:hover { background: color-mix(in srgb, var(--md-primary) 8%, transparent); }
   .install-snack__btn--primary { background: var(--md-primary); color: var(--md-on-primary); }
   .install-snack__btn--primary:hover { background: var(--md-primary); filter: brightness(1.1); }
@@ -66,7 +66,7 @@
   .setting-row__link:disabled { opacity: 0.6; cursor: default; }
 
   /* Switch (M3): the track fills when on, the thumb grows from a dot and swells while pressed. A button, so it also works as a form submit. */
-  .switch { position: relative; width: 3.25rem; height: 2rem; flex: none; padding: 0; border: 2px solid var(--md-outline); border-radius: 999px; background: var(--md-surface-container-highest); cursor: pointer; transition: background-color 0.2s var(--ease-emphasized), border-color 0.2s var(--ease-emphasized); }
+  .switch { position: relative; width: 3.25rem; height: 2rem; flex: none; padding: 0; border: 2px solid var(--md-outline); border-radius: var(--shape-full); background: var(--md-surface-container-highest); cursor: pointer; transition: background-color 0.2s var(--ease-emphasized), border-color 0.2s var(--ease-emphasized); }
   .switch::after { content: ""; position: absolute; top: 50%; left: 0; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--md-outline); translate: 2px -50%; scale: 0.667; transition: translate var(--spring-fast-ms) var(--spring-fast), scale var(--spring-fast-ms) var(--spring-fast), background-color 0.2s var(--ease-emphasized); }
   .switch[aria-checked="true"] { border-color: var(--md-primary); background: var(--md-primary); }
   .switch[aria-checked="true"]::after { background: var(--md-on-primary); translate: 20px -50%; scale: 1; }

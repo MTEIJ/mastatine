@@ -5,6 +5,7 @@ import { displayName, getCommitteePeople } from "@/lib/committees";
 import { getLiveItems } from "@/lib/meetings";
 import MinutesEditor from "../../../MinutesEditor";
 import { loadEditableMeeting } from "../access";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Edit minutes", robots: { index: false } };
 
@@ -17,7 +18,7 @@ export default async function EditMinutesPage(props: { params: Promise<{ id: str
   return (
     <AppFrame title="Edit minutes" tagline={`${meeting.title} · saved automatically; colleagues see your changes live`}>
       {items.length === 0 ? (
-        <p className="card p-6">Add agenda items first. <Link className="underline" href={`/mastapps/minutes/meetings/${meeting.id}/agenda`}>Edit agenda</Link></p>
+        <p className={cardClass("p-6")}>Add agenda items first. <Link className="underline" href={`/mastapps/minutes/meetings/${meeting.id}/agenda`}>Edit agenda</Link></p>
       ) : (
         <MinutesEditor meetingId={meeting.id} initialItems={items} initialStatus={meeting.minutes_status} isAdmin={user.role === "admin"} people={people.map((p) => ({ id: p.id, name: displayName(p) }))} />
       )}

@@ -9,6 +9,8 @@ import Manage from "./Manage";
 import { todayInAmsterdam } from "./today";
 import { deletePhoto } from "./photos";
 import { addSubscriber, getWalkers, importSubscribers, removeSignedOff, removeSubscriber } from "./store";
+import { Input } from "@/components/ui/Field";
+import { cardClass, labelClass } from "@/components/ui/classes";
 
 
 /** Where the calendar stands today, and everyone placed on the map accordingly (see placeWalkers). */
@@ -40,24 +42,24 @@ export default definePlugin({
   ConfigFields: ({ config }) => (
     <div className="space-y-5">
       <label className="block">
-        <span className="label">Title</span>
-        <input className="input" name="title" defaultValue={config.title} maxLength={60} required />
+        <span className={labelClass()}>Title</span>
+        <Input name="title" defaultValue={config.title} maxLength={60} required />
       </label>
 
       <div className="flex flex-wrap gap-3">
         <label className="block">
-          <span className="label">Number of days</span>
-          <input className="input w-28" type="number" name="days" defaultValue={config.days} min={1} max={MAX_DAYS} step={1} required />
+          <span className={labelClass()}>Number of days</span>
+          <Input className="w-28" type="number" name="days" defaultValue={config.days} min={1} max={MAX_DAYS} step={1} required />
         </label>
         <label className="block">
-          <span className="label">Date of day 1 (optional)</span>
-          <input className="input" type="date" name="startDate" defaultValue={config.startDate ?? ""} />
+          <span className={labelClass()}>Date of day 1 (optional)</span>
+          <Input type="date" name="startDate" defaultValue={config.startDate ?? ""} />
         </label>
       </div>
       <p className="text-sm text-muted">With a date, today&apos;s tile is marked on the map. Automatic movement needs it.</p>
 
       <fieldset className="space-y-2">
-        <legend className="label">Movement</legend>
+        <legend className={labelClass()}>Movement</legend>
         <label className="flex items-start gap-2 text-sm">
           <input type="radio" name="movement" value="auto" defaultChecked={config.movement === "auto"} className="mt-1" />
           <span><strong>Automatic.</strong> Everyone still in the game moves to the next day by themselves, following the date of day 1. You only record who failed, and on which day.</span>
@@ -69,7 +71,7 @@ export default definePlugin({
       </fieldset>
 
       <fieldset className="space-y-2">
-        <legend className="label">Who may update players (mark as failed, or step them)?</legend>
+        <legend className={labelClass()}>Who may update players (mark as failed, or step them)?</legend>
         {EDIT_MODES.map((mode) => (
           <label key={mode} className="flex items-start gap-2 text-sm">
             <input type="radio" name="editMode" value={mode} defaultChecked={config.editMode === mode} className="mt-1" />
@@ -108,7 +110,7 @@ export default definePlugin({
     if (viewer.userId === null && !viewer.isManager) return null;
     const { walkers, progress, today } = await load(instance.id, config);
     return (
-      <section className="card space-y-3 p-5 sm:p-6">
+      <section className={cardClass("space-y-3 p-5 sm:p-6")}>
         <h2 className="text-xl font-extrabold">{config.title}</h2>
         <AdventMap
           token={instance.public_token}

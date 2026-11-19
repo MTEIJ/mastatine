@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import NewsletterForm from "@/components/NewsletterForm";
 import PageHeader from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
   title: "Newsletter",
@@ -22,9 +23,9 @@ export default function NewsletterPage() {
     <>
       <PageHeader title="The quarterly Mast" intro="The best masts, the news and what is coming up. Four times a year." />
       <div className="container-prose">
-        <div className="card p-6 sm:p-8">
+        <Card className="p-6 sm:p-8">
           <NewsletterForm layout="stacked" />
-        </div>
+        </Card>
         <ul className="mt-8 space-y-3 text-sm text-muted">
           {PROMISES.map((promise) => (
             <li key={promise} className="flex gap-3">

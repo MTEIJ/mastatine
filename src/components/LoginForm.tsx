@@ -3,6 +3,8 @@
 import { useEffect, useId, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { hasDisplayName } from "@/lib/profile";
+import { Button } from "@/components/ui/Button";
+import { Input, Label } from "@/components/ui/Field";
 
 type Status = "idle" | "sending" | "sent";
 
@@ -78,8 +80,8 @@ export default function LoginForm({ next }: { next: string }) {
           expire in 10 minutes. Nothing there? Check your spam folder.
         </p>
         <form onSubmit={handleCode} className="space-y-3" noValidate>
-          <label htmlFor={`${id}-code`} className="label">Or enter the code</label>
-          <input
+          <Label htmlFor={`${id}-code`}>Or enter the code</Label>
+          <Input
             id={`${id}-code`}
             type="text"
             required
@@ -90,17 +92,17 @@ export default function LoginForm({ next }: { next: string }) {
             spellCheck={false}
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            className="input text-center text-2xl tracking-[0.5em]"
+            className="text-center text-2xl tracking-[0.5em]"
             placeholder="000000"
           />
           {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-          <button type="submit" disabled={verifying || code.length !== 6} className="btn btn-primary w-full py-3">
+          <Button type="submit" disabled={verifying || code.length !== 6} variant="primary" className="w-full py-3">
             {verifying ? "Checking…" : "Sign in with code"}
-          </button>
+          </Button>
         </form>
-        <button type="button" className="btn btn-secondary btn-sm" onClick={() => { setStatus("idle"); setCode(""); setError(""); }}>
+        <Button type="button" variant="secondary" size="sm" onClick={() => { setStatus("idle"); setCode(""); setError(""); }}>
           Use a different email
-        </button>
+        </Button>
       </div>
     );
   }
@@ -108,13 +110,13 @@ export default function LoginForm({ next }: { next: string }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div>
-        <label htmlFor={`${id}-email`} className="label">Email address</label>
-        <input id={`${id}-email`} type="email" required autoComplete="email" inputMode="email" autoCapitalize="none" spellCheck={false} maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} className="input" placeholder="you@example.com" />
+        <Label htmlFor={`${id}-email`}>Email address</Label>
+        <Input id={`${id}-email`} type="email" required autoComplete="email" inputMode="email" autoCapitalize="none" spellCheck={false} maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
       </div>
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-      <button type="submit" disabled={status === "sending" || !email} className="btn btn-primary w-full py-3">
+      <Button type="submit" disabled={status === "sending" || !email} variant="primary" className="w-full py-3">
         {status === "sending" ? "Sending link…" : "Email me a sign-in link"}
-      </button>
+      </Button>
     </form>
   );
 }

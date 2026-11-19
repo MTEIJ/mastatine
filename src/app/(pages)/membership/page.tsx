@@ -4,6 +4,7 @@ import MembershipRequest from "@/components/MembershipRequest";
 import PageHeader from "@/components/ui/PageHeader";
 import { FAQ, JOIN_STEPS, MEMBERSHIP_PERKS } from "@/content/site";
 import { getMembership } from "@/lib/membership";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = {
   title: "Membership",
@@ -24,7 +25,7 @@ export default async function MembershipPage() {
       <div className="container-page">
         <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {MEMBERSHIP_PERKS.map((perk) => (
-            <li key={perk.title} className="card p-6">
+            <li key={perk.title} className={cardClass("p-6")}>
               <h2 className="text-xl font-extrabold">{perk.title}</h2>
               <p className="mt-2 text-base text-muted">{perk.text}</p>
             </li>
@@ -33,7 +34,7 @@ export default async function MembershipPage() {
         <h2 className="mt-14 text-2xl font-bold">How to join</h2>
         <ol className="mt-5 grid gap-5 sm:grid-cols-3">
           {JOIN_STEPS.map((step, i) => (
-            <li key={step.title} className="rounded-2xl border border-line p-5">
+            <li key={step.title} className="rounded-lg border border-line p-5">
               <p className="text-sm font-bold uppercase tracking-wide text-accent-text">Step {i + 1}</p>
               <h3 className="mt-1 text-lg font-bold">{step.title}</h3>
               <p className="mt-1.5 text-base text-muted">{step.text}</p>
@@ -42,7 +43,7 @@ export default async function MembershipPage() {
         </ol>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <MembershipRequest membership={membership} next="/membership" />
-          <Link href="/newsletter" className="btn btn-secondary">
+          <Link href="/newsletter" className={buttonClass({ variant: "secondary" })}>
             Subscribe to the newsletter
           </Link>
         </div>

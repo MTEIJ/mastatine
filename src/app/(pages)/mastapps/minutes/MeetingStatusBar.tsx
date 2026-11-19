@@ -1,6 +1,8 @@
 import ConfirmButton from "@/components/admin/ConfirmButton";
 import { STATUS_LABEL, type MeetingStatus } from "@/lib/minutes-format";
 import { setMeetingStatus } from "./actions";
+import { Button } from "@/components/ui/Button";
+import { buttonClass } from "@/components/ui/classes";
 
 const BADGE: Record<MeetingStatus, string> = {
   open: "bg-accent-soft text-accent-text",
@@ -33,17 +35,17 @@ export default function MeetingStatusBar({ meetingId, status, isAdmin }: Meeting
       </span>
 
       {status === "open" && (
-        <form action={to("done")}><button type="submit" className="btn btn-secondary btn-sm">Mark as done</button></form>
+        <form action={to("done")}><Button type="submit" variant="secondary" size="sm">Mark as done</Button></form>
       )}
       {status === "done" && (
-        <form action={to("open")}><button type="submit" className="btn btn-secondary btn-sm">Reopen</button></form>
+        <form action={to("open")}><Button type="submit" variant="secondary" size="sm">Reopen</Button></form>
       )}
       {status !== "locked" && (
-        <form action={to("locked")}><ConfirmButton message={LOCK_WARNING} className="btn btn-secondary btn-sm">Lock</ConfirmButton></form>
+        <form action={to("locked")}><ConfirmButton message={LOCK_WARNING} className={buttonClass({ variant: "secondary", size: "sm" })}>Lock</ConfirmButton></form>
       )}
       {status === "locked" &&
         (isAdmin ? (
-          <form action={to("open")}><button type="submit" className="btn btn-secondary btn-sm">Reopen (admin)</button></form>
+          <form action={to("open")}><Button type="submit" variant="secondary" size="sm">Reopen (admin)</Button></form>
         ) : (
           <span className="text-sm text-muted">Read-only. Only an admin can reopen it.</span>
         ))}

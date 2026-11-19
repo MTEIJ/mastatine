@@ -9,6 +9,8 @@ import { requireUser } from "@/lib/session";
 import { PLUGINS, resolvePlugin } from "@/plugins/registry";
 import { addPlugin } from "./actions";
 import StatusBadge from "./StatusBadge";
+import { Button } from "@/components/ui/Button";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Activity plugins", robots: { index: false } };
 
@@ -31,7 +33,7 @@ export default async function ActivityPluginsPage(props: PageProps) {
   return (
     <AppFrame title={`Plugins for ${activity.name}`} tagline="Extra tools for this activity.">
       <div className="space-y-5">
-        <section className="card p-5 sm:p-6" aria-labelledby="installed-title">
+        <section className={cardClass("p-5 sm:p-6")} aria-labelledby="installed-title">
           <h2 id="installed-title" className="text-lg font-extrabold">On this activity</h2>
           {instances.length === 0 ? (
             <p className="mt-2 text-sm text-muted">No plugins yet. Add one below.</p>
@@ -43,7 +45,7 @@ export default async function ActivityPluginsPage(props: PageProps) {
                   <li key={instance.id}>
                     <Link
                       href={`/mastapps/activities/${activity.id}/plugins/${instance.id}`}
-                      className="-mx-2 flex items-center justify-between gap-3 rounded-lg px-2 py-3 hover:bg-soft"
+                      className="-mx-2 flex items-center justify-between gap-3 rounded-sm px-2 py-3 hover:bg-soft"
                     >
                       <span className="flex min-w-0 items-center gap-2">
                         <span className="truncate font-bold">{resolved?.plugin.name ?? `Unknown plugin “${instance.plugin_id}”`}</span>
@@ -58,7 +60,7 @@ export default async function ActivityPluginsPage(props: PageProps) {
           )}
         </section>
 
-        <section className="card p-5 sm:p-6" aria-labelledby="add-title">
+        <section className={cardClass("p-5 sm:p-6")} aria-labelledby="add-title">
           <h2 id="add-title" className="text-lg font-extrabold">Add a plugin</h2>
           {full && <p className="mt-1 text-sm font-bold">This activity has the maximum of {MAX_PLUGINS_PER_ACTIVITY} plugins. Remove one to add another.</p>}
           <ul className="mt-3 divide-y divide-line border-y border-line">
@@ -71,7 +73,7 @@ export default async function ActivityPluginsPage(props: PageProps) {
                 <form action={addPlugin} className="shrink-0">
                   <input type="hidden" name="activity" value={activity.id} />
                   <input type="hidden" name="plugin" value={plugin.id} />
-                  <button className="btn btn-primary btn-sm" type="submit" disabled={full}>Add</button>
+                  <Button variant="primary" size="sm" type="submit" disabled={full}>Add</Button>
                 </form>
               </li>
             ))}
@@ -79,7 +81,7 @@ export default async function ActivityPluginsPage(props: PageProps) {
           <p className="mt-3 text-sm text-muted">Missing something? <Link href="/mastapps/plugins" className="underline">See the plugin library</Link>.</p>
         </section>
 
-        <Link href={`/mastapps/activities/${activity.id}`} className="btn btn-secondary">Back to the activity</Link>
+        <Link href={`/mastapps/activities/${activity.id}`} className={buttonClass({ variant: "secondary" })}>Back to the activity</Link>
       </div>
     </AppFrame>
   );

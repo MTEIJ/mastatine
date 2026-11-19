@@ -14,6 +14,8 @@ import Manage from "./Manage";
 import ScoreboardPage from "./ScoreboardPage";
 import ScoreboardView from "./ScoreboardView";
 import { addSubscriber, getPlayers, importSubscribers } from "./store";
+import { Input } from "@/components/ui/Field";
+import { cardClass, labelClass } from "@/components/ui/classes";
 
 export default definePlugin({
   id: "scoreboard",
@@ -35,12 +37,12 @@ export default definePlugin({
   ConfigFields: ({ config }) => (
     <div className="space-y-5">
       <label className="block">
-        <span className="label">Title</span>
-        <input className="input" name="title" defaultValue={config.title} maxLength={60} required />
+        <span className={labelClass()}>Title</span>
+        <Input name="title" defaultValue={config.title} maxLength={60} required />
       </label>
 
       <fieldset className="space-y-2">
-        <legend className="label">Theme</legend>
+        <legend className={labelClass()}>Theme</legend>
         {THEMES.map((theme) => (
           <label key={theme} className="flex items-start gap-2 text-sm">
             <input type="radio" name="theme" value={theme} defaultChecked={config.theme === theme} className="mt-1" />
@@ -50,19 +52,19 @@ export default definePlugin({
       </fieldset>
 
       <fieldset className="space-y-2">
-        <legend className="label">Scores</legend>
+        <legend className={labelClass()}>Scores</legend>
         <div className="flex flex-wrap gap-3">
           <label className="block">
-            <span className="label">Start</span>
-            <input className="input w-28" type="number" name="startScore" defaultValue={config.startScore} min={-SCORE_LIMIT} max={SCORE_LIMIT} step={1} required />
+            <span className={labelClass()}>Start</span>
+            <Input className="w-28" type="number" name="startScore" defaultValue={config.startScore} min={-SCORE_LIMIT} max={SCORE_LIMIT} step={1} required />
           </label>
           <label className="block">
-            <span className="label">Minimum</span>
-            <input className="input w-28" type="number" name="minScore" defaultValue={config.minScore} min={-SCORE_LIMIT} max={SCORE_LIMIT} step={1} required />
+            <span className={labelClass()}>Minimum</span>
+            <Input className="w-28" type="number" name="minScore" defaultValue={config.minScore} min={-SCORE_LIMIT} max={SCORE_LIMIT} step={1} required />
           </label>
           <label className="block">
-            <span className="label">Maximum</span>
-            <input className="input w-28" type="number" name="maxScore" defaultValue={config.maxScore ?? ""} min={-SCORE_LIMIT} max={SCORE_LIMIT} step={1} placeholder="none" />
+            <span className={labelClass()}>Maximum</span>
+            <Input className="w-28" type="number" name="maxScore" defaultValue={config.maxScore ?? ""} min={-SCORE_LIMIT} max={SCORE_LIMIT} step={1} placeholder="none" />
           </label>
         </div>
         <p className="text-sm text-muted">
@@ -72,7 +74,7 @@ export default definePlugin({
       </fieldset>
 
       <fieldset className="space-y-2">
-        <legend className="label">Who may change scores?</legend>
+        <legend className={labelClass()}>Who may change scores?</legend>
         {EDIT_MODES.map((mode) => (
           <label key={mode} className="flex items-start gap-2 text-sm">
             <input type="radio" name="editMode" value={mode} defaultChecked={config.editMode === mode} className="mt-1" />
@@ -103,7 +105,7 @@ export default definePlugin({
   // visitors, so the board follows the same rule there. (The public link is deliberately open to whoever has it.)
   ActivitySection: async ({ instance, config, viewer }) =>
     viewer.userId === null && !viewer.isManager ? null : (
-      <section className="card space-y-3 p-5 sm:p-6">
+      <section className={cardClass("space-y-3 p-5 sm:p-6")}>
         <h2 className="text-xl font-extrabold">{config.title}</h2>
         <ScoreboardView
           token={instance.public_token}

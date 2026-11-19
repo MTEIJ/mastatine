@@ -3,6 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageHeader from "@/components/ui/PageHeader";
 import { confirmSubscription } from "@/lib/newsletter";
+import { Button } from "@/components/ui/Button";
+import { buttonClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Confirm subscription", robots: { index: false } };
 
@@ -24,7 +26,7 @@ export default async function ConfirmPage(props: { searchParams: Promise<{ token
       <>
         <PageHeader title="You are subscribed" intro="Thank you. The next issue will land in your inbox. Every email has a one-click unsubscribe link." />
         <div className="container-prose">
-          <Link href="/" className="btn btn-primary">Back to the masts</Link>
+          <Link href="/" className={buttonClass({ variant: "primary" })}>Back to the masts</Link>
         </div>
       </>
     );
@@ -35,7 +37,7 @@ export default async function ConfirmPage(props: { searchParams: Promise<{ token
       <>
         <PageHeader title="This link did not work" intro="It may have expired or already been used. Request a new confirmation link and try again." />
         <div className="container-prose">
-          <Link href="/newsletter" className="btn btn-primary">Subscribe again</Link>
+          <Link href="/newsletter" className={buttonClass({ variant: "primary" })}>Subscribe again</Link>
         </div>
       </>
     );
@@ -47,7 +49,7 @@ export default async function ConfirmPage(props: { searchParams: Promise<{ token
       <div className="container-prose">
         <form action={confirm}>
           <input type="hidden" name="token" value={token} />
-          <button type="submit" className="btn btn-primary px-6 py-3 text-base">Yes, subscribe me</button>
+          <Button type="submit" variant="primary" className="px-6 py-3 text-base">Yes, subscribe me</Button>
         </form>
         <p className="mt-4 text-sm text-muted">Did not ask for this? Close this page and nothing happens.</p>
       </div>

@@ -4,6 +4,7 @@ import { getSubscribedIds, type UpcomingActivityCard } from "@/lib/activities";
 import { getMembership } from "@/lib/membership";
 import { getSession } from "@/lib/session";
 import ActivityCard from "@/components/ActivityCard";
+import { buttonClass } from "@/components/ui/classes";
 
 const CARDS = 3;
 const ACTIVITIES = "/mastapps/activities";
@@ -60,7 +61,7 @@ export default async function HomeHub({ top = false }: { /** Leads the page (sig
           <p>
             <strong>Join in.</strong> Sign in with just your email to sign up for activities and use the MastApps.
           </p>
-          <Link href="/login" className="btn btn-primary btn-sm">Sign in</Link>
+          <Link href="/login" className={buttonClass({ variant: "primary", size: "sm" })}>Sign in</Link>
         </div>
       )}
     </section>

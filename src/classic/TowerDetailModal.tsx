@@ -86,7 +86,7 @@ export default function TowerDetailModal({ tower, voteDirection, onClose, onVote
                   disabled={voting}
                   style={{
                     background: voteDirection === "up" ? "var(--orange)" : "transparent",
-                    color: voteDirection === "up" ? "#fff" : "var(--text-mid)",
+                    color: voteDirection === "up" ? "var(--md-on-primary)" : "var(--text-mid)",
                   }}
                   aria-label="Upvote"
                 >
@@ -100,7 +100,7 @@ export default function TowerDetailModal({ tower, voteDirection, onClose, onVote
                   disabled={voting}
                   style={{
                     background: voteDirection === "down" ? "var(--navy)" : "transparent",
-                    color: voteDirection === "down" ? "#fff" : "var(--text-mid)",
+                    color: voteDirection === "down" ? "var(--md-on-primary)" : "var(--text-mid)",
                   }}
                   aria-label="Downvote"
                 >

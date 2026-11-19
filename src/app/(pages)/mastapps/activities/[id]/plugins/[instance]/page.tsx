@@ -13,6 +13,8 @@ import { requireUser } from "@/lib/session";
 import { resolvePlugin } from "@/plugins/registry";
 import { newLink, removePlugin, toggleEnabled } from "../actions";
 import StatusBadge from "../StatusBadge";
+import { Button } from "@/components/ui/Button";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Plugin", robots: { index: false } };
 
@@ -47,12 +49,12 @@ export default async function ActivityPluginPage(props: PageProps) {
             {resolved && (
               <form action={toggleEnabled}>
                 <input type="hidden" name="instance" value={instance.id} />
-                <button className="btn btn-secondary btn-sm" type="submit">{instance.enabled ? "Switch off" : "Switch on"}</button>
+                <Button variant="secondary" size="sm" type="submit">{instance.enabled ? "Switch off" : "Switch on"}</Button>
               </form>
             )}
             <form action={removePlugin}>
               <input type="hidden" name="instance" value={instance.id} />
-              <ConfirmButton message={`Remove ${resolved?.plugin.name ?? "this plugin"} and all its data from this activity?`} className="btn btn-secondary btn-sm">
+              <ConfirmButton message={`Remove ${resolved?.plugin.name ?? "this plugin"} and all its data from this activity?`} className={buttonClass({ variant: "secondary", size: "sm" })}>
                 Remove
               </ConfirmButton>
             </form>
@@ -60,16 +62,16 @@ export default async function ActivityPluginPage(props: PageProps) {
         </div>
 
         {!resolved ? (
-          <p className="card p-5 text-sm text-muted sm:p-6">This plugin is no longer part of the site. You can remove it.</p>
+          <p className={cardClass("p-5 text-sm text-muted sm:p-6")}>This plugin is no longer part of the site. You can remove it.</p>
         ) : (
           <>
             {(resolved.plugin.PublicPage || resolved.plugin.Manage) && (
-              <section className="card space-y-6 p-5 sm:p-6">
+              <section className={cardClass("space-y-6 p-5 sm:p-6")}>
                 {resolved.plugin.PublicPage && (
                   <LinkRow label="Public link" value={`${siteUrl()}/p/${instance.public_token}`} hint="Works without signing in. A new link stops the current one.">
                     <form action={newLink}>
                       <input type="hidden" name="instance" value={instance.id} />
-                      <ConfirmButton message="Create a new link? The current link stops working." className="btn btn-secondary btn-sm">New link</ConfirmButton>
+                      <ConfirmButton message="Create a new link? The current link stops working." className={buttonClass({ variant: "secondary", size: "sm" })}>New link</ConfirmButton>
                     </form>
                   </LinkRow>
                 )}
@@ -77,7 +79,7 @@ export default async function ActivityPluginPage(props: PageProps) {
               </section>
             )}
 
-            <section className="card p-5 sm:p-6" aria-labelledby="settings-title">
+            <section className={cardClass("p-5 sm:p-6")} aria-labelledby="settings-title">
               <h2 id="settings-title" className="mb-4 text-lg font-extrabold">Settings</h2>
               <PluginSettingsForm instanceId={instance.id}>
                 <resolved.plugin.ConfigFields config={resolved.config} />

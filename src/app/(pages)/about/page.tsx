@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
 import { ASTATINE_URL, FOUNDING, ORGANISATION, PILLARS } from "@/content/site";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = {
   title: "About us",
@@ -43,7 +44,7 @@ export default function AboutPage() {
         <h2 className="text-2xl font-bold">What we do</h2>
         <ul className="mt-5 grid gap-5 sm:grid-cols-3">
           {PILLARS.map((pillar) => (
-            <li key={pillar.title} className="card p-6">
+            <li key={pillar.title} className={cardClass("p-6")}>
               <h3 className="text-xl font-extrabold">{pillar.title}</h3>
               <p className="mt-2 text-base text-muted">{pillar.text}</p>
             </li>
@@ -55,7 +56,7 @@ export default function AboutPage() {
         <h2 className="text-2xl font-bold">How we are organised</h2>
         <ul className="mt-5 grid gap-5 sm:grid-cols-2">
           {ORGANISATION.map((organ) => (
-            <li key={organ.title} className="card p-6">
+            <li key={organ.title} className={cardClass("p-6")}>
               <h3 className="text-xl font-extrabold">{organ.title}</h3>
               <p className="mt-2 text-base text-muted">{organ.text}</p>
               {organ.href && (

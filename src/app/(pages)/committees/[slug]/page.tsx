@@ -5,6 +5,9 @@ import CommitteeBanner from "@/components/CommitteeBanner";
 import { getJoinStatus, getPublicCommittee } from "@/lib/committees";
 import { getSession } from "@/lib/session";
 import { requestToJoinCommittee } from "../actions";
+import { Button } from "@/components/ui/Button";
+import { Label, Textarea } from "@/components/ui/Field";
+import { cardClass } from "@/components/ui/classes";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -51,7 +54,7 @@ export default async function CommitteePage({ params }: Props) {
           </ul>
         )}
 
-        <section aria-label="Join" className="card mt-10 p-6">
+        <section aria-label="Join" className={cardClass("mt-10 p-6")}>
           <h2 className="text-xl font-bold">Join {committee.name}</h2>
           {status === "member" ? (
             <p className="mt-3 text-base text-muted">You are part of this committee.</p>
@@ -61,12 +64,12 @@ export default async function CommitteePage({ params }: Props) {
             <form action={requestToJoinCommittee} className="mt-3 space-y-3">
               <input type="hidden" name="committeeId" value={committee.id} />
               <div>
-                <label className="label" htmlFor="join-message">Why do you want to join? (optional)</label>
-                <textarea id="join-message" name="message" className="input min-h-24" maxLength={1000} />
+                <Label htmlFor="join-message">Why do you want to join? (optional)</Label>
+                <Textarea id="join-message" name="message" className="min-h-24" maxLength={1000} />
               </div>
-              <button type="submit" className="btn btn-primary">
+              <Button type="submit" variant="primary">
                 {session ? "Ask to join" : "Sign in to ask to join"}
-              </button>
+              </Button>
             </form>
           )}
         </section>

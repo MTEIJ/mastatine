@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AgendaEditor, { type AgendaDraftItem } from "./AgendaEditor";
+import { Button } from "@/components/ui/Button";
 
 interface PreviousAgenda {
   label: string;
@@ -34,11 +35,11 @@ export default function ImportableAgenda({ initialItems, previous }: ImportableA
   return (
     <div>
       {available && (
-        <div className="mb-3 flex flex-wrap items-center gap-3 rounded-xl bg-soft px-4 py-3">
+        <div className="mb-3 flex flex-wrap items-center gap-3 rounded-md bg-soft px-4 py-3">
           <p className="min-w-0 flex-1 text-sm">Previous agenda: <strong>{available.label}</strong></p>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setDraft((d) => ({ items: available.items, version: d.version + 1 }))}>
+          <Button type="button" variant="secondary" size="sm" onClick={() => setDraft((d) => ({ items: available.items, version: d.version + 1 }))}>
             Import it
-          </button>
+          </Button>
         </div>
       )}
       <AgendaEditor key={draft.version} initialItems={draft.items} />

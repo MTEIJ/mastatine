@@ -2,6 +2,7 @@ import Link from "next/link";
 import FileManager from "@/components/documents/FileManager";
 import { getAllDocuments, missingCategories } from "@/lib/documents";
 import { requireAdmin } from "@/lib/session";
+import { cardClass } from "@/components/ui/classes";
 
 export const instant = false;
 
@@ -13,7 +14,7 @@ export default async function AdminDocuments() {
 
   return (
     <div className="space-y-4">
-      <section aria-labelledby="checklist-title" className="card space-y-1 p-4">
+      <section aria-labelledby="checklist-title" className={cardClass("space-y-1 p-4")}>
         <h2 id="checklist-title" className="text-base font-extrabold">Checklist</h2>
         {missing.length === 0 ? (
           <p className="text-sm text-muted">Every standard document is in place.</p>

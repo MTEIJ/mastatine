@@ -1,6 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Hint, Input } from "@/components/ui/Field";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -39,7 +41,7 @@ export default function NewsletterForm({ layout = "inline", compact = false }: N
 
   if (status === "sent") {
     return (
-      <p role="status" className="rounded-2xl bg-accent-soft px-5 py-4 text-sm font-medium text-accent-text">
+      <p role="status" className="rounded-lg bg-accent-soft px-5 py-4 text-sm font-medium text-accent-text">
         {message}
       </p>
     );
@@ -52,7 +54,7 @@ export default function NewsletterForm({ layout = "inline", compact = false }: N
           <label htmlFor={`${id}-email`} className="sr-only">
             Email address
           </label>
-          <input
+          <Input
             id={`${id}-email`}
             type="email"
             required
@@ -61,7 +63,7 @@ export default function NewsletterForm({ layout = "inline", compact = false }: N
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="input !rounded-full"
+            className="!rounded-full"
           />
         </div>
         <div className="absolute -left-[9999px]" aria-hidden>
@@ -70,16 +72,16 @@ export default function NewsletterForm({ layout = "inline", compact = false }: N
             <input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
           </label>
         </div>
-        <button type="submit" disabled={status === "sending"} className="btn btn-primary">
+        <Button type="submit" disabled={status === "sending"} variant="primary">
           {status === "sending" ? "Sending…" : "Subscribe"}
-        </button>
+        </Button>
       </div>
       {status === "error" && (
         <p role="alert" className="mt-2 text-sm text-danger">
           {message}
         </p>
       )}
-      {!compact && <p className="hint">About four emails a year. Unsubscribe in one click.</p>}
+      {!compact && <Hint>About four emails a year. Unsubscribe in one click.</Hint>}
     </form>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Field";
 
 interface CopyFieldProps {
   value: string;
@@ -32,17 +34,17 @@ export default function CopyField({ value, label, compact = false }: CopyFieldPr
   return (
     <div className={`flex items-center gap-2 ${showField ? "min-w-0 flex-1" : ""}`}>
       {showField && (
-        <input className="input min-w-0 flex-1 text-sm" readOnly value={value} aria-label={label} onFocus={(e) => e.currentTarget.select()} />
+        <Input className="min-w-0 flex-1 text-sm" readOnly value={value} aria-label={label} onFocus={(e) => e.currentTarget.select()} />
       )}
-      <button
+      <Button
         type="button"
-        className="btn btn-secondary btn-sm shrink-0"
+        variant="secondary" size="sm" className="shrink-0"
         onClick={copy}
         aria-live="polite"
         aria-label={compact && !showField ? `Copy ${label.toLowerCase()}` : undefined}
       >
         {copied ? "Copied!" : compact ? "Copy link" : "Copy"}
-      </button>
+      </Button>
     </div>
   );
 }

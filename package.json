@@ -9,7 +9,7 @@
     "dev": "bun scripts/dev.mjs",
     "dev:next": "next dev",
     "build": "bun --bun next build",
-    "lint": "eslint",
+    "lint": "eslint && stylelint \"src/**/*.css\"",
     "db:dev": "POSTGRES_PASSWORD=dev docker compose -f docker-compose.yml -f compose.dev.yaml up -d --wait db && DATABASE_URL=postgresql://mastatine:dev@127.0.0.1:5432/mastatine bun scripts/migrate.mjs",
     "db:migrate": "bun scripts/migrate.mjs",
     "db:seed-documents": "bun scripts/seed-documents.ts",
@@ -45,6 +45,7 @@
     "eslint": "^10.14.0",
     "eslint-config-next": "16.4.4",
     "pdfkit": "^0.20.2",
+    "stylelint": "16.23.1",
     "tailwindcss": "^4.3.4",
     "typescript": "^6"
   },

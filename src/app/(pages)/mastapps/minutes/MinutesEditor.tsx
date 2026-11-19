@@ -7,6 +7,9 @@ import type { LiveItem } from "@/lib/meetings";
 import AssigneePicker, { assigneeNames } from "./AssigneePicker";
 import { acquireItemLock, addAction, releaseItemLock, saveItemNotes, setMeetingStatus } from "./actions";
 import NotesField from "./NotesField";
+import { Button } from "@/components/ui/Button";
+import { Badge, Card } from "@/components/ui/Card";
+import { Input, Select } from "@/components/ui/Field";
 
 interface MinutesEditorProps {
   meetingId: string;
@@ -148,15 +151,15 @@ export default function MinutesEditor({ meetingId, initialItems, initialStatus, 
 
   return (
     <div className="admin-compact space-y-2">
-      <div className="sticky top-2 z-10 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-xl border border-line bg-surface/95 px-3 py-2 shadow-sm backdrop-blur">
+      <div className="sticky top-2 z-10 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-md border border-line bg-surface/95 px-3 py-2 shadow-sm backdrop-blur">
         <p role="status" aria-live="polite" className={`text-sm ${saveState === "saved" || saveState === "saving" ? "text-muted" : "font-bold text-danger"}`}>
           {locked ? `Locked. ${isAdmin ? "You can reopen it." : "Only an admin can reopen it."}` : SAVE_TEXT[saveState]}
         </p>
         <div className="flex items-center gap-2">
           <label className="text-sm font-bold" htmlFor="status">Status</label>
-          <select id="status" className="input !w-auto" value={status} disabled={locked && !isAdmin} onChange={(e) => void onStatus(e.target.value as MeetingStatus)}>
+          <Select id="status" className="!w-auto" value={status} disabled={locked && !isAdmin} onChange={(e) => void onStatus(e.target.value as MeetingStatus)}>
             {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
       </div>
 
@@ -165,7 +168,7 @@ export default function MinutesEditor({ meetingId, initialItems, initialStatus, 
         const readOnly = lockedByOther || locked;
         const heading = `${labels[i]} ${item.title}`;
         return (
-          <div key={item.id} className={`card p-3 ${item.level === 1 ? "ml-4 sm:ml-8" : ""}`}>
+          <Card key={item.id} className={`p-3 ${item.level === 1 ? "ml-4 sm:ml-8" : ""}`}>
             <div className="mb-1 flex items-start justify-between gap-2">
               {readOnly ? (
                 <h3 className="text-sm font-bold text-accent-text">{heading}</h3>
@@ -173,7 +176,7 @@ export default function MinutesEditor({ meetingId, initialItems, initialStatus, 
                 <label className="text-sm font-bold text-accent-text" htmlFor={`notes-${item.id}`}>{heading}</label>
               )}
               <div className="flex shrink-0 items-center gap-2">
-                {lockedByOther && <span className="badge">{item.locked_by_name} is editing…</span>}
+                {lockedByOther && <Badge>{item.locked_by_name} is editing…</Badge>}
                 {!locked && addingFor !== item.id && (
                   <button type="button" className="text-xs font-bold text-muted hover:text-accent-text" onClick={() => setAddingFor(item.id)}>+ Action point</button>
                 )}
@@ -192,7 +195,7 @@ export default function MinutesEditor({ meetingId, initialItems, initialStatus, 
             {item.actions.length > 0 && (
               <ul className="mt-2 space-y-1">
                 {item.actions.map((a) => (
-                  <li key={a.id} className={`rounded-md bg-soft px-2 py-1 text-xs ${a.is_done ? "line-through opacity-60" : ""}`}>
+                  <li key={a.id} className={`rounded-sm bg-soft px-2 py-1 text-xs ${a.is_done ? "line-through opacity-60" : ""}`}>
                     <strong>Action point · {assigneeNames(a.assignees)}:</strong> {a.body} <span className="text-muted">({formatDeadline(a.deadline)})</span>
                   </li>
                 ))}
@@ -200,19 +203,19 @@ export default function MinutesEditor({ meetingId, initialItems, initialStatus, 
             )}
 
             {!locked && addingFor === item.id && (
-              <form onSubmit={onAddAction} className="mt-2 space-y-2 rounded-lg border border-line p-2">
+              <form onSubmit={onAddAction} className="mt-2 space-y-2 rounded-sm border border-line p-2">
                 <input type="hidden" name="id" value={meetingId} />
                 <input type="hidden" name="item_id" value={item.id} />
-                <input name="body" aria-label="Action point" className="input" required maxLength={500} placeholder="What needs to happen?" autoFocus />
+                <Input name="body" aria-label="Action point" required maxLength={500} placeholder="What needs to happen?" autoFocus />
                 <AssigneePicker people={people.map((p) => ({ id: p.id, label: p.name }))} />
                 <div className="flex flex-wrap gap-2">
-                  <input name="deadline" type="date" aria-label="Deadline (empty: next meeting)" className="input !w-auto" />
-                  <button type="submit" className="btn btn-primary btn-sm">Add</button>
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => setAddingFor(null)}>Cancel</button>
+                  <Input name="deadline" type="date" aria-label="Deadline (empty: next meeting)" className="!w-auto" />
+                  <Button type="submit" variant="primary" size="sm">Add</Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setAddingFor(null)}>Cancel</Button>
                 </div>
               </form>
             )}
-          </div>
+          </Card>
         );
       })}
     </div>

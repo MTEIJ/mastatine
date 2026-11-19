@@ -5,7 +5,7 @@
  */
 @layer components {
   /* ── Phone / tablet header: a plain website header. Brand on the left; sign in (visitors) and the menu on the right ── */
-  .mobile-bar { position: sticky; top: 0; z-index: 30; display: flex; flex: 0 0 100%; align-items: center; gap: 0.25rem; height: 3.75rem; padding: 0 0.4rem 0 1rem; background: #fff; color: var(--md-on-surface); }
+  .mobile-bar { position: sticky; top: 0; z-index: 30; display: flex; flex: 0 0 100%; align-items: center; gap: 0.25rem; height: 3.75rem; padding: 0 0.4rem 0 1rem; background: var(--md-surface-container-lowest); color: var(--md-on-surface); }
   .mobile-bar__brand { display: flex; min-width: 0; flex: 1; align-items: center; gap: 0.6rem; color: var(--md-on-surface); font-size: 1.1rem; font-weight: 900; letter-spacing: -0.01em; white-space: nowrap; }
   .mobile-bar__brand span { overflow: hidden; text-overflow: ellipsis; }
   .mobile-bar__brand:hover { color: var(--md-on-surface); }
@@ -63,7 +63,7 @@
   .dash .tabbar { position: static; flex: none; }
 
   /* ── Homepage hub: app launcher (signed in) and the next activities (everyone) ── */
-  .hub { margin: 2rem 0; padding: 1.75rem 1.75rem 2rem; border-radius: var(--shape-lg); background: #fff; box-shadow: none; color: var(--md-on-surface); }
+  .hub { margin: 2rem 0; padding: 1.75rem 1.75rem 2rem; border-radius: var(--shape-lg); background: var(--md-surface-container-lowest); box-shadow: none; color: var(--md-on-surface); }
   .hub--top { margin-top: 0; }
   /* Visitors: the intro and "Coming up" are one panel, not two boxes stacked on the orange. A divider sits where they meet. */
   .lp-text:has(+ .hub) { margin-bottom: 0; padding-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; box-shadow: none; }

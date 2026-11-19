@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import LoginForm from "@/components/LoginForm";
 import { safeNextPath } from "@/lib/safe-redirect";
 import { getSession } from "@/lib/session";
+import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = { title: "Sign in", robots: { index: false } };
 
@@ -24,13 +25,13 @@ export default async function LoginPage(props: { searchParams: Promise<{ next?: 
         <h1 className="mt-3 text-4xl font-extrabold sm:text-5xl">Sign in or create an account</h1>
         <p className="mt-3 text-muted">Enter your email and we send you a single-use link. New here? The same link creates your account. No password to remember, or to leak.</p>
         {error && (
-          <p role="alert" className="mt-6 rounded-xl bg-danger/10 px-4 py-3 text-sm text-danger">
+          <p role="alert" className="mt-6 rounded-md bg-danger/10 px-4 py-3 text-sm text-danger">
             {ERRORS[error] ?? "Something went wrong signing you in. Please request a new link."}
           </p>
         )}
-        <div className="card mt-8 p-6 sm:p-8">
+        <Card className="mt-8 p-6 sm:p-8">
           <LoginForm next={target} />
-        </div>
+        </Card>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { listBookYears } from "@/lib/finance";
 import type { FinanceAccess } from "@/lib/finance-access";
 import { formatDate } from "@/lib/news";
 import { closeBookYear } from "../actions";
+import { buttonClass } from "@/components/ui/classes";
 
 /** Book years: open until the treasurer closes them after the year has ended. Closing seals the year's mutations. */
 export default async function BookYearsView({ access }: { access: FinanceAccess }) {
@@ -54,7 +55,7 @@ export default async function BookYearsView({ access }: { access: FinanceAccess 
                   {access.canWrite && (
                     <td>
                       {canClose && (
-                        <Modal label="Close year" triggerLabel={`Close book year ${y.year}`} title={`Close book year ${y.year}`} description="This cannot be undone." triggerClassName="btn btn-secondary btn-sm max-sm:w-full">
+                        <Modal label="Close year" triggerLabel={`Close book year ${y.year}`} title={`Close book year ${y.year}`} description="This cannot be undone." triggerClassName={buttonClass({ variant: "secondary", size: "sm" }, "max-sm:w-full")}>
                           <form action={closeBookYear} className="space-y-3 text-sm">
                             <input type="hidden" name="year" value={y.year} />
                             <p>
@@ -62,7 +63,7 @@ export default async function BookYearsView({ access }: { access: FinanceAccess 
                               in {y.year} can be edited or deleted; mistakes are fixed with a reversal dated in an open year.
                             </p>
                             <p className="text-muted">Check the statement and the receipts first. Closing is recorded with your name.</p>
-                            <ConfirmButton className="btn btn-primary btn-sm" message={`Close book year ${y.year}? This cannot be undone.`}>Close {y.year}</ConfirmButton>
+                            <ConfirmButton className={buttonClass({ variant: "primary", size: "sm" })} message={`Close book year ${y.year}? This cannot be undone.`}>Close {y.year}</ConfirmButton>
                           </form>
                         </Modal>
                       )}

@@ -1,4 +1,5 @@
 import { CATEGORIES } from "@/lib/finance";
+import { Input, Label, Select } from "@/components/ui/Field";
 
 interface EntryDefaults {
   amount_cents: number;
@@ -26,40 +27,40 @@ export default function EntryFields({ idPrefix, activities, entry }: EntryFields
   return (
     <div className="grid grid-cols-2 gap-3">
       <div>
-        <label className="label" htmlFor={field("direction")}>Money</label>
-        <select id={field("direction")} name="direction" className="input" defaultValue={entry && entry.amount_cents < 0 ? "out" : "in"}>
+        <Label htmlFor={field("direction")}>Money</Label>
+        <Select id={field("direction")} name="direction" defaultValue={entry && entry.amount_cents < 0 ? "out" : "in"}>
           <option value="in">In</option>
           <option value="out">Out</option>
-        </select>
+        </Select>
       </div>
       <div>
-        <label className="label" htmlFor={field("amount")}>Amount (€)</label>
-        <input id={field("amount")} name="amount" className="input" inputMode="decimal" required placeholder="12,50" defaultValue={entry ? euros(entry.amount_cents) : undefined} />
+        <Label htmlFor={field("amount")}>Amount (€)</Label>
+        <Input id={field("amount")} name="amount" inputMode="decimal" required placeholder="12,50" defaultValue={entry ? euros(entry.amount_cents) : undefined} />
       </div>
       <div className="col-span-2">
-        <label className="label" htmlFor={field("date")}>Date</label>
-        <input id={field("date")} name="occurred_on" type="date" className="input" required defaultValue={entry?.occurred_on ?? today()} max={today()} />
+        <Label htmlFor={field("date")}>Date</Label>
+        <Input id={field("date")} name="occurred_on" type="date" required defaultValue={entry?.occurred_on ?? today()} max={today()} />
       </div>
       <div className="col-span-2">
-        <label className="label" htmlFor={field("category")}>Category</label>
-        <select id={field("category")} name="category" className="input" defaultValue={entry?.category ?? "donation"}>
+        <Label htmlFor={field("category")}>Category</Label>
+        <Select id={field("category")} name="category" defaultValue={entry?.category ?? "donation"}>
           {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label} ({c.direction === "either" ? "in or out" : c.direction})</option>)}
-        </select>
+        </Select>
       </div>
       <div className="col-span-2">
-        <label className="label" htmlFor={field("description")}>What for</label>
-        <input id={field("description")} name="description" className="input" required maxLength={300} defaultValue={entry?.description} />
+        <Label htmlFor={field("description")}>What for</Label>
+        <Input id={field("description")} name="description" required maxLength={300} defaultValue={entry?.description} />
       </div>
       <div className="col-span-2">
-        <label className="label" htmlFor={field("counterparty")}>From / to (optional)</label>
-        <input id={field("counterparty")} name="counterparty" className="input" maxLength={120} placeholder="Donor or supplier" defaultValue={entry?.counterparty} />
+        <Label htmlFor={field("counterparty")}>From / to (optional)</Label>
+        <Input id={field("counterparty")} name="counterparty" maxLength={120} placeholder="Donor or supplier" defaultValue={entry?.counterparty} />
       </div>
       <div className="col-span-2">
-        <label className="label" htmlFor={field("activity")}>Activity (optional)</label>
-        <select id={field("activity")} name="activity_id" className="input" defaultValue={entry?.activity_id ?? ""}>
+        <Label htmlFor={field("activity")}>Activity (optional)</Label>
+        <Select id={field("activity")} name="activity_id" defaultValue={entry?.activity_id ?? ""}>
           <option value="">Not tied to an activity</option>
           {activities.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-        </select>
+        </Select>
       </div>
     </div>
   );

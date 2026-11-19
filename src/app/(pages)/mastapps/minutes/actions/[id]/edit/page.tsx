@@ -7,6 +7,9 @@ import { getAction, getItems, itemLabels } from "@/lib/meetings";
 import { requireUser } from "@/lib/session";
 import AssigneePicker from "../../../AssigneePicker";
 import { updateAction } from "../../../actions";
+import { Button } from "@/components/ui/Button";
+import { Input, Label, Select, Textarea } from "@/components/ui/Field";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Edit action point", robots: { index: false } };
 
@@ -25,27 +28,27 @@ export default async function EditActionPage(props: { params: Promise<{ id: stri
 
   return (
     <AppFrame title="Edit action point" tagline={action.committee_name}>
-      <form action={updateAction} className="card max-w-xl space-y-4 p-6 sm:p-8">
+      <form action={updateAction} className={cardClass("max-w-xl space-y-4 p-6 sm:p-8")}>
         <input type="hidden" name="id" value={action.id} />
         <div>
-          <label className="label" htmlFor="body">Action point</label>
-          <textarea id="body" name="body" className="input" required maxLength={500} defaultValue={action.body} />
+          <Label htmlFor="body">Action point</Label>
+          <Textarea id="body" name="body" required maxLength={500} defaultValue={action.body} />
         </div>
         <AssigneePicker people={people.map((p) => ({ id: p.id, label: displayName(p) }))} selected={action.assignees.map((a) => a.id)} />
         <div>
-          <label className="label" htmlFor="deadline">Deadline (empty: next meeting)</label>
-          <input id="deadline" name="deadline" type="date" className="input" defaultValue={action.deadline ?? ""} />
+          <Label htmlFor="deadline">Deadline (empty: next meeting)</Label>
+          <Input id="deadline" name="deadline" type="date" defaultValue={action.deadline ?? ""} />
         </div>
         <div>
-          <label className="label" htmlFor="item_id">Raised under</label>
-          <select id="item_id" name="item_id" className="input" defaultValue={action.item_id ?? ""}>
+          <Label htmlFor="item_id">Raised under</Label>
+          <Select id="item_id" name="item_id" defaultValue={action.item_id ?? ""}>
             <option value="">No agenda item</option>
             {items.map((item, i) => <option key={item.id} value={item.id}>{labels[i]} {item.title}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button type="submit" className="btn btn-primary">Save</button>
-          <Link href={meetingUrl} className="btn btn-secondary">Cancel</Link>
+          <Button type="submit" variant="primary">Save</Button>
+          <Link href={meetingUrl} className={buttonClass({ variant: "secondary" })}>Cancel</Link>
         </div>
       </form>
     </AppFrame>

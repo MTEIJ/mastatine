@@ -3,6 +3,8 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { disablePush, enablePush, sendTestPush } from "@/app/(pages)/account/push-actions";
 import { installStore, promptInstall, vapidKeyBytes } from "@/lib/pwa-client";
+import { Button } from "@/components/ui/Button";
+import { cardClass } from "@/components/ui/classes";
 
 type PushStatus = "loading" | "unsupported" | "needs-install" | "blocked" | "off" | "on";
 
@@ -12,7 +14,7 @@ export function InstallCard() {
   if (standalone) return null;
 
   return (
-    <section aria-labelledby="install-title" className="card setting-row mt-4">
+    <section aria-labelledby="install-title" className={cardClass("setting-row mt-4")}>
       <div className="setting-row__body">
         <h2 id="install-title" className="setting-row__title">Install the app</h2>
         <p className="setting-row__text">
@@ -24,9 +26,9 @@ export function InstallCard() {
         </p>
       </div>
       {canPrompt && (
-        <button type="button" className="btn btn-primary btn-sm" onClick={() => void promptInstall()}>
+        <Button type="button" variant="primary" size="sm" onClick={() => void promptInstall()}>
           Install
-        </button>
+        </Button>
       )}
     </section>
   );

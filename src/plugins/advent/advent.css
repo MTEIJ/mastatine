@@ -14,6 +14,15 @@
   --ac-gold: #a16207;
 }
 
+/* Decoration colours, the same in both looks. */
+.ac-board,
+.ac-page {
+  --ac-night-sky: linear-gradient(180deg, #0b1736 0%, #14295e 55%, #1c3a7a 100%);
+  --ac-glow: #ffc857;
+  --ac-navy: #16204a;
+  --ac-error: #7a1f1f;
+}
+
 /* The standalone page: a winter night with snow and gold. */
 .ac-page,
 .ac-page .ac-board {
@@ -33,7 +42,7 @@
   z-index: 100;
   overflow-y: auto;
   color: var(--ac-ink);
-  background: radial-gradient(60rem 30rem at 50% -8rem, rgb(255 200 87 / 0.18), transparent 70%), linear-gradient(180deg, #0b1736 0%, #14295e 55%, #1c3a7a 100%);
+  background: radial-gradient(60rem 30rem at 50% -8rem, rgb(255 200 87 / 0.18), transparent 70%), var(--ac-night-sky);
 }
 .ac-page::before,
 .ac-page::after {
@@ -45,7 +54,7 @@
 }
 .ac-page::before {
   background-image:
-    radial-gradient(2px 2px at 20px 30px, #fff 50%, transparent 52%),
+    radial-gradient(2px 2px at 20px 30px, white 50%, transparent 52%),
     radial-gradient(1.5px 1.5px at 90px 80px, rgb(255 255 255 / 0.8) 50%, transparent 52%),
     radial-gradient(2px 2px at 160px 20px, rgb(255 255 255 / 0.9) 50%, transparent 52%),
     radial-gradient(2.5px 2.5px at 130px 150px, rgb(255 224 150 / 0.9) 50%, transparent 52%);
@@ -79,9 +88,9 @@
   height: 4px;
   margin: 0.9rem auto 0;
   border-radius: 99px;
-  background: linear-gradient(90deg, transparent, #ffc857, #f57f20, #ffc857, transparent);
+  background: linear-gradient(90deg, transparent, var(--ac-glow), var(--md-brand), var(--ac-glow), transparent);
 }
-.ac-eyebrow { margin: 0; font-size: 0.8rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: #ffc857; }
+.ac-eyebrow { margin: 0; font-size: 0.8rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ac-glow); }
 .ac-title { margin: 0.2rem 0 0; font-size: clamp(2rem, 7vw, 3.25rem); font-weight: 900; line-height: 1.1; text-wrap: balance; text-shadow: 0 2px 24px rgb(0 0 0 / 0.35); }
 .ac-summary { margin: 0.4rem 0 0; color: var(--ac-muted); font-variant-numeric: tabular-nums; }
 .ac-foot { margin-top: 1.75rem; text-align: center; font-size: 0.8rem; color: var(--ac-muted); }
@@ -117,7 +126,7 @@
   border-radius: 50%;
   border: 2px solid rgb(255 255 255 / 0.85);
   background: var(--photo, none) center / cover, hsl(var(--hue) 62% 38%);
-  color: #fff;
+  color: white;
   font-size: 0.68rem;
   font-weight: 900;
   line-height: 1;
@@ -187,7 +196,7 @@
   font-variant-numeric: tabular-nums;
   cursor: pointer;
 }
-.ac-select option { color: #111; }
+.ac-select option { color: var(--md-on-surface); }
 .ac-select:focus-visible { outline: 3px solid var(--ac-gold); outline-offset: 2px; }
 .ac-fail .ac-btn--die { border-radius: 0 999px 999px 0; font-size: 0.85rem; white-space: nowrap; }
 
@@ -198,7 +207,7 @@
 /* The avatar in the list, for someone who may change the photo: tap it to choose one. */
 .ac-photo { position: relative; display: inline-flex; flex: none; }
 .ac-photo-pick { position: relative; display: inline-flex; cursor: pointer; border-radius: 50%; }
-.ac-photo-pick:focus-within { outline: 2px solid var(--ac-gold, #ffcf4a); outline-offset: 2px; }
+.ac-photo-pick:focus-within { outline: 2px solid var(--ac-gold); outline-offset: 2px; }
 .ac-file { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .ac-photo-badge {
   position: absolute;
@@ -209,8 +218,8 @@
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
-  background: #fff;
-  color: #16204a;
+  background: white;
+  color: var(--ac-navy);
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
   pointer-events: none;
 }
@@ -225,8 +234,8 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: #16204a;
-  color: #fff;
+  background: var(--ac-navy);
+  color: white;
   font-family: inherit;
   font-size: 0.75rem;
   font-weight: 700;
@@ -245,8 +254,8 @@
   max-width: 15rem;
   padding: 0.3rem 0.55rem;
   border-radius: 0.5rem;
-  background: #7a1f1f;
-  color: #fff;
+  background: var(--ac-error);
+  color: white;
   font-size: 0.78rem;
 }
 
@@ -285,7 +294,7 @@
 
 .acs-roll { position: relative; flex: 1; min-height: 0; overflow: hidden; }
 /* Names fade in at the bottom and out at the top, like credits leaving the frame. */
-.acs-roll--moving { -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); }
+.acs-roll--moving { -webkit-mask-image: linear-gradient(transparent, black 14%, black 86%, transparent); mask-image: linear-gradient(transparent, black 14%, black 86%, transparent); }
 .acs-roll--moving .acs-track { animation: acs-roll calc(var(--secs) * 1s) linear infinite; }
 @keyframes acs-roll { to { transform: translateY(-50%); } }
 @media (prefers-reduced-motion: reduce) {

@@ -3,6 +3,9 @@ import { envFinanceEmails } from "@/lib/finance-access";
 import { listRoles, recentAccessChanges } from "@/lib/finance-roles";
 import { requireAdmin } from "@/lib/session";
 import { grantFinanceRole, revokeFinanceRole } from "./actions";
+import { Button } from "@/components/ui/Button";
+import { Input, Label, Select } from "@/components/ui/Field";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 export const instant = false;
 
@@ -26,7 +29,7 @@ export default async function FinanceAccessPage(props: { searchParams: Promise<{
   return (
     <div className="max-w-3xl space-y-5">
       {message && (
-        <p role="status" className={`rounded-xl px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
+        <p role="status" className={`rounded-md px-4 py-3 text-sm ${message.tone === "ok" ? "bg-accent-soft text-accent-text" : "bg-danger/10 text-danger"}`}>
           {message.text}
         </p>
       )}
@@ -39,19 +42,19 @@ export default async function FinanceAccessPage(props: { searchParams: Promise<{
 
       <section aria-labelledby="grant-title">
         <h2 id="grant-title" className="text-base font-extrabold">Give access</h2>
-        <form action={grantFinanceRole} className="card mt-2 flex flex-wrap items-end gap-3 p-4">
+        <form action={grantFinanceRole} className={cardClass("mt-2 flex flex-wrap items-end gap-3 p-4")}>
           <div className="min-w-0 flex-1">
-            <label className="label" htmlFor="fa-email">Email of their account</label>
-            <input id="fa-email" name="email" type="email" className="input" required maxLength={254} autoComplete="off" />
+            <Label htmlFor="fa-email">Email of their account</Label>
+            <Input id="fa-email" name="email" type="email" required maxLength={254} autoComplete="off" />
           </div>
           <div>
-            <label className="label" htmlFor="fa-role">Role</label>
-            <select id="fa-role" name="role" className="input" defaultValue="treasurer">
+            <Label htmlFor="fa-role">Role</Label>
+            <Select id="fa-role" name="role" defaultValue="treasurer">
               <option value="treasurer">Treasurer (can write)</option>
               <option value="auditor">Auditor (read only)</option>
-            </select>
+            </Select>
           </div>
-          <button type="submit" className="btn btn-primary">Save</button>
+          <Button type="submit" variant="primary">Save</Button>
         </form>
       </section>
 
@@ -75,7 +78,7 @@ export default async function FinanceAccessPage(props: { searchParams: Promise<{
                   <td className="text-right">
                     <form action={revokeFinanceRole}>
                       <input type="hidden" name="user_id" value={r.user_id} />
-                      <ConfirmButton className="btn btn-danger btn-sm" message={`Remove ${r.role} access for ${r.email}?`}>Remove</ConfirmButton>
+                      <ConfirmButton className={buttonClass({ variant: "danger", size: "sm" })} message={`Remove ${r.role} access for ${r.email}?`}>Remove</ConfirmButton>
                     </form>
                   </td>
                 </tr>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { formatPrice, merchImageUrl, merchProductUrl, type MerchProduct } from "@/lib/merch";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 interface MerchCardProps {
   product: MerchProduct;
@@ -14,7 +15,7 @@ export default function MerchCard({ product, shopUrl }: MerchCardProps) {
   const href = merchProductUrl(shopUrl, product, color.id);
 
   return (
-    <li className="card flex flex-col overflow-hidden">
+    <li className={cardClass("flex flex-col overflow-hidden")}>
       <a href={href} target="_blank" rel="noopener noreferrer" className="block bg-accent-soft" aria-label={`${product.title}, ${product.type}, ${color.name}: order on the Spreadshop`}>
         {/* A plain img on purpose: the image server only answers real browsers, so it must not go through our image proxy. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -56,7 +57,7 @@ export default function MerchCard({ product, shopUrl }: MerchCardProps) {
         </fieldset>
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
           <p className="text-xl font-extrabold">{formatPrice(product.price)}</p>
-          <a href={href} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+          <a href={href} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: "primary" })}>
             Order on Spreadshop
           </a>
         </div>

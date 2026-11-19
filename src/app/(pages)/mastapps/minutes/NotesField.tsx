@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import Markdown from "@/components/Markdown";
 import { prefixLines, wrap, type Edit } from "@/lib/markdown-edit";
+import { Textarea } from "@/components/ui/Field";
 
 interface NotesFieldProps {
   id: string;
@@ -15,7 +16,7 @@ interface NotesFieldProps {
   onBlur: () => void;
 }
 
-const toolClass = "grid h-7 min-w-7 place-items-center rounded px-1.5 text-sm font-bold text-muted hover:bg-soft hover:text-ink";
+const toolClass = "grid h-7 min-w-7 place-items-center rounded-xs px-1.5 text-sm font-bold text-muted hover:bg-soft hover:text-ink";
 
 interface ToolButtonProps {
   label: string;
@@ -163,7 +164,7 @@ export default function NotesField({ id, meetingId, value, readOnly, onChange, o
         <button
           type="button"
           aria-pressed={preview}
-          className="ml-auto rounded px-2 py-1 text-xs font-bold text-muted hover:bg-soft hover:text-ink aria-pressed:bg-soft aria-pressed:text-ink"
+          className="ml-auto rounded-xs px-2 py-1 text-xs font-bold text-muted hover:bg-soft hover:text-ink aria-pressed:bg-soft aria-pressed:text-ink"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => setPreview((p) => !p)}
         >
@@ -172,14 +173,14 @@ export default function NotesField({ id, meetingId, value, readOnly, onChange, o
       </div>
 
       {preview && (
-        <div className="min-h-16 rounded-lg border border-line bg-surface px-3 py-2 text-sm">
+        <div className="min-h-16 rounded-sm border border-line bg-surface px-3 py-2 text-sm">
           {value.trim() ? <Markdown>{value}</Markdown> : <p className="text-muted">Nothing to preview yet.</p>}
         </div>
       )}
-      <textarea
+      <Textarea
         ref={area}
         id={id}
-        className="input min-h-16 resize-none field-sizing-content !py-2 text-sm"
+        className="min-h-16 resize-none field-sizing-content !py-2 text-sm"
         maxLength={10000}
         hidden={preview}
         value={value}
@@ -197,7 +198,7 @@ export default function NotesField({ id, meetingId, value, readOnly, onChange, o
               <a href={p.src} target="_blank" rel="noopener noreferrer" title={p.alt || "Open picture"}>
                 {/* Uploads are already resized WebP, so next/image would add nothing. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.src} alt={p.alt} loading="lazy" className="h-20 w-auto max-w-40 rounded-lg border border-line object-cover" />
+                <img src={p.src} alt={p.alt} loading="lazy" className="h-20 w-auto max-w-40 rounded-sm border border-line object-cover" />
               </a>
             </li>
           ))}

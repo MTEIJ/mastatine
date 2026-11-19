@@ -9,6 +9,7 @@ import { getNewsletterStatus, type NewsletterStatus } from "@/lib/newsletter";
 import { vapidPublicKey } from "@/lib/push";
 import { requireUser } from "@/lib/session";
 import { setNewsletter } from "./actions";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Your account", robots: { index: false } };
 
@@ -39,11 +40,11 @@ export default async function AccountPage(props: { searchParams: Promise<{ email
         {/* In the installed app, signing out sits at the bottom, away from the everyday things. */}
         <div className="only-web"><SignOutButton /></div>
       </header>
-      {emailResult === "changed" && !linkError && <p role="status" className="mt-3 rounded-xl bg-success/10 px-4 py-3 text-sm text-success">Your email address is now {user.email}. Use it to sign in from now on.</p>}
-      {linkError && <p role="alert" className="mt-3 rounded-xl bg-danger/10 px-4 py-3 text-sm text-danger">That confirmation link did not work. It may have expired or been used already; ask for a new one below.</p>}
+      {emailResult === "changed" && !linkError && <p role="status" className="mt-3 rounded-md bg-success/10 px-4 py-3 text-sm text-success">Your email address is now {user.email}. Use it to sign in from now on.</p>}
+      {linkError && <p role="alert" className="mt-3 rounded-md bg-danger/10 px-4 py-3 text-sm text-danger">That confirmation link did not work. It may have expired or been used already; ask for a new one below.</p>}
 
       {!membership.isMember && (
-        <section id="membership" aria-labelledby="membership-title" className="card mt-6 p-4">
+        <section id="membership" aria-labelledby="membership-title" className={cardClass("mt-6 p-4")}>
           <h2 id="membership-title" className="text-lg font-extrabold">Become a member</h2>
           <p className="mb-3 mt-1 text-sm text-muted">Members get access to the Quotes app and to members-only activities. It is free; an admin approves each request.</p>
           <MembershipRequest membership={membership} next="/account" />
@@ -51,14 +52,14 @@ export default async function AccountPage(props: { searchParams: Promise<{ email
       )}
 
       {/* The app has the Apps tab for this. */}
-      <Link href="/mastapps" className="only-web card mt-6 flex items-center justify-between p-4 font-extrabold text-ink hover:border-accent hover:text-accent-text">
+      <Link href="/mastapps" className={cardClass("only-web mt-6 flex items-center justify-between p-4 font-extrabold text-ink hover:border-accent hover:text-accent-text")}>
         <span>Open MastApps</span>
         <span aria-hidden>&rarr;</span>
       </Link>
 
       <InstallCard />
 
-      <section aria-label="Settings" className="card setting-list mt-4">
+      <section aria-label="Settings" className={cardClass("setting-list mt-4")}>
         {pushKey && <NotificationsRow publicKey={pushKey} />}
         <form action={setNewsletter} className="setting-row">
           <input type="hidden" name="subscribe" value={newsletter === "confirmed" ? "no" : "yes"} />

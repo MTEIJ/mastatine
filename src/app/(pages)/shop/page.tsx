@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import MerchGrid from "@/components/MerchGrid";
 import { getMerchProducts } from "@/lib/spreadshop-feed";
 import { getShopUrl } from "@/lib/shop";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = {
   title: "Merch",
@@ -21,7 +22,7 @@ async function ProductGrid() {
       <MerchGrid products={products} shopUrl={shopUrl} />
       {shopUrl && (
         <p className="mt-8">
-          <a href={shopUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+          <a href={shopUrl} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: "secondary" })}>
             See the whole shop
           </a>
         </p>
@@ -38,7 +39,7 @@ export default function ShopPage() {
       <Suspense fallback={null}>
         <ProductGrid />
       </Suspense>
-      <p role="note" className="card mt-10 px-4 py-3 text-sm text-muted">
+      <p role="note" className={cardClass("mt-10 px-4 py-3 text-sm text-muted")}>
         <strong className="text-ink">Good to know:</strong> our merch is made, sold and shipped by Spreadshop, an external print-on-demand
         company, not by us. It is a real shop (promise): you pay at their checkout, and questions about an order go to them.
         Want a second opinion? Read what customers say about{" "}

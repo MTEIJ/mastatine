@@ -5,6 +5,8 @@ import { getNewsletterStatus } from "@/lib/newsletter";
 import { safeNextPath } from "@/lib/safe-redirect";
 import { requireUser } from "@/lib/session";
 import { answerNewsletterPrompt } from "./actions";
+import { Button } from "@/components/ui/Button";
+import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Welcome", robots: { index: false } };
 
@@ -32,11 +34,11 @@ export default async function WelcomePage(props: { searchParams: Promise<{ next?
       <div className="w-full max-w-md">
         <h1 className="text-4xl font-extrabold sm:text-5xl">You are signed in</h1>
         <p className="mt-3 text-muted">One question before you go: would you like the newsletter? The best masts, the news and what is coming up.</p>
-        <form action={answerNewsletterPrompt} className="card mt-8 space-y-3 p-6 sm:p-8">
+        <form action={answerNewsletterPrompt} className={cardClass("mt-8 space-y-3 p-6 sm:p-8")}>
           <input type="hidden" name="next" value={next} />
-          <button type="submit" name="answer" value="yes" className="btn btn-primary w-full py-3">Yes, send me the newsletter</button>
-          <button type="submit" name="answer" value="no" className="btn btn-secondary w-full py-3">No thanks</button>
-          <button type="submit" name="answer" value="later" className="btn btn-ghost w-full">Not now</button>
+          <Button type="submit" name="answer" value="yes" variant="primary" className="w-full py-3">Yes, send me the newsletter</Button>
+          <Button type="submit" name="answer" value="no" variant="secondary" className="w-full py-3">No thanks</Button>
+          <Button type="submit" name="answer" value="later" variant="ghost" className="w-full">Not now</Button>
         </form>
         <ul className="mt-6 space-y-2 text-sm text-muted">
           {PROMISES.map((promise) => (

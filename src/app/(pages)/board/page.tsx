@@ -8,6 +8,7 @@ import { formatDateTime } from "@/lib/datetime";
 import { getSession } from "@/lib/session";
 import BoardApplicationForm, { type SavedApplication } from "./BoardApplicationForm";
 import { withdrawBoardApplication } from "./actions";
+import { buttonClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = {
   title: "The Board",
@@ -60,7 +61,7 @@ async function Application() {
   const session = await getSession();
   if (!session) {
     return (
-      <Link href={`/login?next=${encodeURIComponent("/board#apply")}`} className="btn btn-primary">
+      <Link href={`/login?next=${encodeURIComponent("/board#apply")}`} className={buttonClass({ variant: "primary" })}>
         Sign in to apply for the board
       </Link>
     );
@@ -78,7 +79,7 @@ async function Application() {
         label={saved ? "Change my board application" : "Apply for the board"}
         title={BOARD_CALL.title}
         description={BOARD_CALL.intro}
-        triggerClassName="btn btn-primary"
+        triggerClassName={buttonClass({ variant: "primary" })}
         dialogClassName="modal--wide"
       >
         <BoardApplicationForm saved={saved ?? null} />

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import MerchCard from "@/components/MerchCard";
+import { buttonClass } from "@/components/ui/classes";
 import type { MerchProduct } from "@/lib/merch";
 
 interface MerchGridProps {
@@ -41,7 +42,7 @@ export default function MerchGrid({ products, shopUrl }: MerchGridProps) {
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search by name or colour"
           aria-label="Search merch by name or colour"
-          className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-3 py-2 sm:max-w-xs"
+          className="min-w-0 flex-1 rounded-sm border border-line bg-surface px-3 py-2 sm:max-w-xs"
         />
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by type">
           {categories.map((name) => (
@@ -50,7 +51,7 @@ export default function MerchGrid({ products, shopUrl }: MerchGridProps) {
               type="button"
               onClick={() => setCategory(name)}
               aria-pressed={name === category}
-              className={`btn ${name === category ? "btn-primary" : "btn-secondary"}`}
+              className={buttonClass({ variant: name === category ? "primary" : "secondary" })}
             >
               {name}
             </button>

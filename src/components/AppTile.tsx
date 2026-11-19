@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import ShapeIcon from "@/components/ui/ShapeIcon";
 import type { MastApp } from "@/content/apps";
+import { Badge } from "@/components/ui/Card";
 
 function Arrow({ external }: { external?: boolean }) {
   return (
@@ -25,7 +26,7 @@ export default function AppTile({ app, detail }: AppTileProps) {
       <span className="app-tile__body">
         <span className="app-tile__head">
           <h2 className="app-tile__name">{app.name}</h2>
-          {app.access && <span className="badge">{app.access} only</span>}
+          {app.access && <Badge>{app.access} only</Badge>}
         </span>
         <span className="app-tile__text">{app.description}</span>
         {detail && <span className="app-tile__detail">{detail}</span>}

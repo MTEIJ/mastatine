@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/ui/PageHeader";
 import { getLegalIdentity } from "@/lib/legal";
+import { Card } from "@/components/ui/Card";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -26,7 +27,7 @@ export default function ContactPage() {
     <>
       <PageHeader title="Get in touch" intro="A real person reads these, usually within a few days." />
       <div className="container-page">
-        <div className="card mx-auto max-w-3xl p-6 sm:p-8">
+        <Card className="mx-auto max-w-3xl p-6 sm:p-8">
           {email ? (
             <>
               <p className="text-base text-muted">Email</p>
@@ -37,22 +38,22 @@ export default function ContactPage() {
           ) : (
             <p className="text-muted">The contact address has not been configured yet.</p>
           )}
-        </div>
+        </Card>
 
         {legal.name || legal.address || legal.kvk ? (
-          <div className="card mx-auto mt-6 max-w-3xl p-6 sm:p-8">
+          <Card className="mx-auto mt-6 max-w-3xl p-6 sm:p-8">
             <h2 className="text-lg font-bold">Who runs this site</h2>
             <dl className="mt-2 space-y-1 text-base">
               {legal.name && <div><dt className="inline font-semibold">Name: </dt><dd className="inline">{legal.name}</dd></div>}
               {legal.address && <div><dt className="inline font-semibold">Address: </dt><dd className="inline">{legal.address}</dd></div>}
               {legal.kvk && <div><dt className="inline font-semibold">KvK number: </dt><dd className="inline">{legal.kvk}</dd></div>}
             </dl>
-          </div>
+          </Card>
         ) : null}
 
         <ul className="mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
           {TOPICS.map((topic) => (
-            <li key={topic.title} className="rounded-2xl border border-line p-5">
+            <li key={topic.title} className="rounded-lg border border-line p-5">
               <h2 className="text-lg font-bold">{topic.title}</h2>
               <p className="mt-1.5 text-base text-muted">{topic.text}</p>
             </li>

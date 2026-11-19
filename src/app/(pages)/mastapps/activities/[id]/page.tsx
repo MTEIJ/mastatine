@@ -20,6 +20,10 @@ import { resolvePlugin } from "@/plugins/registry";
 import { joinWaitlist, leaveWaitlist, removeParticipant, unsubscribe, updateParticipantChoices } from "../actions";
 import MessageParticipantsForm from "../MessageParticipantsForm";
 import SubscribeForm from "../SubscribeForm";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Select } from "@/components/ui/Field";
+import { buttonClass, cardClass, labelClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = { title: "Activity" };
 
@@ -73,17 +77,17 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
       width={800}
       height={1000}
       sizes="(max-width: 1024px) 100vw, 352px"
-      className="h-auto w-full rounded-xl"
+      className="h-auto w-full rounded-md"
     />
   );
 
   return (
     <AppFrame title={activity.name}>
-      {!activity.is_visible && <p className="mb-4 rounded-xl bg-soft px-4 py-3 text-sm">This activity is hidden from the activity list.</p>}
+      {!activity.is_visible && <p className="mb-4 rounded-md bg-soft px-4 py-3 text-sm">This activity is hidden from the activity list.</p>}
       <div className="grid gap-6 lg:grid-cols-[1fr_22rem] lg:gap-8">
         <div className="space-y-5">
           {/* 1. What and when */}
-          <section className="card p-5 sm:p-6">
+          <section className={cardClass("p-5 sm:p-6")}>
             <p className="text-sm font-extrabold uppercase tracking-wide text-accent-text">{activity.committee_name}</p>
             <p className="mt-1 text-2xl font-extrabold leading-tight sm:text-3xl">{when}</p>
             <ul className="mt-4 flex flex-wrap gap-2">
@@ -99,18 +103,18 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
           {/* 2. Join: straight after the facts, so nobody has to scroll to find it */}
           <section id="join" aria-label="Join this activity" className="scroll-mt-4 space-y-3">
             {activity.subscribed && activity.my_price_cents !== null && (
-              <p className="rounded-xl bg-soft px-4 py-3 text-sm">
+              <p className="rounded-md bg-soft px-4 py-3 text-sm">
                 {(activity.my_choices ?? []).length > 0 && <>Your choices: <strong>{(activity.my_choices ?? []).map((c) => c.choice).join(", ")}</strong>. </>}
                 Your price: <strong>{activity.my_price_cents === 0 ? "For free" : formatEuro(activity.my_price_cents)}</strong>.
               </p>
             )}
             {activity.subscribed ? (
-              <div role="status" className="space-y-3 rounded-xl bg-success/10 p-4">
+              <div role="status" className="space-y-3 rounded-md bg-success/10 p-4">
                 <p className="flex items-center gap-2 font-extrabold text-success"><CheckIcon /> You are going</p>
                 {canUnsubscribe ? (
                   <form action={unsubscribe}>
                     <input type="hidden" name="id" value={activity.id} />
-                    <ConfirmButton message={`Unsubscribe from ${activity.name}?`} className="btn btn-secondary btn-sm">Unsubscribe</ConfirmButton>
+                    <ConfirmButton message={`Unsubscribe from ${activity.name}?`} className={buttonClass({ variant: "secondary", size: "sm" })}>Unsubscribe</ConfirmButton>
                   </form>
                 ) : (
                   <p className="text-sm text-muted">You cannot unsubscribe from this activity. Contact the organisers if your plans change.</p>
@@ -119,7 +123,7 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
             ) : state === "open" && !user ? (
               <>
               {groups.length > 0 && (
-                <div className="card space-y-2 p-4 text-sm">
+                <Card className="space-y-2 p-4 text-sm">
                   <p className="font-bold">When you subscribe you choose</p>
                   <ul className="space-y-1">
                     {groups.map((g) => (
@@ -129,42 +133,42 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
                       </li>
                     ))}
                   </ul>
-                </div>
+                </Card>
               )}
-              <Link href={`/login?next=${encodeURIComponent(`/mastapps/activities/${activity.id}`)}`} className="btn btn-primary w-full py-3 text-base">
+              <Link href={`/login?next=${encodeURIComponent(`/mastapps/activities/${activity.id}`)}`} className={buttonClass({ variant: "primary" }, "w-full py-3 text-base")}>
                 Sign in to join
               </Link>
               </>
             ) : state === "open" && needsName ? (
-              <Link href={`/account/name?next=${encodeURIComponent(`/mastapps/activities/${activity.id}`)}`} className="btn btn-primary w-full py-3 text-base">
+              <Link href={`/account/name?next=${encodeURIComponent(`/mastapps/activities/${activity.id}`)}`} className={buttonClass({ variant: "primary" }, "w-full py-3 text-base")}>
                 Choose a display name to join
               </Link>
             ) : state === "open" ? (
               <SubscribeForm id={activity.id} groups={groups} />
             ) : state === "full" && user && !needsName ? (
-              <div className="space-y-3 rounded-xl bg-soft p-4">
+              <div className="space-y-3 rounded-md bg-soft p-4">
                 <p className="font-extrabold">This activity is full</p>
                 {waitlist.onList ? (
                   <>
                     <p className="text-sm">You are on the waitlist{waitlist.position ? ` (place ${waitlist.position})` : ""}. We email you when a spot opens.</p>
                     <form action={leaveWaitlist}>
                       <input type="hidden" name="id" value={activity.id} />
-                      <button className="btn btn-secondary btn-sm" type="submit">Leave the waitlist</button>
+                      <Button variant="secondary" size="sm" type="submit">Leave the waitlist</Button>
                     </form>
                   </>
                 ) : (
                   <form action={joinWaitlist} className="space-y-2">
                     <input type="hidden" name="id" value={activity.id} />
                     <p className="text-sm text-muted">Join the waitlist and we email you if someone drops out{waitlist.total > 0 ? ` (${waitlist.total} waiting)` : ""}.</p>
-                    <button className="btn btn-primary w-full" type="submit">Join the waitlist</button>
+                    <Button variant="primary" className="w-full" type="submit">Join the waitlist</Button>
                   </form>
                 )}
               </div>
             ) : (
-              <button className="btn btn-secondary w-full" type="button" disabled>{NOT_SUBSCRIBABLE[state]}</button>
+              <Button variant="secondary" className="w-full" type="button" disabled>{NOT_SUBSCRIBABLE[state]}</Button>
             )}
             {waitlist.onList && state === "open" && !activity.subscribed && (
-              <p role="status" className="rounded-xl bg-accent/10 px-4 py-3 text-sm font-bold">A spot is open and you are on the waitlist. Join now before someone else does.</p>
+              <p role="status" className="rounded-md bg-accent/10 px-4 py-3 text-sm font-bold">A spot is open and you are on the waitlist. Join now before someone else does.</p>
             )}
             <p className="text-xs text-muted">
               By subscribing you are expected at the activity. If you are unable to join, please contact the organising committee or the board.
@@ -173,13 +177,13 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
           </section>
 
           {/* 3. About it */}
-          {activity.description && <div className="card p-5 sm:p-6"><Markdown large>{activity.description}</Markdown></div>}
+          {activity.description && <Card className="p-5 sm:p-6"><Markdown large>{activity.description}</Markdown></Card>}
 
           {/* The poster sits in the side column on large screens, and inline here on phones */}
           {poster && <div className="lg:hidden">{poster}</div>}
 
           {/* 4. The small print */}
-          <dl className="card grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 p-5 text-sm sm:p-6">
+          <dl className={cardClass("grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 p-5 text-sm sm:p-6")}>
             {details.map(([label, value]) => (
               <div key={label} className="contents">
                 <dt className="font-bold text-muted">{label}</dt>
@@ -196,12 +200,12 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
           })}
 
           {user && (
-            <details className="card p-4">
+            <details className={cardClass("p-4")}>
               <summary className="cursor-pointer font-bold">Who is going ({participants.length})</summary>
               {canManage && tally.length > 0 && (
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {tally.map((t) => (
-                    <section key={t.group} className="rounded-xl border border-line bg-soft p-3">
+                    <section key={t.group} className="rounded-md border border-line bg-soft p-3">
                       <h3 className="text-sm font-bold text-muted">{t.group}</h3>
                       <ul className="mt-1.5 space-y-1 text-sm">
                         {t.choices.map((c) => (
@@ -238,27 +242,27 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
                             <div className="flex flex-wrap items-start gap-2 md:justify-end">
                               {groups.length > 0 && (
                                 <details className="group">
-                                  <summary className="btn btn-secondary btn-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">Change choices</summary>
-                                  <form action={updateParticipantChoices} className="mt-2 w-64 max-w-full space-y-2 rounded-xl bg-soft p-3 text-left">
+                                  <summary className={buttonClass({ variant: "secondary", size: "sm" }, "cursor-pointer list-none [&::-webkit-details-marker]:hidden")}>Change choices</summary>
+                                  <form action={updateParticipantChoices} className="mt-2 w-64 max-w-full space-y-2 rounded-md bg-soft p-3 text-left">
                                     <input type="hidden" name="id" value={activity.id} />
                                     <input type="hidden" name="user_id" value={p.id} />
                                     {groups.map((g) => (
                                       <label key={g.id} className="block text-sm">
-                                        <span className="label">{g.label}</span>
-                                        <select name={`opt_${g.id}`} className="input" defaultValue={g.choices.find((c) => c.label === p.choices.find((x) => x.group === g.label)?.choice)?.id ?? ""} required={g.required}>
+                                        <span className={labelClass()}>{g.label}</span>
+                                        <Select name={`opt_${g.id}`} defaultValue={g.choices.find((c) => c.label === p.choices.find((x) => x.group === g.label)?.choice)?.id ?? ""} required={g.required}>
                                           {!g.required && <option value="">None</option>}
                                           {g.choices.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
-                                        </select>
+                                        </Select>
                                       </label>
                                     ))}
-                                    <button className="btn btn-secondary btn-sm" type="submit">Save choices</button>
+                                    <Button variant="secondary" size="sm" type="submit">Save choices</Button>
                                   </form>
                                 </details>
                               )}
                               <form action={removeParticipant}>
                                 <input type="hidden" name="id" value={activity.id} />
                                 <input type="hidden" name="user_id" value={p.id} />
-                                <ConfirmButton message={`Unsubscribe ${displayName(p)} from ${activity.name}?`} className="btn btn-secondary btn-sm">Unsubscribe</ConfirmButton>
+                                <ConfirmButton message={`Unsubscribe ${displayName(p)} from ${activity.name}?`} className={buttonClass({ variant: "secondary", size: "sm" })}>Unsubscribe</ConfirmButton>
                               </form>
                             </div>
                           </td>
@@ -279,12 +283,12 @@ export default async function ActivityPage(props: { params: Promise<{ id: string
           {canManage && waitlist.total > 0 && <p className="text-sm text-muted">{waitlist.total} on the waitlist.</p>}
 
           <div className="flex flex-wrap gap-3">
-            <Link href="/mastapps/activities" className="btn btn-secondary">All activities</Link>
+            <Link href="/mastapps/activities" className={buttonClass({ variant: "secondary" })}>All activities</Link>
             {activity.is_visible && (
-              <a href={`/mastapps/activities/${activity.id}/event.ics`} download className="btn btn-secondary">Add to calendar</a>
+              <a href={`/mastapps/activities/${activity.id}/event.ics`} download className={buttonClass({ variant: "secondary" })}>Add to calendar</a>
             )}
-            {canManage && <Link href={`/mastapps/activities/${activity.id}/edit`} className="btn btn-secondary">Edit</Link>}
-            {canManage && <Link href={`/mastapps/activities/${activity.id}/plugins`} className="btn btn-secondary">Plugins</Link>}
+            {canManage && <Link href={`/mastapps/activities/${activity.id}/edit`} className={buttonClass({ variant: "secondary" })}>Edit</Link>}
+            {canManage && <Link href={`/mastapps/activities/${activity.id}/plugins`} className={buttonClass({ variant: "secondary" })}>Plugins</Link>}
           </div>
         </div>
 

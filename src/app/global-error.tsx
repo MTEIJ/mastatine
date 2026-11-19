@@ -1,6 +1,8 @@
 "use client";
 
-// Replaces the root layout when it fails, so it brings its own <html>, <body> and (inline) styles.
+// Replaces the root layout when it fails, so it brings its own <html>, <body> and (inline) styles. No stylesheet is
+// loaded here, so the design tokens do not exist either: the colours are the tokens' values, written out.
+/* eslint-disable design-system/use-tokens */
 export default function GlobalError({ unstable_retry }: { error: Error & { digest?: string }; unstable_retry: () => void }) {
   return (
     <html lang="en">

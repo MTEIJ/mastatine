@@ -7,6 +7,7 @@ import type { NewsPost } from "@/lib/news";
 import { requireAdmin } from "@/lib/session";
 import { deleteNews, saveNews } from "../actions";
 import NewsForm from "../NewsForm";
+import { buttonClass } from "@/components/ui/classes";
 
 export const instant = false;
 
@@ -27,7 +28,7 @@ export default async function EditNewsPage(props: { params: Promise<{ id: string
       <NewsForm action={saveNews} post={post} submitLabel="Save changes" />
       <form action={deleteNews} className="mt-4">
         <input type="hidden" name="id" value={post.id} />
-        <ConfirmButton message={`Delete “${post.title}”? This cannot be undone.`} className="btn btn-danger btn-sm">Delete post</ConfirmButton>
+        <ConfirmButton message={`Delete “${post.title}”? This cannot be undone.`} className={buttonClass({ variant: "danger", size: "sm" })}>Delete post</ConfirmButton>
       </form>
     </div>
   );

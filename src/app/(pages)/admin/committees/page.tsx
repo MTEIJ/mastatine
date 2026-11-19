@@ -4,6 +4,10 @@ import MemberSearch from "@/components/admin/MemberSearch";
 import { displayName, getPendingJoinRequests } from "@/lib/committees";
 import { addCommitteeMember, approveJoinRequest, createCommittee, declineJoinRequest, deleteCommittee, removeCommitteeMember, setCommitteeVisibility, toggleCommitteeChair, updateCommittee } from "../actions";
 import { requireAdmin } from "@/lib/session";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Card";
+import { Input, Label, Textarea } from "@/components/ui/Field";
+import { buttonClass, cardClass } from "@/components/ui/classes";
 
 /** Members named in the table row; the rest are one click away in the edit menu. */
 const SHOWN = 4;
@@ -42,18 +46,18 @@ export default async function AdminCommittees() {
     <div className="space-y-3">
       <form action={createCommittee} className="flex flex-wrap items-end gap-2">
         <div className="min-w-0 flex-1 basis-40">
-          <label className="label" htmlFor="committee-name">New committee</label>
-          <input id="committee-name" name="name" className="input" required maxLength={80} />
+          <Label htmlFor="committee-name">New committee</Label>
+          <Input id="committee-name" name="name" required maxLength={80} />
         </div>
         <div className="min-w-0 flex-[2] basis-56">
-          <label className="label" htmlFor="committee-description">Description</label>
-          <input id="committee-description" name="description" className="input" maxLength={400} />
+          <Label htmlFor="committee-description">Description</Label>
+          <Input id="committee-description" name="description" maxLength={400} />
         </div>
-        <button className="btn btn-primary btn-sm" type="submit">Add committee</button>
+        <Button variant="primary" size="sm" type="submit">Add committee</Button>
       </form>
 
       {requests.length > 0 && (
-        <section aria-label="Join requests" className="card space-y-2 p-4">
+        <section aria-label="Join requests" className={cardClass("space-y-2 p-4")}>
           <h2 className="text-sm font-bold uppercase tracking-wide text-accent-text">Join requests ({requests.length})</h2>
           <ul className="divide-y divide-line">
             {requests.map((r) => (
@@ -68,11 +72,11 @@ export default async function AdminCommittees() {
                 <div className="flex gap-1">
                   <form action={approveJoinRequest}>
                     <input type="hidden" name="id" value={r.id} />
-                    <button className="btn btn-primary btn-sm" type="submit">Approve</button>
+                    <Button variant="primary" size="sm" type="submit">Approve</Button>
                   </form>
                   <form action={declineJoinRequest}>
                     <input type="hidden" name="id" value={r.id} />
-                    <button className="btn btn-secondary btn-sm" type="submit">Decline</button>
+                    <Button variant="secondary" size="sm" type="submit">Decline</Button>
                   </form>
                 </div>
               </li>
@@ -98,7 +102,7 @@ export default async function AdminCommittees() {
                 <tr key={c.id}>
                   <td data-primary>
                     <span className="font-medium">{c.name}</span>
-                    {!c.is_public && <span className="badge ml-2 !bg-soft !text-muted">Hidden from site</span>}
+                    {!c.is_public && <Badge className="ml-2 !bg-soft !text-muted">Hidden from site</Badge>}
                     {c.description && <span className="block text-xs font-normal text-muted">{c.description}</span>}
                   </td>
                   <td data-label="Members" className="sm:max-w-md">
@@ -122,12 +126,12 @@ export default async function AdminCommittees() {
                       <form action={setCommitteeVisibility} className="max-sm:w-full">
                         <input type="hidden" name="id" value={c.id} />
                         <input type="hidden" name="public" value={c.is_public ? "false" : "true"} />
-                        <button className="btn btn-secondary btn-sm max-sm:w-full" type="submit" title={c.is_public ? "Remove from the public committee pages" : "Show on the public committee pages"}>
+                        <Button variant="secondary" size="sm" className="max-sm:w-full" type="submit" title={c.is_public ? "Remove from the public committee pages" : "Show on the public committee pages"}>
                           {c.is_public ? "Hide from site" : "Show on site"}
-                        </button>
+                        </Button>
                       </form>
                       <details className="popover max-sm:w-full">
-                        <summary className="btn btn-secondary btn-sm max-sm:w-full" aria-label={`Edit ${c.name}`} title="Edit"><span className="sm:hidden">Edit</span><span aria-hidden="true" className="max-sm:hidden text-base leading-none">⋯</span></summary>
+                        <summary className={buttonClass({ variant: "secondary", size: "sm" }, "max-sm:w-full")} aria-label={`Edit ${c.name}`} title="Edit"><span className="sm:hidden">Edit</span><span aria-hidden="true" className="max-sm:hidden text-base leading-none">⋯</span></summary>
                         <div className="popover__panel space-y-4 text-sm">
                           <section aria-label="Members" className="space-y-1.5">
                             <h3 className="text-xs font-bold uppercase tracking-wide text-muted">Members ({own.length})</h3>
@@ -135,17 +139,17 @@ export default async function AdminCommittees() {
                               <ul className="max-h-56 divide-y divide-line overflow-y-auto">
                                 {own.map((m) => (
                                   <li key={m.user_id} className="flex items-center justify-between gap-2 py-1">
-                                    <span className="min-w-0 truncate">{displayName(m)}{m.is_chair && <span className="badge ml-1.5">chair</span>}</span>
+                                    <span className="min-w-0 truncate">{displayName(m)}{m.is_chair && <Badge className="ml-1.5">chair</Badge>}</span>
                                     <span className="flex shrink-0 gap-1">
                                       <form action={toggleCommitteeChair}>
                                         <input type="hidden" name="committeeId" value={c.id} />
                                         <input type="hidden" name="userId" value={m.user_id} />
-                                        <button className="btn btn-secondary btn-sm" type="submit">{m.is_chair ? "Unchair" : "Chair"}</button>
+                                        <Button variant="secondary" size="sm" type="submit">{m.is_chair ? "Unchair" : "Chair"}</Button>
                                       </form>
                                       <form action={removeCommitteeMember}>
                                         <input type="hidden" name="committeeId" value={c.id} />
                                         <input type="hidden" name="userId" value={m.user_id} />
-                                        <button className="btn btn-secondary btn-sm" type="submit" aria-label={`Remove ${displayName(m)}`}>Remove</button>
+                                        <Button variant="secondary" size="sm" type="submit" aria-label={`Remove ${displayName(m)}`}>Remove</Button>
                                       </form>
                                     </span>
                                   </li>
@@ -159,20 +163,20 @@ export default async function AdminCommittees() {
                             <h3 className="text-xs font-bold uppercase tracking-wide text-muted">Details</h3>
                             <input type="hidden" name="id" value={c.id} />
                             <div>
-                              <label className="label" htmlFor={`committee-name-${c.id}`}>Name</label>
-                              <input id={`committee-name-${c.id}`} name="name" className="input" required maxLength={80} defaultValue={c.name} />
+                              <Label htmlFor={`committee-name-${c.id}`}>Name</Label>
+                              <Input id={`committee-name-${c.id}`} name="name" required maxLength={80} defaultValue={c.name} />
                             </div>
                             <div>
-                              <label className="label" htmlFor={`committee-desc-${c.id}`}>Description</label>
-                              <textarea id={`committee-desc-${c.id}`} name="description" className="input min-h-16" maxLength={400} defaultValue={c.description ?? ""} />
+                              <Label htmlFor={`committee-desc-${c.id}`}>Description</Label>
+                              <Textarea id={`committee-desc-${c.id}`} name="description" className="min-h-16" maxLength={400} defaultValue={c.description ?? ""} />
                             </div>
                             <div>
-                              <label className="label" htmlFor={`committee-banner-${c.id}`}>Banner</label>
+                              <Label htmlFor={`committee-banner-${c.id}`}>Banner</Label>
                               {c.banner_url && (
                                 // eslint-disable-next-line @next/next/no-img-element
-                                <img src={c.banner_url} alt="" className="mb-2 h-16 w-full rounded-md border border-line object-cover" />
+                                <img src={c.banner_url} alt="" className="mb-2 h-16 w-full rounded-sm border border-line object-cover" />
                               )}
-                              <input id={`committee-banner-${c.id}`} name="banner" type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="input" />
+                              <Input id={`committee-banner-${c.id}`} name="banner" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
                               {c.banner_url && (
                                 <label className="choice-row mt-2">
                                   <input type="checkbox" name="removeBanner" className="mt-0" />
@@ -180,12 +184,12 @@ export default async function AdminCommittees() {
                                 </label>
                               )}
                             </div>
-                            <button className="btn btn-primary btn-sm" type="submit">Save details</button>
+                            <Button variant="primary" size="sm" type="submit">Save details</Button>
                           </form>
 
                           <form action={deleteCommittee} className="border-t border-line pt-3">
                             <input type="hidden" name="id" value={c.id} />
-                            <ConfirmButton message={`Delete ${c.name}? Its activities, meetings and action points are deleted too.`} className="btn btn-danger btn-sm">Delete committee</ConfirmButton>
+                            <ConfirmButton message={`Delete ${c.name}? Its activities, meetings and action points are deleted too.`} className={buttonClass({ variant: "danger", size: "sm" })}>Delete committee</ConfirmButton>
                           </form>
                         </div>
                       </details>
