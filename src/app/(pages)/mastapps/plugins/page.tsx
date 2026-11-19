@@ -48,7 +48,7 @@ export default async function PluginLibraryPage(props: { searchParams: Promise<{
                   </p>
                   <p className="text-sm text-muted">{item.activity_name} · {formatDayMonth(item.starts_at)}</p>
                 </div>
-                <Link href={`/mastapps/activities/${item.activity_id}/plugins`} className="btn btn-secondary btn-sm">Manage</Link>
+                <Link href={`/mastapps/activities/${item.activity_id}/plugins/${item.id}`} className="btn btn-secondary btn-sm">Manage</Link>
               </li>
             ))}
           </ul>

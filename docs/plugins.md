@@ -15,7 +15,7 @@ Committees use them from an activity: **Activity → Plugins → Add**. The over
 | One plugin | `src/plugins/<id>/index.tsx` (the scoreboard is the reference) |
 | Instances: which plugin is on for which activity | table `activity_plugins`, `src/lib/plugin-instances.ts` |
 | Per-instance storage for plugins | table `plugin_data`, `src/lib/plugin-data.ts` |
-| Manage page (settings, link, add/remove) | `/mastapps/activities/[id]/plugins` |
+| Manage pages: the list (add) and one page per plugin (settings, link, on/off, remove) | `/mastapps/activities/[id]/plugins`, `…/plugins/[instance]` |
 | Public page without login | `/p/<token>`: standalone and full screen, without the site header, sidebar or footer (`isStandalonePath`) |
 | Signup events | `src/plugins/events.ts`, called from `logActivityEvent` |
 

@@ -59,7 +59,7 @@ async function managedBoard(formData: FormData) {
 function refreshBoard(instance: { activity_id: string; public_token: string }) {
   revalidatePath(`/p/${instance.public_token}`);
   revalidatePath(`/mastapps/activities/${instance.activity_id}`);
-  revalidatePath(`/mastapps/activities/${instance.activity_id}/plugins`);
+  revalidatePath(`/mastapps/activities/${instance.activity_id}/plugins`, "layout");
 }
 
 export async function addPlayerAction(formData: FormData): Promise<void> {

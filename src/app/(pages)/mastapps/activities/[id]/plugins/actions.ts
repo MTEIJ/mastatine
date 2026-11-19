@@ -28,7 +28,8 @@ async function managedInstance(formData: FormData) {
 
 function refresh(activityId: string) {
   revalidatePath(`/mastapps/activities/${activityId}`);
-  revalidatePath(`/mastapps/activities/${activityId}/plugins`);
+  // "layout" also covers each plugin's own page below it.
+  revalidatePath(`/mastapps/activities/${activityId}/plugins`, "layout");
 }
 
 export async function addPlugin(formData: FormData): Promise<void> {
@@ -41,8 +42,8 @@ export async function addPlugin(formData: FormData): Promise<void> {
   if ((await getInstances(activityId.data)).length >= MAX_PLUGINS_PER_ACTIVITY) return;
   const instance = await createInstance(activityId.data, plugin.id, plugin.defaultConfig as Record<string, unknown>);
   refresh(activityId.data);
-  // The new plugin starts with default settings: take the organiser straight to them, already unfolded.
-  redirect(`/mastapps/activities/${activityId.data}/plugins?new=${instance.id}#plugin-${instance.id}`);
+  // The new plugin starts with default settings: take the organiser straight to its page.
+  redirect(`/mastapps/activities/${activityId.data}/plugins/${instance.id}`);
 }
 
 export interface SettingsState {
@@ -86,4 +87,6 @@ export async function removePlugin(formData: FormData): Promise<void> {
   if (!instance) return;
   await deleteInstance(instance.id);
   refresh(instance.activity_id);
+  // Removing happens on the plugin's own page, which no longer exists: back to the list.
+  redirect(`/mastapps/activities/${instance.activity_id}/plugins`);
 }
