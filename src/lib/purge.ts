@@ -16,7 +16,10 @@ export interface PurgeResult {
 /** Uploads younger than this may still be waiting for their form to be submitted. */
 const ORPHAN_UPLOAD_MIN_AGE_MS = 24 * 60 * 60 * 1000;
 
-/** Deletes files in the upload directory that no mast or activity references (abandoned or abusive uploads). */
+/**
+ * Deletes files in the upload directory that nothing references (abandoned or abusive uploads): masts, activity
+ * posters, board application mast photos, minutes, and plugin data rows with a `photo` field.
+ */
 async function purgeOrphanUploads(): Promise<number> {
   const files = await readdir(UPLOAD_DIR).catch(() => [] as string[]);
   const candidates = files.filter((f) => UPLOAD_FILENAME_RE.test(f));
@@ -26,7 +29,9 @@ async function purgeOrphanUploads(): Promise<number> {
   const rows = await sql<{ url: string }[]>`
     SELECT image_url AS url FROM towers
     UNION SELECT poster_url FROM activities WHERE poster_url IS NOT NULL
+    UNION SELECT mast_photo FROM board_applications
     UNION SELECT found[1] FROM meeting_items, regexp_matches(notes, '(/uploads/[a-z0-9-]+\\.(?:jpg|png|webp|gif))', 'g') AS found
+    UNION SELECT value->>'photo' FROM plugin_data WHERE value ? 'photo'
   `;
   const used = new Set(rows.map((r) => r.url));
 

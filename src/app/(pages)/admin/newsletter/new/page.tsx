@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { createIssue } from "../../actions";
 import AudienceField from "@/components/admin/AudienceField";
 import ActivitiesField from "@/components/admin/ActivitiesField";
@@ -21,7 +22,7 @@ export default async function NewIssuePage() {
         </div>
         <div>
           <label className="label" htmlFor="body">Message</label>
-          <textarea id="body" name="body" className="input min-h-72 font-mono" required maxLength={20000} />
+          <MarkdownEditor id="body" name="body" heightClass="min-h-72" required maxLength={20000} />
           <p className="hint">{FORMAT_HINT} Blank lines start a new paragraph and web addresses become links. The unsubscribe link and the footer notice are added automatically.</p>
         </div>
         <ActivitiesField />

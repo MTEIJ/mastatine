@@ -43,6 +43,8 @@ services:
       LEGAL_NAME: ${LEGAL_NAME:-}
       LEGAL_ADDRESS: ${LEGAL_ADDRESS:-}
       KVK_NUMBER: ${KVK_NUMBER:-}
+      # Members' WhatsApp group invite (https://chat.whatsapp.com/...), sent to newly approved members. Optional.
+      WHATSAPP_GROUP_URL: ${WHATSAPP_GROUP_URL:-}
       SHOP_URL: ${SHOP_URL:-}
       # Merch page: the shop id switches on the live product feed; the API key (optional) adds colour names and codes.
       SPREADSHIRT_SHOP_ID: ${SPREADSHIRT_SHOP_ID:-}

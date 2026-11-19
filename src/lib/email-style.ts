@@ -1,3 +1,5 @@
+import { BUTTON_COLOURS, type ButtonTone } from "@/lib/markdown-button";
+
 // Brand colours, see brand/GUIDE.md. Shared by the email shell and the Markdown formatter.
 export const BRAND_ORANGE = "#f57f20";
 export const CORAL = "#e5432a";
@@ -22,5 +24,16 @@ export function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
+/**
+ * An email button: a rounded link with an arrow. `href` and `labelHtml` must already be escaped (the Markdown formatter
+ * passes formatted text). Inline-block, so two in one paragraph sit side by side and wrap on a narrow screen.
+ */
+export function emailButton(href: string, labelHtml: string, tone: ButtonTone = "dark"): string {
+  const c = BUTTON_COLOURS[tone];
+  const arrow = tone === "dark" ? BRAND_ORANGE : c.fg;
+  return `<a href="${href}" bgcolor="${c.bg}" style="display:inline-block;margin:0 8px 10px 0;background:${c.bg};color:${c.fg};text-decoration:none !important;border-radius:999px;font-size:16px;font-weight:700;padding:15px 30px">${labelHtml} <span style="color:${arrow}">&rarr;</span></a>`;
+}
+
 /** Shown under every text box whose content goes into an email. Kept here so client forms can import it. */
-export const FORMAT_HINT = "Formatting: **bold**, *italic*, [link text](https://…), # heading, - list, > quote, --- line.";
+export const FORMAT_HINT =
+  'Formatting: **bold**, *italic*, [link text](https://…), [button text](https://… "button"), # heading, - list, > quote, --- line. Buttons can be "button orange" or "button green".';

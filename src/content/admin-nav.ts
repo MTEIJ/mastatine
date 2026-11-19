@@ -16,6 +16,7 @@ export const ADMIN_GROUPS: readonly AdminNavGroup[] = [
     title: "People",
     items: [
       { label: "Users", href: "/admin/users" },
+      { label: "Board applications", href: "/admin/board" },
       { label: "Committees", href: "/admin/committees" },
       { label: "Finance access", href: "/admin/finance-access" },
     ],

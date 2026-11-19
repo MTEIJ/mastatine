@@ -6,7 +6,16 @@ import { getInstanceByToken } from "@/lib/plugin-instances";
 import { resolvePlugin } from "@/plugins/registry";
 
 // The address is the secret: keep it out of search results and never pass it on in a Referer header.
-export const metadata: Metadata = { title: "Activity", robots: { index: false, follow: false }, referrer: "no-referrer" };
+const BASE_METADATA: Metadata = { title: "Activity", robots: { index: false, follow: false }, referrer: "no-referrer" };
+
+/** On a screen view (?view=screen) the tab shows only the plugin's own title, without the site name. */
+export async function generateMetadata(props: { params: Promise<{ token: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }): Promise<Metadata> {
+  const [{ token }, search] = await Promise.all([props.params, props.searchParams]);
+  if (search.view !== "screen") return BASE_METADATA;
+  const instance = await getInstanceByToken(token);
+  const title = instance?.config && typeof instance.config === "object" && "title" in instance.config ? String(instance.config.title) : "Live";
+  return { ...BASE_METADATA, title: { absolute: title } };
+}
 
 export const instant = false;
 

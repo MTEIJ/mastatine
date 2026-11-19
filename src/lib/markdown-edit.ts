@@ -31,11 +31,26 @@ export function link(text: string, start: number, end: number): Edit {
   return { text: next, start: urlStart, end: urlStart + 8 };
 }
 
+/**
+ * Inserts a button (a link titled "button", see markdown-button.ts) on its own line, using the selection as its text,
+ * and selects the placeholder address so it can be typed over.
+ */
+export function button(text: string, start: number, end: number, title: string): Edit {
+  const label = text.slice(start, end).trim() || "Button text";
+  const before = text.slice(0, start);
+  const after = text.slice(end);
+  const lead = before === "" || before.endsWith("\n") ? "" : "\n";
+  const trail = after === "" || after.startsWith("\n") ? "" : "\n";
+  const md = `[${label}](https:// "${title}")`;
+  const urlStart = before.length + lead.length + label.length + 3;
+  return { text: before + lead + md + trail + after, start: urlStart, end: urlStart + 8 };
+}
+
 /** Plain text for places that cannot show formatting (calendar files): drops the Markdown markers. */
 export function stripMarkdown(text: string): string {
   return text
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/\[([^\]]+)\]\(([^)]*)\)/g, "$1 ($2)")
+    .replace(/\[([^\]]+)\]\((\S*?)(?:\s+"[^"\n]*")?\)/g, "$1 ($2)")
     .replace(/^#{1,6} /gm, "")
     .replace(/(\*\*|__)(.+?)\1/g, "$2")
     .replace(/(\*|_)(.+?)\1/g, "$2");

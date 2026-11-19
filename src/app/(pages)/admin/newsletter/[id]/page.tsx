@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MarkdownEditor from "@/components/MarkdownEditor";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import sql from "@/lib/db";
@@ -83,7 +84,7 @@ export default async function IssuePage(props: { params: Promise<{ id: string }>
             </div>
             <div>
               <label className="label" htmlFor="body">Message</label>
-              <textarea id="body" name="body" className="input min-h-64 font-mono" defaultValue={issue.body} required maxLength={20000} />
+              <MarkdownEditor id="body" name="body" heightClass="min-h-64" defaultValue={issue.body} required maxLength={20000} />
               <p className="hint">{FORMAT_HINT}</p>
             </div>
             <ActivitiesField defaultValue={issue.activities_count} />

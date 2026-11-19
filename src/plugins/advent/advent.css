@@ -1,0 +1,310 @@
+/*
+ * Advent calendar styles. Everything is scoped to .ac-* so nothing leaks into the rest of the site.
+ * .ac-board is the map plus list. On the activity page it sits in the site; .ac-page is the standalone full-screen page.
+ */
+
+.ac-board {
+  --ac-ink: var(--ink, #111);
+  --ac-muted: var(--muted, #4a4a4a);
+  --ac-panel: var(--surface, #fff);
+  --ac-line: var(--line, #d4d4d4);
+  --ac-accent: var(--accent, #f57f20);
+  --ac-accent-fg: var(--accent-fg, #1a0f05);
+  --ac-tile: var(--soft, #f2f2f2);
+  --ac-gold: #a16207;
+}
+
+/* The standalone page: a winter night with snow and gold. */
+.ac-page,
+.ac-page .ac-board {
+  --ac-ink: #f4f7ff;
+  --ac-muted: #b7c3e6;
+  --ac-panel: rgb(255 255 255 / 0.07);
+  --ac-line: rgb(255 255 255 / 0.16);
+  --ac-accent: #f57f20;
+  --ac-accent-fg: #1a0f05;
+  --ac-tile: rgb(255 255 255 / 0.08);
+  --ac-gold: #ffc857;
+}
+
+.ac-page {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow-y: auto;
+  color: var(--ac-ink);
+  background: radial-gradient(60rem 30rem at 50% -8rem, rgb(255 200 87 / 0.18), transparent 70%), linear-gradient(180deg, #0b1736 0%, #14295e 55%, #1c3a7a 100%);
+}
+.ac-page::before,
+.ac-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+.ac-page::before {
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 90px 80px, rgb(255 255 255 / 0.8) 50%, transparent 52%),
+    radial-gradient(2px 2px at 160px 20px, rgb(255 255 255 / 0.9) 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 130px 150px, rgb(255 224 150 / 0.9) 50%, transparent 52%);
+  background-size: 200px 200px;
+  opacity: 0.5;
+}
+.ac-page::after {
+  background-image:
+    radial-gradient(3px 3px at 40px 60px, rgb(255 255 255 / 0.9) 50%, transparent 52%),
+    radial-gradient(2px 2px at 150px 120px, rgb(255 255 255 / 0.7) 50%, transparent 52%);
+  background-size: 260px 260px;
+  opacity: 0.35;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ac-page::after { animation: ac-snow 60s linear infinite; }
+}
+@keyframes ac-snow { to { background-position: 0 260px; } }
+
+.ac-wrap {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 1.5rem, 52rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 4vw, 3rem) 0 3rem;
+}
+.ac-head { margin-bottom: 1.5rem; text-align: center; }
+.ac-head::after {
+  content: "";
+  display: block;
+  width: 6rem;
+  height: 4px;
+  margin: 0.9rem auto 0;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, #ffc857, #f57f20, #ffc857, transparent);
+}
+.ac-eyebrow { margin: 0; font-size: 0.8rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; color: #ffc857; }
+.ac-title { margin: 0.2rem 0 0; font-size: clamp(2rem, 7vw, 3.25rem); font-weight: 900; line-height: 1.1; text-wrap: balance; text-shadow: 0 2px 24px rgb(0 0 0 / 0.35); }
+.ac-summary { margin: 0.4rem 0 0; color: var(--ac-muted); font-variant-numeric: tabular-nums; }
+.ac-foot { margin-top: 1.75rem; text-align: center; font-size: 0.8rem; color: var(--ac-muted); }
+.ac-empty { text-align: center; color: var(--ac-muted); }
+
+/* ───── the fallen ───── */
+
+.ac-memoriam {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 0.6rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ac-memoriam li {
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--ac-line);
+  border-radius: 99px;
+  background: var(--ac-panel);
+  color: var(--ac-ink);
+  font-size: 0.9rem;
+}
+.ac-memoriam span { color: var(--ac-muted); }
+
+.ac-token {
+  display: inline-grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid rgb(255 255 255 / 0.85);
+  background: var(--photo, none) center / cover, hsl(var(--hue) 62% 38%);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.35);
+}
+
+/* ───── the list ───── */
+
+.ac-list {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  border: 1px solid var(--ac-line);
+  border-radius: 0.9rem;
+  background: var(--ac-panel);
+  color: var(--ac-ink);
+}
+.ac-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.9rem;
+}
+.ac-row + .ac-row { border-top: 1px solid var(--ac-line); }
+.ac-row--me { box-shadow: inset 3px 0 0 var(--ac-gold); }
+.ac-row--dead .ac-name { text-decoration: line-through; text-decoration-color: var(--ac-muted); }
+.ac-row .ac-token { width: 2.1rem; height: 2.1rem; font-size: 0.8rem; }
+.ac-name { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+.ac-you { margin-left: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--ac-muted); }
+.ac-status { margin: 0; font-size: 0.85rem; color: var(--ac-muted); }
+
+.ac-actions { display: flex; gap: 0.35rem; margin: 0; }
+.ac-btn {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.7rem;
+  border: 1px solid var(--ac-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ac-ink);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ac-btn:hover:not(:disabled) { border-color: var(--ac-muted); }
+.ac-btn:disabled { opacity: 0.35; cursor: default; }
+.ac-btn--go { border-color: transparent; background: var(--ac-accent); color: var(--ac-accent-fg); }
+.ac-btn--go:hover:not(:disabled) { filter: brightness(1.1); border-color: transparent; }
+.ac-btn:focus-visible { outline: 3px solid var(--ac-gold); outline-offset: 2px; }
+
+/* "Failed on day …": the day picker joined to the grave button as one pill. */
+.ac-fail { display: inline-flex; align-items: stretch; }
+.ac-select {
+  min-height: 2.5rem;
+  padding: 0 0.5rem 0 0.8rem;
+  border: 1px solid var(--ac-line);
+  border-right: 0;
+  border-radius: 999px 0 0 999px;
+  background: var(--ac-panel);
+  color: var(--ac-ink);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.ac-select option { color: #111; }
+.ac-select:focus-visible { outline: 3px solid var(--ac-gold); outline-offset: 2px; }
+.ac-fail .ac-btn--die { border-radius: 0 999px 999px 0; font-size: 0.85rem; white-space: nowrap; }
+
+@media (max-width: 34rem) {
+  .ac-row { gap: 0.5rem; padding-inline: 0.65rem; }
+}
+
+/* The avatar in the list, for someone who may change the photo: tap it to choose one. */
+.ac-photo { position: relative; display: inline-flex; flex: none; }
+.ac-photo-pick { position: relative; display: inline-flex; cursor: pointer; border-radius: 50%; }
+.ac-photo-pick:focus-within { outline: 2px solid var(--ac-gold, #ffcf4a); outline-offset: 2px; }
+.ac-file { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.ac-photo-badge {
+  position: absolute;
+  right: -0.2rem;
+  bottom: -0.2rem;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #fff;
+  color: #16204a;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+  pointer-events: none;
+}
+.ac-photo-remove {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.3rem;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #16204a;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.ac-photo--busy .ac-token { opacity: 0.5; animation: ac-pulse 1s ease-in-out infinite; }
+@keyframes ac-pulse { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .ac-photo--busy .ac-token { animation: none; } }
+.ac-photo-error {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 2;
+  width: max-content;
+  max-width: 15rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 0.5rem;
+  background: #7a1f1f;
+  color: #fff;
+  font-size: 0.78rem;
+}
+
+/*
+ * The screen view (?view=screen): for a TV on the wall. The map is the centrepiece, filling the height; on either side a
+ * column of names rolls like film credits (still standing left, in memoriam right). Sizes follow the viewport, so it
+ * reads from across the room on any screen. Narrow or portrait: the map on top, the columns below.
+ */
+.acs { overflow: hidden; font-family: Lato, "Segoe UI", system-ui, sans-serif; }
+.acs-grid {
+  --pad: clamp(1rem, 2.2vw, 2.5rem);
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(0, 3.2fr) minmax(12rem, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "top top top" "left map right";
+  gap: clamp(0.5rem, 1.5vh, 1.25rem) clamp(1rem, 2vw, 2.5rem);
+  height: 100dvh;
+  padding: var(--pad);
+  box-sizing: border-box;
+}
+.acs-top { grid-area: top; text-align: center; }
+.acs-kicker { margin: 0; font-size: clamp(0.85rem, 1.2vw, 1.3rem); font-weight: 800; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ac-gold); }
+.acs-title { margin: 0.15rem 0 0; font-size: clamp(2rem, 4vw, 4.5rem); font-weight: 900; line-height: 1; text-shadow: 0 2px 24px rgb(0 0 0 / 0.35); }
+
+.acs-map { grid-area: map; display: grid; place-items: center; min-width: 0; min-height: 0; }
+/* As wide as the column allows, but never taller than the space under the title. */
+.acs-map .ac-stage { max-width: none; width: min(100%, calc((100dvh - 2 * var(--pad) - clamp(4rem, 9vw, 8rem)) * var(--ratio))); }
+
+.acs-col { display: flex; flex-direction: column; min-height: 0; align-self: stretch; padding-block: clamp(1rem, 6vh, 5rem); }
+.acs-col:first-of-type { grid-area: left; }
+.acs-col:last-of-type { grid-area: right; }
+.acs-h { margin: 0 0 1rem; text-align: center; font-size: clamp(0.8rem, 1vw, 1.1rem); font-weight: 800; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ac-gold); }
+.acs-count { margin-left: 0.3em; color: var(--ac-ink); letter-spacing: 0; }
+
+.acs-roll { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+/* Names fade in at the bottom and out at the top, like credits leaving the frame. */
+.acs-roll--moving { -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); }
+.acs-roll--moving .acs-track { animation: acs-roll calc(var(--secs) * 1s) linear infinite; }
+@keyframes acs-roll { to { transform: translateY(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .acs-roll--moving .acs-track { animation: none; }
+  .acs-roll--moving { -webkit-mask-image: none; mask-image: none; }
+}
+
+.acs-credits { display: grid; justify-content: center; gap: clamp(0.6rem, 1.6vh, 1.1rem); margin: 0; padding: 0 0 clamp(0.6rem, 1.6vh, 1.1rem); list-style: none; }
+.acs-credits li { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+.acs-credits .ac-token { flex: none; width: clamp(2.4rem, 3.2vw, 3.6rem); height: clamp(2.4rem, 3.2vw, 3.6rem); font-size: clamp(0.85rem, 1.1vw, 1.25rem); border-width: 3px; }
+.acs-name { display: flex; flex-direction: column; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: clamp(1.05rem, 1.5vw, 1.75rem); font-weight: 800; line-height: 1.15; }
+.acs-day { font-size: 0.72em; font-weight: 600; font-style: italic; color: var(--ac-muted); }
+.acs-fell .ac-token { filter: grayscale(1) brightness(0.9); }
+.acs-none { color: var(--ac-muted); font-style: italic; font-size: clamp(1rem, 1.3vw, 1.4rem); }
+
+@media (max-aspect-ratio: 1/1), (max-width: 50rem) {
+  .acs { overflow-y: auto; }
+  .acs-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto; grid-template-areas: "top top" "map map" "left right"; height: auto; min-height: 100dvh; }
+  .acs-map .ac-stage { width: 100%; }
+  .acs-col { padding-block: 0; }
+  .acs-roll { max-height: 60vh; }
+}

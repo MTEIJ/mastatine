@@ -10,11 +10,13 @@ interface ModalProps {
   /** Accessible name of the opening button when the label alone is ambiguous (several in one table). */
   triggerLabel?: string;
   triggerClassName?: string;
+  /** Extra classes on the dialog, e.g. "modal--wide" for a long form. */
+  dialogClassName?: string;
   children: React.ReactNode;
 }
 
 /** A button that opens its children in a native modal dialog: focus is trapped, Esc and a click outside close it. */
-export default function Modal({ label, title, description, triggerLabel, triggerClassName = "btn btn-secondary btn-sm", children }: ModalProps) {
+export default function Modal({ label, title, description, triggerLabel, triggerClassName = "btn btn-secondary btn-sm", dialogClassName, children }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -25,7 +27,7 @@ export default function Modal({ label, title, description, triggerLabel, trigger
       </button>
       <dialog
         ref={ref}
-        className="modal"
+        className={dialogClassName ? `modal ${dialogClassName}` : "modal"}
         aria-labelledby={titleId}
         onClick={(event) => {
           // The panel fills the dialog, so a click on the dialog element itself is a click on the backdrop.

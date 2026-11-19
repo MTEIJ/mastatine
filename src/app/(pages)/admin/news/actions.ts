@@ -82,7 +82,7 @@ export async function saveAnnouncement(formData: FormData) {
   const data = parsed.data;
   if (data.mode === "custom" && (!data.title || !isValidAnnouncementLink(data.link))) redirect("/admin/news?notice=announcement-invalid");
 
-  // Saving always bumps updated_at: the bar comes back for everyone who dismissed the previous message.
+  // A changed title, summary or link brings the bar back for everyone who dismissed the previous message (see announcementId).
   await sql`
     INSERT INTO site_announcement (id, mode, title, summary, link, updated_at)
     VALUES (1, ${data.mode}, ${data.title}, ${data.summary}, ${data.link}, NOW())

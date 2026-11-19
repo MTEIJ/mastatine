@@ -1,6 +1,7 @@
 import { SITE_NAME, siteUrl } from "@/lib/env";
 import { AUDIENCE_REASON, type Audience } from "@/lib/newsletter-audience";
-import { BRAND_ORANGE, CAPS_FONT, CORAL, CREAM, FONT, INK, LINE, LINK, MUTED, PAGE_BG, P_STYLE, escapeHtml } from "@/lib/email-style";
+import { BRAND_ORANGE, CAPS_FONT, CORAL, CREAM, FONT, INK, LINE, LINK, MUTED, PAGE_BG, P_STYLE, emailButton, escapeHtml } from "@/lib/email-style";
+import type { ButtonTone } from "@/lib/markdown-button";
 import { markdownToPlainText, textToHtml } from "@/lib/email-format";
 import { TIME_ZONE, formatDateTime } from "@/lib/datetime";
 
@@ -33,7 +34,9 @@ interface MessageParts {
   /** Label and value pairs, shown as a small table. */
   details?: MailDetail[];
   /** The one thing we want the reader to do. */
-  action?: { url: string; label: string };
+  action?: MailButton;
+  /** A second button beside the main one, for an equally useful next step. */
+  secondAction?: MailButton;
   /** Quieter extra links. */
   links?: { url: string; label: string }[];
   /** Small print under the action. */
@@ -55,8 +58,17 @@ function detailsTable(details: MailDetail[]): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${CREAM}" style="margin:4px 0 22px;background:${CREAM}"><tr><td bgcolor="${CREAM}" style="padding:6px 22px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr></table>`;
 }
 
-function button(url: string, label: string): string {
-  return `<p style="margin:4px 0 22px"><a href="${escapeHtml(url)}" style="display:inline-block;background:${INK};color:#ffffff;text-decoration:none !important;border-radius:999px;font-size:16px;font-weight:700;padding:15px 30px">${escapeHtml(label)} <span style="color:${BRAND_ORANGE}">&rarr;</span></a></p>`;
+interface MailButton {
+  url: string;
+  label: string;
+  tone?: ButtonTone;
+}
+
+const buttonLink = ({ url, label, tone }: MailButton) => emailButton(escapeHtml(url), escapeHtml(label), tone);
+
+/** The main button, with an optional second one next to it (they wrap below each other on a narrow screen). */
+function buttons(main: MailButton, second?: MailButton): string {
+  return `<p style="margin:4px 0 12px">${buttonLink(main)}${second ? buttonLink(second) : ""}</p>`;
 }
 
 /**
@@ -65,6 +77,7 @@ function button(url: string, label: string): string {
  */
 function compose(subject: string, parts: MessageParts): EmailContent {
   const footer = parts.footer ?? { text: PARODY_NOTICE, html: escapeHtml(PARODY_NOTICE) };
+  const textLinks = (parts.links ?? []).filter((l) => l.url !== parts.action?.url);
 
   const textSections = [
     parts.heading.toUpperCase(),
@@ -73,7 +86,9 @@ function compose(subject: string, parts: MessageParts): EmailContent {
     ...(parts.extra ? [parts.extra.text] : []),
     ...(parts.details?.length ? [parts.details.map((d) => `${d.label}: ${d.value}`).join("\n")] : []),
     ...(parts.action ? [`${parts.action.label}: ${parts.action.url}`] : []),
-    ...(parts.links?.length ? [parts.links.map((l) => `${l.label}: ${l.url}`).join("\n")] : []),
+    ...(parts.secondAction ? [`${parts.secondAction.label}: ${parts.secondAction.url}`] : []),
+    // A link that repeats the button (written out for mail apps that hide buttons) is already on the line above.
+    ...(textLinks.length ? [textLinks.map((l) => `${l.label}: ${l.url}`).join("\n")] : []),
     ...(parts.notes ?? []),
     `--\n${footer.text}`,
   ];
@@ -93,7 +108,7 @@ function compose(subject: string, parts: MessageParts): EmailContent {
       ${parts.body ? parts.body.html : ""}
       ${parts.extra ? parts.extra.html : ""}
       ${parts.details?.length ? detailsTable(parts.details) : ""}
-      ${parts.action ? button(parts.action.url, parts.action.label) : ""}
+      ${parts.action ? buttons(parts.action, parts.secondAction) : ""}
       ${(parts.links ?? []).map((l) => `<p style="margin:0 0 10px;font-size:14px"><a href="${escapeHtml(l.url)}" style="color:${LINK};font-weight:700">${escapeHtml(l.label)}</a></p>`).join("")}
       ${(parts.notes ?? []).map((n) => `<p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:${MUTED}">${escapeHtml(n)}</p>`).join("")}
     </td></tr>
@@ -377,17 +392,27 @@ export function activityInviteEmail(d: ActivityInviteDetails): EmailContent {
   });
 }
 
-/** Sent when an admin approves someone's membership request. */
-export function membershipApprovedEmail(name: string | null): EmailContent {
+/**
+ * Sent when an admin approves someone's membership request. With the members' WhatsApp group link (WHATSAPP_GROUP_URL)
+ * the invite is the main button, and the link is also written out for mail apps that hide buttons.
+ */
+export function membershipApprovedEmail(name: string | null, whatsappUrl: string | null = null): EmailContent {
+  const mastapps = absoluteUrl("/mastapps");
   return compose(`You are now a member of ${SITE_NAME}`, {
-    preheader: "Your membership request was approved.",
+    preheader: whatsappUrl ? "Your membership request was approved. Join the members' WhatsApp group!" : "Your membership request was approved.",
     heading: "Welcome, member!",
-    intro: `${name ? `Hi ${name}, an` : "An"} admin approved your membership request. You now have access to everything that is just for members.`,
+    intro: `${name ? `Hi ${name}, an` : "An"} admin approved your membership request. You now have access to everything that is just for members.${
+      whatsappUrl ? " Join the members' WhatsApp group to stay in the loop." : ""
+    }`,
     details: [
+      ...(whatsappUrl ? [{ label: "WhatsApp", value: "Chat with the other members" }] : []),
       { label: "Quotes", value: "Read, add and grade quotes" },
       { label: "Activities", value: "See and join members-only activities" },
     ],
-    action: { url: absoluteUrl("/mastapps"), label: "Open MastApps" },
+    action: whatsappUrl ? { url: whatsappUrl, label: "Join the WhatsApp group", tone: "green" } : { url: mastapps, label: "Open MastApps" },
+    secondAction: whatsappUrl ? { url: mastapps, label: "Open MastApps", tone: "orange" } : undefined,
+    links: whatsappUrl ? [{ url: whatsappUrl, label: whatsappUrl }] : undefined,
+    notes: whatsappUrl ? ["The group link is for members only. Please do not pass it on."] : undefined,
   });
 }
 
@@ -414,6 +439,22 @@ export function membershipRequestedEmail(person: { name: string | null; email: s
       { label: "Email", value: person.email },
     ],
     action: { url: absoluteUrl("/admin/users?filter=requests"), label: "Review requests" },
+  });
+}
+
+export function boardApplicationEmail(application: { name: string; email: string; firstChoice: string; secondChoice: string | null; updated: boolean }): EmailContent {
+  const what = application.updated ? "updated their board application" : "applied for the board";
+  return compose(application.updated ? "Board application updated" : "New board application", {
+    preheader: `${application.name} ${what}.`,
+    heading: application.updated ? "Board application updated" : "New board application",
+    intro: `${application.name} ${what}. Read the motivation (and admire the mast) in the admin area.`,
+    details: [
+      { label: "Name", value: application.name },
+      { label: "Email", value: application.email },
+      { label: "1st choice", value: application.firstChoice },
+      { label: "2nd choice", value: application.secondChoice ?? "None" },
+    ],
+    action: { url: absoluteUrl("/admin/board"), label: "Read applications" },
   });
 }
 

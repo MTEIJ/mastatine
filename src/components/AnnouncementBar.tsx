@@ -40,8 +40,8 @@ function Wrapper({ href, className, children }: { href: string | null; className
 }
 
 /**
- * Sticky strip at the top of every site page; admins choose what it says (the latest news by default). Closing it is remembered per news item
- * (a per-visitor convenience, not tracking), so a changed message is announced again. While visible it publishes its
+ * Sticky strip at the top of every site page; admins choose what it says (the latest news by default). Closing it is remembered only for the
+ * message on show (a per-visitor convenience, not tracking), so a new or changed announcement appears again. While visible it publishes its
  * height as --announce-h so the sticky sidebar can sit below it.
  */
 export default function AnnouncementBar({ id, title, summary, href }: AnnouncementBarProps) {

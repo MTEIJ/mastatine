@@ -16,6 +16,7 @@ import { slugifyCommittee } from "@/lib/committees";
 import { sendIssue, sendTestIssue } from "@/lib/newsletter";
 import { AUDIENCES, countAudience, parseAudience } from "@/lib/newsletter-audience";
 import { membershipApprovedEmail, membershipEndedEmail } from "@/lib/email-templates";
+import { whatsappGroupUrl } from "@/lib/env";
 import { REREQUEST_COOLDOWN_DAYS } from "@/lib/membership";
 import { sendMail } from "@/lib/mailer";
 
@@ -104,7 +105,7 @@ export async function approveMember(formData: FormData) {
   `;
   if (approved) {
     after(() =>
-      sendMail({ to: approved.email, ...membershipApprovedEmail(approved.name || null) }).catch((error) =>
+      sendMail({ to: approved.email, ...membershipApprovedEmail(approved.name || null, whatsappGroupUrl()) }).catch((error) =>
         console.error("Failed to send the membership approval email:", (error as Error).message),
       ),
     );

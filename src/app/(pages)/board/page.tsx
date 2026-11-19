@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Modal from "@/components/ui/Modal";
 import PageHeader from "@/components/ui/PageHeader";
-import { BOARD } from "@/content/site";
+import { BOARD, BOARD_CALL } from "@/content/site";
+import sql from "@/lib/db";
+import { formatDateTime } from "@/lib/datetime";
+import { getSession } from "@/lib/session";
+import BoardApplicationForm, { type SavedApplication } from "./BoardApplicationForm";
+import { withdrawBoardApplication } from "./actions";
 
 export const metadata: Metadata = {
   title: "The Board",
-  description: "The board roles of M.A. Mastatine and what each one does.",
+  description: "The board roles of M.A. Mastatine, and the application form for the first board.",
 };
 
 export const instant = false;
@@ -19,15 +25,19 @@ export default function BoardPage() {
       />
       <div className="container-page">
         <h2 className="text-2xl font-bold">Roles</h2>
-        <ul className="mt-5 grid gap-5 sm:grid-cols-2">
+        <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {BOARD.map((role) => (
-            <li key={role.title} className="card p-6">
+            <li key={role.key} className="card p-6">
               <h3 className="text-xl font-extrabold">{role.title}</h3>
               {role.portfolio && <p className="text-base font-bold text-accent-text">{role.portfolio}</p>}
               <p className="mt-3 text-base text-muted">{role.summary}</p>
             </li>
           ))}
         </ul>
+
+        <div id="apply" className="mt-8 scroll-mt-24">
+          <Application />
+        </div>
 
         <p className="mt-12 text-base text-muted">
           The board reports to the members. Questions, ideas or complaints?{" "}
@@ -38,5 +48,47 @@ export default function BoardPage() {
         </p>
       </div>
     </>
+  );
+}
+
+/** The button that opens the form (filled in with what the person sent before), or why there is none. */
+async function Application() {
+  if (!BOARD_CALL.open) return null;
+
+  const session = await getSession();
+  if (!session) {
+    return (
+      <Link href={`/login?next=${encodeURIComponent("/board#apply")}`} className="btn btn-primary">
+        Sign in to apply for the board
+      </Link>
+    );
+  }
+
+  const [saved] = await sql<(SavedApplication & { updated_at: Date })[]>`
+    SELECT first_choice, second_choice, motivation, study, hours_per_week, mast_photo, mast_location, mast_spirit,
+      crate_hours, superpower, updated_at
+    FROM board_applications WHERE user_id = ${session.user.id}
+  `;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <Modal
+        label={saved ? "Change my board application" : "Apply for the board"}
+        title={BOARD_CALL.title}
+        description={BOARD_CALL.intro}
+        triggerClassName="btn btn-primary"
+        dialogClassName="modal--wide"
+      >
+        <BoardApplicationForm saved={saved ?? null} />
+      </Modal>
+      {saved && (
+        <span className="flex flex-wrap items-center gap-x-3 text-sm text-muted">
+          You applied on {formatDateTime(saved.updated_at)}.
+          <form action={withdrawBoardApplication}>
+            <button type="submit" className="font-semibold text-danger underline underline-offset-2">Withdraw</button>
+          </form>
+        </span>
+      )}
+    </div>
   );
 }

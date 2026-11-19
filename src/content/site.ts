@@ -14,8 +14,10 @@ export const FOUNDING = {
 } as const;
 
 export interface Role {
+  /** Stable key, stored with board applications. Never change it once people have applied; rename the title instead. */
+  key: string;
   title: string;
-  /** Secondary portfolio, shown in small print under the title. */
+  /** The boring official name, shown in small print under the title. */
   portfolio?: string;
   /** What this role does for the association. */
   summary: string;
@@ -23,24 +25,71 @@ export interface Role {
 
 export const BOARD: Role[] = [
   {
-    title: "Chairman",
+    key: "chair",
+    title: "Chairmast",
+    portfolio: "Chair",
     summary: "Leads the board and the general meeting, represents the association and keeps the whole structure standing.",
   },
   {
-    title: "Secretary",
-    portfolio: "Internal Affairs",
-    summary: "Keeps the minutes, the member administration and the archive, and looks after members and committees.",
+    key: "secretary",
+    title: "Sexytary",
+    portfolio: "Secretary",
+    summary: "Keeps the minutes, the member administration and the archive. Makes paperwork look good.",
   },
   {
-    title: "Treasurer",
+    key: "treasurer",
+    title: "Moneymaster",
+    portfolio: "Treasurer",
     summary: "Manages the budget, the accounts and the finances of every activity.",
   },
   {
-    title: "Educational Affairs",
+    key: "external",
+    title: "Commastioner of External Affairs",
     portfolio: "External Affairs",
-    summary: "Organises educational activities and excursions, and builds contacts with companies and other associations.",
+    summary: "Builds contacts with companies, sponsors and other associations.",
+  },
+  {
+    key: "internal",
+    title: "Commastioner of Internal Affairs",
+    portfolio: "Internal Affairs",
+    summary: "Looks after the members and the committees, and makes sure everyone feels at home.",
+  },
+  {
+    key: "awareness",
+    title: "Mastermind",
+    portfolio: "General Board Member",
+    summary: "Spreads mast awareness, everywhere, always. No fixed tasks: helps out wherever the board needs it and makes sure nobody walks past a mast without looking up.",
   },
 ];
+
+export interface Choice {
+  value: string;
+  label: string;
+}
+
+/** Copy and answer options for the board application form on /board. */
+export const BOARD_CALL = {
+  /** Set to false to close the form; the page then says applications are closed. */
+  open: true,
+  title: "Apply for the first board",
+  intro:
+    "Mastatine needs its very first board. No experience needed, just enthusiasm, a bit of time and a deep, unexplainable love for tall metal structures. Fill in the form below. Yes, all of it. Especially the mast photo.",
+  hoursPerWeek: [
+    { value: "1-3", label: "1 to 3 hours (a light breeze)" },
+    { value: "4-8", label: "4 to 8 hours (a steady signal)" },
+    { value: "9-15", label: "9 to 15 hours (full reception)" },
+    { value: "16+", label: "16+ hours (I live in the mast now)" },
+  ] satisfies Choice[],
+  mastSpirits: [
+    { value: "lattice", label: "Lattice tower: sturdy, reliable, a little see-through" },
+    { value: "monopole", label: "Monopole: simple, straight to the point" },
+    { value: "guyed", label: "Guyed mast: I need support, and that is okay" },
+    { value: "tree", label: "Disguised as a tree: fooling absolutely no one" },
+    { value: "steeple", label: "Church steeple: holy on the outside, 5G on the inside" },
+    { value: "rooftop", label: "Rooftop antenna: small, but always on top of things" },
+  ] satisfies Choice[],
+  promise: "I solemnly swear I will never actually climb a mast.",
+} as const;
 
 export interface Pillar {
   title: string;

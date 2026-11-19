@@ -1,5 +1,6 @@
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkBreaks from "remark-breaks";
+import { BUTTON_COLOURS, buttonTone } from "@/lib/markdown-button";
 
 // Mirrors the server's upload naming; kept here so this file stays free of Node-only imports (it also runs in the editor preview).
 const UPLOADED_IMAGE = /^\/uploads\/[a-z0-9-]+\.(jpg|png|webp|gif)$/;
@@ -23,9 +24,28 @@ const components: Components = {
   ul: ({ children }) => <ul className="my-1.5 list-disc space-y-0.5 pl-5">{children}</ul>,
   ol: ({ children }) => <ol className="my-1.5 list-decimal space-y-0.5 pl-5">{children}</ol>,
   blockquote: ({ children }) => <blockquote className="my-2 border-l-4 border-line pl-3 text-muted">{children}</blockquote>,
-  a: ({ href, children }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-accent-text underline underline-offset-2">{children}</a>
-  ),
+  a: ({ href, title, children }) => {
+    // [text](url "button"), "button orange" or "button green" is drawn as a button; see markdown-button.ts.
+    const tone = buttonTone(title);
+    if (tone) {
+      const c = BUTTON_COLOURS[tone];
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="my-1 mr-2 inline-flex min-h-11 items-center gap-2 rounded-full px-6 py-2.5 font-bold no-underline shadow-sm transition-[filter] hover:brightness-110"
+          style={{ background: c.bg, color: c.fg }}
+        >
+          {children}
+          <span aria-hidden="true" style={{ color: tone === "dark" ? BUTTON_COLOURS.orange.bg : c.fg }}>&rarr;</span>
+        </a>
+      );
+    }
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-accent-text underline underline-offset-2">{children}</a>
+    );
+  },
   img: ({ src, alt }) =>
     typeof src === "string" && src ? (
       // Uploads are already resized WebP, so next/image would add nothing.

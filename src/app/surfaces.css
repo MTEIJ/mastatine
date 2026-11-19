@@ -56,6 +56,11 @@
   .page-header__bar { display: none; }
 }
 
+/* ── Long forms in a dialog (the board application) need more width than an ordinary dialog ── */
+@media (min-width: 640px) {
+  dialog.modal--wide { width: min(46rem, calc(100vw - 1.5rem)); }
+}
+
 /* ── Documents: the PDF preview overlay is much larger than an ordinary dialog ── */
 dialog.modal--viewer { width: min(72rem, calc(100vw - 1.5rem)); height: calc(100dvh - 2rem); }
 dialog.modal--viewer .modal__panel { height: 100%; }

@@ -2,7 +2,8 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import Markdown from "@/components/Markdown";
-import { link, prefixLines, wrap, type Edit } from "@/lib/markdown-edit";
+import { BUTTON_COLOURS, BUTTON_TONES, BUTTON_TONE_LABELS, buttonTitle } from "@/lib/markdown-button";
+import { button, link, prefixLines, wrap, type Edit } from "@/lib/markdown-edit";
 
 interface MarkdownEditorProps {
   id: string;
@@ -24,12 +25,13 @@ function ToolButton({ label, title, onClick, className = "" }: { label: string; 
   );
 }
 
-/** A text area that stores Markdown, with a small toolbar (bold, italic, sizes, lists, link) and a preview. Submits as a normal form field. */
+/** A text area that stores Markdown, with a small toolbar (bold, italic, sizes, lists, link, button) and a preview. Submits as a normal form field. */
 export default function MarkdownEditor({ id, name, defaultValue = "", maxLength, required, heightClass = "min-h-32" }: MarkdownEditorProps) {
   const area = useRef<HTMLTextAreaElement>(null);
   const pending = useRef<{ start: number; end: number } | null>(null);
   const [value, setValue] = useState(defaultValue);
   const [preview, setPreview] = useState(false);
+  const [buttonMenu, setButtonMenu] = useState(false);
 
   useLayoutEffect(() => {
     if (pending.current && area.current) {
@@ -69,6 +71,24 @@ export default function MarkdownEditor({ id, name, defaultValue = "", maxLength,
         <ToolButton label="•" title="Bulleted list" onClick={() => apply((t, s, e) => prefixLines(t, s, e, () => "- ", /^- /))} />
         <ToolButton label="1." title="Numbered list" onClick={() => apply((t, s, e) => prefixLines(t, s, e, (i) => `${i + 1}. `, /^\d+\. /))} />
         <ToolButton label="Link" title="Link" onClick={() => apply(link)} />
+        <ToolButton label="Button" title="Button: pick a colour" className={buttonMenu ? "bg-soft text-ink" : ""} onClick={() => setButtonMenu((open) => !open)} />
+        {buttonMenu &&
+          BUTTON_TONES.map((tone) => (
+            <button
+              key={tone}
+              type="button"
+              title={`${BUTTON_TONE_LABELS[tone]} button`}
+              className="h-7 rounded-full px-3 text-xs font-bold"
+              style={{ background: BUTTON_COLOURS[tone].bg, color: BUTTON_COLOURS[tone].fg }}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                setButtonMenu(false);
+                apply((t, s, e) => button(t, s, e, buttonTitle(tone)));
+              }}
+            >
+              {BUTTON_TONE_LABELS[tone]}
+            </button>
+          ))}
         <button
           type="button"
           aria-pressed={preview}
@@ -96,7 +116,7 @@ export default function MarkdownEditor({ id, name, defaultValue = "", maxLength,
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={onKeyDown}
       />
-      {!preview && <p className="mt-1 text-xs text-muted">Select text, then use the buttons. Links open in a new tab.</p>}
+      {!preview && <p className="mt-1 text-xs text-muted">Select text, then use the buttons. Links open in a new tab. Use Button to add a button in black, orange or WhatsApp green.</p>}
     </div>
   );
 }

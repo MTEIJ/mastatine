@@ -1,3 +1,4 @@
+import advent from "./advent";
 import scoreboard from "./scoreboard";
 import type { PluginDefinition, PluginInstance } from "./types";
 
@@ -7,7 +8,7 @@ import type { PluginDefinition, PluginInstance } from "./types";
  */
 // Each plugin has its own Config type, so the list is typed loosely; typed access goes through resolvePlugin().
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const PLUGINS: readonly PluginDefinition<any>[] = [scoreboard];
+export const PLUGINS: readonly PluginDefinition<any>[] = [scoreboard, advent];
 
 export const getPlugin = (id: string) => PLUGINS.find((p) => p.id === id) ?? null;
 

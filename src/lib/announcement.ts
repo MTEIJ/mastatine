@@ -1,5 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import sql from "@/lib/db";
+import { announcementId } from "@/lib/announcement-id";
 import { getLatestNews } from "@/lib/news";
 
 export type AnnouncementMode = "latest_news" | "custom" | "off";
@@ -54,8 +55,11 @@ export async function getAnnouncement(): Promise<Announcement | null> {
   if (settings.mode === "off") return null;
   if (settings.mode === "custom") {
     if (!settings.title) return null;
-    return { id: `custom-${settings.version}`, title: settings.title, summary: settings.summary, href: settings.link || null };
+    const href = settings.link || null;
+    return { id: announcementId("custom", settings.title, settings.summary, href), title: settings.title, summary: settings.summary, href };
   }
   const latest = await getLatestNews();
-  return latest ? { id: latest.slug, title: latest.title, summary: latest.summary, href: `/news/${latest.slug}` } : null;
+  if (!latest) return null;
+  const href = `/news/${latest.slug}`;
+  return { id: announcementId("news", latest.title, latest.summary, href), title: latest.title, summary: latest.summary, href };
 }

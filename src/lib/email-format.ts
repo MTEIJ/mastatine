@@ -1,14 +1,17 @@
 import { siteUrl } from "@/lib/env";
-import { CORAL, INK, LINE, LINK, MUTED, P_STYLE, CAPS_FONT, escapeHtml } from "@/lib/email-style";
+import { CORAL, INK, LINE, LINK, MUTED, P_STYLE, CAPS_FONT, emailButton, escapeHtml } from "@/lib/email-style";
+import { buttonTone } from "@/lib/markdown-button";
 
 /**
- * A small, safe subset of Markdown for emails: # headings, **bold**, *italic*, [links](url), "- " and "1. " lists,
+ * A small, safe subset of Markdown for emails: # headings, **bold**, *italic*, [links](url), [buttons](url "button")
+ * (see markdown-button.ts), "- " and "1. " lists,
  * "> " quotes and "---" rules. Everything is escaped first and only our own inline-styled tags come out, so nothing the
  * author types can inject HTML. Single line breaks are kept; bare web addresses become links.
  */
 
 const SAFE_URL = /^(https?:\/\/|mailto:)/i;
-const INLINE = /\[([^\]\n]+)\]\((\S+?)\)|\*\*(.+?)\*\*|(?<![*\w])\*(?![\s*])(.+?)(?<![\s*])\*(?![*\w])|(?<![\w])_(?![\s_])(.+?)(?<![\s_])_(?!\w)|https?:\/\/[^\s<]+/g;
+// A link may carry a title ("button", "button orange", ...); the text is already escaped, so its quotes are &quot;.
+const INLINE = /\[([^\]\n]+)\]\((\S+?)(?:\s+&quot;([^\n]*?)&quot;)?\)|\*\*(.+?)\*\*|(?<![*\w])\*(?![\s*])(.+?)(?<![\s*])\*(?![*\w])|(?<![\w])_(?![\s_])(.+?)(?<![\s_])_(?!\w)|https?:\/\/[^\s<]+/g;
 
 function link(href: string, label: string): string {
   return `<a href="${href}" style="color:${LINK};font-weight:bold">${label}</a>`;
@@ -21,10 +24,12 @@ function allowedHref(escaped: string): string | null {
 }
 
 function inline(escaped: string): string {
-  return escaped.replace(INLINE, (match, text, href, bold, italicStar, italicUnderscore) => {
+  return escaped.replace(INLINE, (match, text, href, title, bold, italicStar, italicUnderscore) => {
     if (text !== undefined) {
       const target = allowedHref(href);
-      return target ? link(target, inline(text)) : match;
+      if (!target) return match;
+      const tone = buttonTone(title?.replace(/&quot;/g, '"'));
+      return tone ? emailButton(target, inline(text), tone) : link(target, inline(text));
     }
     if (bold !== undefined) return `<strong>${inline(bold)}</strong>`;
     const italic = italicStar ?? italicUnderscore;
@@ -89,7 +94,7 @@ export function textToHtml(text: string): string {
 export function markdownToPlainText(text: string): string {
   return text
     .replace(/\r\n?/g, "\n")
-    .replace(/\[([^\]\n]+)\]\((\S+?)\)/g, "$1 ($2)")
+    .replace(/\[([^\]\n]+)\]\((\S+?)(?:\s+"[^"\n]*")?\)/g, "$1 ($2)")
     .replace(/\*\*(.+?)\*\*/g, "$1")
     .replace(/(?<![*\w])\*(?![\s*])(.+?)(?<![\s*])\*(?![*\w])/g, "$1")
     .replace(/(?<!\w)_(?![\s_])(.+?)(?<![\s_])_(?!\w)/g, "$1")
