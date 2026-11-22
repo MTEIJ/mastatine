@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 import { getNews } from "@/lib/news";
 import { getPublicCommittees } from "@/lib/committees";
 import { siteUrl } from "@/lib/env";
@@ -7,6 +8,7 @@ import { siteUrl } from "@/lib/env";
 const PAGES = ["/", "/about", "/board", "/committees", "/history", "/membership", "/news", "/mastapps", "/mastapps/activities", "/mastapps/quotes", "/newsletter", "/contact", "/privacy", "/terms"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  await connection(); // SITE_URL is a runtime setting, so it must not be baked in at build time
   const base = siteUrl();
   const [news, committees] = await Promise.all([getNews(), getPublicCommittees().catch(() => [])]);
   return [
