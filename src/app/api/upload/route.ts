@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
 
   // Reject oversized bodies before buffering them.
   const declared = Number(req.headers.get("content-length"));
-  if (declared > MAX_SIZE + 1024 * 1024) {
+  // A missing or non-numeric length (chunked body) is refused too: browsers always send one for form uploads.
+  if (!(declared <= MAX_SIZE + 1024 * 1024)) {
     return NextResponse.json({ error: "File too large (max 20 MB)" }, { status: 413 });
   }
 

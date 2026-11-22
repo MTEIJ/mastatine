@@ -3,7 +3,7 @@ import Link from "next/link";
 import FileManager from "@/components/documents/FileManager";
 import PageHeader from "@/components/ui/PageHeader";
 import { getDocuments } from "@/lib/documents";
-import { getSession } from "@/lib/session";
+import { getMembership } from "@/lib/membership";
 import { cardClass } from "@/components/ui/classes";
 
 export const metadata: Metadata = {
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
 export const instant = false;
 
 export default async function DocumentsPage() {
-  const signedIn = Boolean(await getSession());
-  const docs = await getDocuments(signedIn).catch((error: unknown) => {
+  const { signedIn, isMember } = await getMembership();
+  const docs = await getDocuments(isMember).catch((error: unknown) => {
     console.error("Failed to load documents:", (error as Error).message);
     return [];
   });
@@ -28,10 +28,18 @@ export default async function DocumentsPage() {
         intro="The official papers of the association: what we are founded on, how we work and what we have done."
       />
       <div className="container-page pb-12">
-        {!signedIn && (
+        {!isMember && (
           <p className={cardClass("mb-6 p-4 text-base")}>
             Most documents are for members only.{" "}
-            <Link href="/login?next=/documents" className="font-semibold text-accent-text underline underline-offset-2">Sign in</Link> to see them all.
+            {signedIn ? (
+              <>
+                <Link href="/membership" className="font-semibold text-accent-text underline underline-offset-2">Become a member</Link> to see them all.
+              </>
+            ) : (
+              <>
+                <Link href="/login?next=/documents" className="font-semibold text-accent-text underline underline-offset-2">Sign in</Link> to see them all.
+              </>
+            )}
           </p>
         )}
         <FileManager files={docs} canManage={false} />

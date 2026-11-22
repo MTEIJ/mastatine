@@ -10,7 +10,7 @@ const encoder = new TextEncoder();
 
 /** RFC 5545 TEXT escaping. */
 function escapeText(value: string): string {
-  return value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  return value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r\n|\r|\n/g, "\\n");
 }
 
 /** UTC form: 20261028T180000Z */

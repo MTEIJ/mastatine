@@ -8,3 +8,6 @@ designs
 *.tsbuildinfo
 .claude
 .vscode
+finance-data
+documents-data
+.pglite

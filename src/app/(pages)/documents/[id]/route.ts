@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import sql from "@/lib/db";
 import { readDocument } from "@/lib/documents";
-import { getSession } from "@/lib/session";
+import { getMembership } from "@/lib/membership";
 
 const notFound = () => new NextResponse("Not found", { status: 404 });
 
 /**
- * Members-only documents need a signed-in user; the file must still match the hash recorded at upload.
+ * Members-only documents need an approved member (signing in alone is not enough: anyone can create an account); the file must still match the hash recorded at upload.
  * Shown inline (the file manager previews it in an overlay) unless `?download=1` asks for a download.
  * Framing is allowed for this site only; see the /documents/:id rule in next.config.ts.
  */
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     SELECT filename, sha256, title, visibility FROM documents WHERE id = ${id.data}
   `;
   if (!doc) return notFound();
-  if (doc.visibility !== "public" && !(await getSession())) return notFound();
+  if (doc.visibility !== "public" && !(await getMembership()).isMember) return notFound();
 
   const data = await readDocument(doc.filename, doc.sha256);
   if (!data) return new NextResponse("This file is missing or no longer matches its recorded hash.", { status: 409 });

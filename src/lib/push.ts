@@ -17,9 +17,23 @@ export interface PushMessage {
   tag?: string;
 }
 
+/** Hosts of the browser vendors' push services; the server only ever posts to these (no arbitrary-URL requests). */
+const PUSH_SERVICE_HOSTS = [
+  "fcm.googleapis.com",
+  "updates.push.services.mozilla.com",
+  "push.services.mozilla.com",
+  "push.apple.com",
+  "notify.windows.com",
+];
+
+function isPushServiceHost(endpoint: string): boolean {
+  const host = new URL(endpoint).hostname.toLowerCase();
+  return PUSH_SERVICE_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
+}
+
 /** What a browser hands over after subscribing, checked before it is stored. */
 export const pushSubscriptionSchema = z.object({
-  endpoint: z.url({ protocol: /^https$/ }).max(1000),
+  endpoint: z.url({ protocol: /^https$/ }).max(1000).refine(isPushServiceHost, "Unknown push service"),
   keys: z.object({ p256dh: z.string().min(1).max(200), auth: z.string().min(1).max(100) }),
 });
 export type PushSubscriptionInput = z.infer<typeof pushSubscriptionSchema>;

@@ -15,11 +15,11 @@ const columns = () => sql`
   size_bytes, original_name, to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS updated_at
 `;
 
-/** Documents the viewer may see: everything for a signed-in member, only the public ones otherwise. */
-export function getDocuments(signedIn: boolean): Promise<DocumentRow[]> {
+/** Documents the viewer may see: everything for an approved member, only the public ones otherwise. */
+export function getDocuments(isMember: boolean): Promise<DocumentRow[]> {
   return sql<DocumentRow[]>`
     SELECT ${columns()} FROM documents
-    WHERE ${signedIn ? sql`TRUE` : sql`visibility = 'public'`}
+    WHERE ${isMember ? sql`TRUE` : sql`visibility = 'public'`}
     ORDER BY document_date DESC, title
   `;
 }

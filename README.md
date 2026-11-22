@@ -105,18 +105,6 @@ Every page shares one layout (`src/app/layout.tsx`): the sidebar and footer from
 panel on the orange background. The original stylesheet sits in a low-priority CSS layer in `src/app/globals.css`, below
 the Tailwind utilities, so utility classes always win over its global element rules. Editorial text lives in `src/content/`.
 
-### Migrating from Supabase (one-off)
-
-With the stack running, from a machine that can reach both databases (the Postgres port is not published; run it inside the app container or temporarily publish it):
-
-```bash
-docker compose cp scripts/migrate-from-supabase.mjs app:/app/migrate.mjs
-docker compose exec -e SOURCE_DATABASE_URL=... -e TARGET_DATABASE_URL=postgresql://mastatine:$POSTGRES_PASSWORD@db:5432/mastatine app bun migrate.mjs
-```
-
-It copies towers and votes and downloads every image into the `uploads` volume. Re-running is safe.
-
-
 ## License
 
 [MIT](LICENSE.md) for the code. The name, logo and editorial text are a parody; see the notice in the license file.
