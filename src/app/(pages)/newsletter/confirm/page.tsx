@@ -24,7 +24,7 @@ export default async function ConfirmPage(props: { searchParams: Promise<{ token
   if (status === "done") {
     return (
       <>
-        <PageHeader title="You are subscribed" intro="Thank you. The next issue will land in your inbox. Every email has a one-click unsubscribe link." />
+        <PageHeader keepInApp title="You are subscribed" intro="Thank you. The next issue will land in your inbox. Every email has a one-click unsubscribe link." />
         <div className="container-prose">
           <Link href="/" className={buttonClass({ variant: "primary" })}>Back to the masts</Link>
         </div>
@@ -35,7 +35,7 @@ export default async function ConfirmPage(props: { searchParams: Promise<{ token
   if (status === "invalid" || !token) {
     return (
       <>
-        <PageHeader title="This link did not work" intro="It may have expired or already been used. Request a new confirmation link and try again." />
+        <PageHeader keepInApp title="This link did not work" intro="It may have expired or already been used. Request a new confirmation link and try again." />
         <div className="container-prose">
           <Link href="/newsletter" className={buttonClass({ variant: "primary" })}>Subscribe again</Link>
         </div>
@@ -45,7 +45,7 @@ export default async function ConfirmPage(props: { searchParams: Promise<{ token
 
   return (
     <>
-      <PageHeader title="Confirm your subscription" intro="One last click to start receiving the M.A. Mastatine newsletter, about four times a year." />
+      <PageHeader keepInApp title="Confirm your subscription" intro="One last click to start receiving the M.A. Mastatine newsletter, about four times a year." />
       <div className="container-prose">
         <form action={confirm}>
           <input type="hidden" name="token" value={token} />

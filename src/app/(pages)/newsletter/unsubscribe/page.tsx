@@ -23,7 +23,7 @@ export default async function UnsubscribePage(props: { searchParams: Promise<{ t
   if (status === "done") {
     return (
       <>
-        <PageHeader title="You are unsubscribed" intro="We will not email you again. Sorry to see you go; the masts will still be here." />
+        <PageHeader keepInApp title="You are unsubscribed" intro="We will not email you again. Sorry to see you go; the masts will still be here." />
         <div className="container-prose">
           <Link href="/" className={buttonClass({ variant: "primary" })}>Back to the masts</Link>
         </div>
@@ -34,7 +34,7 @@ export default async function UnsubscribePage(props: { searchParams: Promise<{ t
   if (status === "invalid" || !t || !verifyUnsubscribeToken(t)) {
     return (
       <>
-        <PageHeader title="This link is not valid" intro="If you keep receiving emails you do not want, contact us and we will remove you right away." />
+        <PageHeader keepInApp title="This link is not valid" intro="If you keep receiving emails you do not want, contact us and we will remove you right away." />
         <div className="container-prose">
           <Link href="/contact" className={buttonClass({ variant: "primary" })}>Contact us</Link>
         </div>

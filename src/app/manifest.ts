@@ -12,7 +12,8 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/",
     display: "standalone",
     background_color: "#fff4e2",
-    theme_color: "#f57f20",
+    // The app bar's surface (tokens.css), so the title bar and the app bar are one colour while the page loads.
+    theme_color: "#f3f4f6",
     categories: ["social", "lifestyle"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

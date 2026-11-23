@@ -48,7 +48,19 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export const viewport: Viewport = { themeColor: "#f57f20" };
+/**
+ * The browser's own bar: brand orange in a browser tab, but in the installed app the status bar takes the app bar's
+ * surface colour, so the top of the screen reads as one bar (an orange strip above a grey bar looked like two headers).
+ * The colours are the --md-surface tokens in tokens.css, light and dark.
+ */
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(display-mode: standalone) and (prefers-color-scheme: dark)", color: "#131417" },
+    { media: "(display-mode: standalone)", color: "#f3f4f6" },
+    { color: "#f57f20" },
+  ],
+  colorScheme: "light dark",
+};
 
 /** Shown while the agenda loads, so the rest of the page is not held back by its queries. */
 function AgendaSkeleton() {

@@ -187,20 +187,47 @@ export default function SubmitForm({ onSuccess }: SubmitFormProps = {}) {
   const required = <span className="text-danger">*</span>;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* The photo first: it is what the mast is about, and on a phone it is the one big tap target. */}
       <div>
-        <Label htmlFor="submit-name">Your name {required}</Label>
-        <Input id="submit-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Jan de Vries" />
+        <Label htmlFor="submit-photo">Photo {required}</Label>
+        <button
+          type="button"
+          className="mast-photo-pick"
+          onClick={() => fileRef.current?.click()}
+          aria-describedby="submit-photo-hint"
+        >
+          {preview ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={preview} alt="Selected photo" className="mast-photo-pick__preview" />
+          ) : (
+            <span className="mast-photo-pick__empty">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+                <circle cx="12" cy="13" r="3.5" />
+              </svg>
+              <span className="font-bold text-ink">Take or choose a photo</span>
+            </span>
+          )}
+        </button>
+        <p id="submit-photo-hint" className="mt-1 text-xs text-muted">{preview ? "Tap the photo to pick another one." : "JPG, PNG or WebP, up to 20 MB."}</p>
+        <input id="submit-photo" ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       </div>
 
       <div>
-        <Label htmlFor="submit-title">Mast title {required}</Label>
-        <Input id="submit-title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="e.g. The Gerbrandy Tower, IJsselstein" />
+        <Label htmlFor="submit-title">Which mast? {required}</Label>
+        <Input id="submit-title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="e.g. Gerbrandytoren, IJsselstein" />
       </div>
 
-      <div>
-        <Label htmlFor="submit-height">Approximated Height (meters) {optional}</Label>
-        <Input id="submit-height" type="number" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="e.g. 366.8" step="0.1" />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label htmlFor="submit-name">Your name {required}</Label>
+          <Input id="submit-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="nickname" placeholder="e.g. Jan" />
+        </div>
+        <div>
+          <Label htmlFor="submit-height">Height (m) {optional}</Label>
+          <Input id="submit-height" type="number" inputMode="decimal" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="e.g. 366.8" step="0.1" />
+        </div>
       </div>
 
       <div>
@@ -209,32 +236,10 @@ export default function SubmitForm({ onSuccess }: SubmitFormProps = {}) {
           id="submit-description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-          placeholder="Tell us something interesting about this mast: height, purpose, location, why it's spectacular…"
+          rows={2}
+          placeholder="Height, purpose, why it is spectacular…"
           className="resize-none"
         />
-      </div>
-
-      <div>
-        <Label htmlFor="submit-photo">Photo {required}</Label>
-        <div
-          className="cursor-pointer rounded-md border-2 border-dashed border-line p-6 text-center transition-colors hover:border-accent"
-          onClick={() => fileRef.current?.click()}
-        >
-          {preview ? (
-            <div className="relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={preview} alt="Preview" className="mx-auto max-h-48 rounded-sm object-contain" />
-            </div>
-          ) : (
-            <div>
-              <div className="mb-2 text-3xl">📷</div>
-              <p className="text-sm font-medium text-ink">Click to select a photo</p>
-              <p className="mt-1 text-sm text-muted">JPG, PNG or WebP, up to 20 MB</p>
-            </div>
-          )}
-        </div>
-        <input id="submit-photo" ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       </div>
 
       {isProfane && (
@@ -259,7 +264,7 @@ export default function SubmitForm({ onSuccess }: SubmitFormProps = {}) {
             ? "Uploading photo…"
             : state === "submitting"
               ? "Submitting mast…"
-              : "Submit Mast 📡"}
+              : "Submit mast"}
       </Button>
     </form>
   );

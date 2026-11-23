@@ -22,6 +22,12 @@ interface TowerGridProps {
   initialPage: TowerPage;
   initialQuery: string;
   children?: React.ReactNode;
+  /**
+   * "home" (default): the homepage's floating sort/search button on phones, the white-on-orange bar on desktop.
+   * "page": the Masts page, a plain toolbar above the grid (search field, sort chips and `toolbarAction`, e.g. submit).
+   */
+  variant?: "home" | "page";
+  toolbarAction?: React.ReactNode;
 }
 
 async function fetchPage(sort: SortKey, q: string, offset: number): Promise<TowerPage> {
@@ -31,7 +37,7 @@ async function fetchPage(sort: SortKey, q: string, offset: number): Promise<Towe
   return res.json();
 }
 
-export default function TowerGrid({ initialPage, initialQuery, children }: TowerGridProps) {
+export default function TowerGrid({ initialPage, initialQuery, children, variant = "home", toolbarAction }: TowerGridProps) {
   const [towers, setTowers] = useState<Tower[]>(initialPage.towers);
   const [hasMore, setHasMore] = useState(initialPage.hasMore);
   const [loading, setLoading] = useState(false);
@@ -82,12 +88,13 @@ export default function TowerGrid({ initialPage, initialQuery, children }: Tower
   useEffect(() => () => clearTimeout(searchTimer.current), []);
 
   useEffect(() => {
+    if (variant === "page") return;
     const phone = window.matchMedia("(max-width: 650px)");
     const sync = () => setFloatTarget(phone.matches ? document.body : null);
     sync();
     phone.addEventListener("change", sync);
     return () => phone.removeEventListener("change", sync);
-  }, []);
+  }, [variant]);
 
   // A tap anywhere outside the open panel closes it.
   useEffect(() => {
@@ -197,10 +204,36 @@ export default function TowerGrid({ initialPage, initialQuery, children }: Tower
       </div>
   );
 
+  const toolbar = (
+    <div className="masts-toolbar">
+      <div className="search-bar masts-toolbar__search">
+        <span className="search-bar__icon" aria-hidden>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+        </span>
+        <label className="sr-only" htmlFor="masts-q">Search masts</label>
+        <input id="masts-q" type="search" enterKeyHint="search" className="search-bar__input" placeholder="Search masts" value={searchValue} maxLength={100} onChange={(e) => changeSearch(e.target.value)} />
+      </div>
+      <div className="masts-toolbar__row">
+        <div className="chips" role="group" aria-label="Sort masts">
+          {(Object.keys(SORT_LABELS) as SortKey[]).map((key) => (
+            <button key={key} type="button" className="chip" aria-pressed={sortKey === key} onClick={() => changeSort(key)}>
+              {SORT_LABELS[key]}
+            </button>
+          ))}
+        </div>
+        {toolbarAction}
+      </div>
+    </div>
+  );
+
   return (
     <>
+      {variant === "page" && toolbar}
       {/* On phones the controls float over the page; rendering them in <body> keeps position: fixed true to the screen. */}
-      {floatTarget ? createPortal(controls, floatTarget) : controls}
+      {variant === "home" && (floatTarget ? createPortal(controls, floatTarget) : controls)}
 
       <div ref={gridRef} className={`content-masonry${loading ? " is-loading" : ""}`}>
         {children}
@@ -222,7 +255,7 @@ export default function TowerGrid({ initialPage, initialQuery, children }: Tower
       </div>
 
       {towers.length === 0 && !loading && query && (
-        <p className="grid-empty">No masts found for &ldquo;{query}&rdquo;.</p>
+        <p className={variant === "page" ? "masts-empty" : "grid-empty"}>No masts found for &ldquo;{query}&rdquo;.</p>
       )}
 
       <p className="sr-only" role="status">

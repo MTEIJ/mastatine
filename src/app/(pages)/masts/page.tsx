@@ -17,25 +17,19 @@ async function getFirstPage(q: string): Promise<TowerPage> {
   }
 }
 
-/** The masts to browse and rate. The website shows them on its homepage; the installed app has no homepage, so they live here. */
+/**
+ * The masts to browse and rate. The website shows them on its homepage; the installed app has no homepage, so they live
+ * here: a search field, sort chips and the submit button above a plain grid (no orange website band, no intro card).
+ */
 export default async function MastsPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const q = parseQuery((await props.searchParams)?.s);
   const firstPage = await getFirstPage(q);
 
   return (
-    <section id="lp-posts">
-      <div className="lp-posts-inside">
-        <div id="towers" style={{ scrollMarginTop: "2rem" }} />
-        <TowerGrid initialPage={firstPage} initialQuery={q}>
-          <article className="post hentry news-card">
-            <div className="news-card__top">
-              <span className="news-card__label">Masts</span>
-            </div>
-            <p style={{ flex: 1, marginBottom: "0.5rem" }}>Rate the masts, or add one of your own.</p>
-            <SubmitModal />
-          </article>
-        </TowerGrid>
-      </div>
-    </section>
+    <div className="masts-page">
+      <h1 className="sr-only">Masts</h1>
+      <div id="towers" />
+      <TowerGrid initialPage={firstPage} initialQuery={q} variant="page" toolbarAction={<SubmitModal compact />} />
+    </div>
   );
 }

@@ -28,11 +28,20 @@
   .today-welcome h1 { margin: 0.5rem 0 0; font-size: 1.9rem; font-weight: 900; letter-spacing: -0.025em; line-height: 1.1; }
   .today-welcome p { margin: 0 0 0.6rem; color: var(--md-on-surface-variant); font-size: 1.05rem; line-height: 1.5; }
 
-  /* ── Account: profile header, settings list, switch ── */
-  .account-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; }
-  .account-head__who { min-width: 0; flex: 1 1 12rem; } /* the Sign out button wraps to its own line before the name has to break */
-  .account-head__name { margin: 0; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.025em; line-height: 1.15; overflow-wrap: anywhere; }
-  .account-head__email { margin: 0.1rem 0 0; color: var(--md-on-surface-variant); font-size: 0.95rem; overflow-wrap: anywhere; }
+  /* ── Account: one profile card (name and email edited in place), settings lists, switch ── */
+  .profile { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem; }
+  .profile__who { display: grid; min-width: 0; flex: 1; gap: 0.15rem; }
+  .profile__line { display: flex; min-width: 0; min-height: 2.25rem; align-items: center; gap: 0.25rem; }
+  .profile__name { min-width: 0; margin: 0; font-size: 1.4rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2; overflow-wrap: anywhere; }
+  .profile__email { min-width: 0; margin: 0; color: var(--md-on-surface-variant); font-size: 0.95rem; overflow-wrap: anywhere; }
+  .profile__edit { display: grid; width: 2.25rem; height: 2.25rem; flex: none; place-items: center; border: 0; border-radius: var(--shape-full); background: transparent; color: var(--md-on-surface-variant); cursor: pointer; }
+  .profile__edit:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); color: var(--md-on-surface); }
+  .profile__change { flex: none; margin-left: 0.25rem; padding: 0.35rem 0.5rem; border: 0; border-radius: var(--shape-full); background: none; color: var(--md-primary); font: inherit; font-size: 0.875rem; font-weight: 800; cursor: pointer; }
+  .profile__change:hover { background: color-mix(in srgb, var(--md-primary) 8%, transparent); }
+  .profile__form { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0.25rem 0; }
+  .profile__form .input { flex: 1 1 10rem; }
+  .profile__actions { display: flex; flex: none; gap: 0.25rem; margin-left: auto; }
+  .profile__note { margin: 0.25rem 0 0; font-size: 0.875rem; line-height: 1.4; }
   .avatar { display: grid; width: 3.5rem; height: 3.5rem; flex: none; place-items: center; border-radius: var(--shape-full); background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: 1.5rem; font-weight: 900; }
   .account-signout { display: flex; justify-content: center; margin-top: 1.5rem; }
 
@@ -64,6 +73,17 @@
   .setting-row__link { margin-top: 0.2rem; padding: 0.15rem 0; border: 0; background: none; color: var(--md-primary); font: inherit; font-size: 0.875rem; font-weight: 800; cursor: pointer; }
   .setting-row__link:hover { text-decoration: underline; text-underline-offset: 3px; }
   .setting-row__link:disabled { opacity: 0.6; cursor: default; }
+  /* A row that is a link or opens in place: the whole row is the target, with a chevron on the right. */
+  .setting-row--link { color: var(--md-on-surface); transition: background-color 0.15s; }
+  .setting-row--link:hover { background: var(--md-surface-container-low); color: var(--md-on-surface); }
+  .setting-row--link .setting-row__title, .setting-row--details .setting-row__title, .setting-row--link .setting-row__text, .setting-row--details .setting-row__text { display: block; }
+  .setting-row__chevron { flex: none; color: var(--md-on-surface-variant); font-size: 1.5rem; line-height: 1; transition: rotate 0.2s var(--ease-emphasized); }
+  .setting-row--details { display: block; padding: 0; }
+  .setting-row__summary { display: flex; min-height: 4rem; align-items: center; gap: 1rem; padding: 0.9rem 1rem; cursor: pointer; list-style: none; }
+  .setting-row__summary::-webkit-details-marker { display: none; }
+  .setting-row__summary:hover { background: var(--md-surface-container-low); }
+  .setting-row--details[open] .setting-row__chevron { rotate: 90deg; }
+  .setting-row__more { padding: 0 1rem 1rem; }
 
   /* Switch (M3): the track fills when on, the thumb grows from a dot and swells while pressed. A button, so it also works as a form submit. */
   .switch { position: relative; width: 3.25rem; height: 2rem; flex: none; padding: 0; border: 2px solid var(--md-outline); border-radius: var(--shape-full); background: var(--md-surface-container-highest); cursor: pointer; transition: background-color 0.2s var(--ease-emphasized), border-color 0.2s var(--ease-emphasized); }
@@ -73,4 +93,39 @@
   .switch:active:not(:disabled)::after { scale: 1.17; }
   .switch:disabled { opacity: 0.5; cursor: default; }
   @media (prefers-reduced-motion: reduce) { .switch, .switch::after { transition-duration: 0.01ms; } }
+}
+
+/* ── Masts page (src/app/(pages)/masts/page.tsx): a toolbar and a plain grid on the page's own surface ── */
+@layer components {
+  .masts-page { max-width: 1180px; margin: 0 auto; padding: 1rem 1rem 2rem; }
+  @media (min-width: 1024px) { .masts-page { padding: 2rem 2.25rem 3rem; } }
+  .masts-toolbar { display: grid; gap: 0.75rem; margin-bottom: 1rem; }
+  .masts-toolbar__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+  .masts-page .content-masonry { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  @media (min-width: 560px) { .masts-page .content-masonry { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { .masts-page .content-masonry { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
+  .masts-page .mast-card { border: 1px solid var(--md-outline-variant); box-shadow: none; }
+  .masts-page .mast-card:hover { transform: none; box-shadow: var(--shadow-sm); }
+  .masts-page .mast-card__body { padding: 0.9rem 1rem 1rem; }
+  .masts-page .mast-card__foot { padding-top: 0.75rem; }
+  .masts-page .skeleton { min-height: 18rem; background: var(--md-surface-container-high); animation: none; }
+  .masts-empty { padding: 2rem 0; color: var(--md-on-surface-variant); text-align: center; font-weight: 700; }
+
+  /* Filter chips (M3): outlined, filled with the secondary container when selected. */
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip { display: inline-flex; min-height: 2rem; align-items: center; padding: 0 0.9rem; border: 1px solid var(--md-outline-variant); border-radius: var(--shape-sm); background: transparent; color: var(--md-on-surface-variant); font: inherit; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background-color 0.15s, border-color 0.15s, color 0.15s; }
+  .chip:hover { background: color-mix(in srgb, var(--md-on-surface) 6%, transparent); }
+  .chip[aria-pressed="true"] { border-color: transparent; background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+
+  .masts-submit { display: inline-flex; min-height: 2.5rem; align-items: center; gap: 0.4rem; padding: 0 1.1rem 0 0.9rem; border: 0; border-radius: var(--shape-full); background: var(--md-brand); color: var(--md-on-brand); font: inherit; font-size: 0.9rem; font-weight: 800; cursor: pointer; transition: background-color 0.15s; }
+  .masts-submit:hover { background: var(--md-brand-hover); }
+}
+
+/* ── Submit a mast: the photo picker, a large tap target that becomes the preview ── */
+@layer components {
+  .mast-photo-pick { display: grid; width: 100%; min-height: 9rem; place-items: center; overflow: hidden; padding: 0; border: 2px dashed var(--md-outline-variant); border-radius: var(--shape-lg); background: var(--md-surface-container-low); color: var(--md-on-surface-variant); cursor: pointer; transition: border-color 0.15s, background-color 0.15s; }
+  .mast-photo-pick:hover { border-color: var(--md-primary); }
+  .mast-photo-pick:has(img) { border-style: solid; background: var(--md-inverse-surface); }
+  .mast-photo-pick__empty { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 1.25rem; }
+  .mast-photo-pick__preview { display: block; max-height: 14rem; width: 100%; object-fit: contain; }
 }
