@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { describeDbError } from "@/lib/db";
 import { PAGE_SIZE, listTowers, type TowerPage } from "@/lib/towers";
 import MastFeed from "@/classic/MastFeed";
@@ -18,5 +19,8 @@ async function getFirstPage(): Promise<TowerPage> {
 
 /** The installed app's Masts tab: a full-screen vertical feed, newest first. The grid of all masts stays at /masts. */
 export default async function MastFeedPage() {
+  // Read the masts on every request. Without this the page has no request data, so the build prerendered it (with no
+  // database to read, hence "No masts yet") and served that empty copy to everyone.
+  await connection();
   return <MastFeed initialPage={await getFirstPage()} />;
 }
