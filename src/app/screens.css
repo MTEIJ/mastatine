@@ -129,3 +129,70 @@
   .mast-photo-pick__empty { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 1.25rem; }
   .mast-photo-pick__preview { display: block; max-height: 14rem; width: 100%; object-fit: contain; }
 }
+
+/*
+ * ── Masts feed (src/classic/MastFeed.tsx): full screen, one mast per screen, swiped vertically ──
+ * A fixed layer over the page with its own snapping scroller. In the installed app it stops above the navigation bar
+ * (64px + the safe area) and the top app bar is hidden; in a browser tab it covers the whole window.
+ */
+@layer components {
+  .feed { position: fixed; inset: 0; z-index: 36; background: var(--md-inverse-surface); color: var(--md-on-fill); }
+  .feed__scroller { height: 100%; overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; scrollbar-width: none; }
+  .feed__scroller::-webkit-scrollbar { display: none; }
+  .feed__scroller:focus-visible { outline: none; }
+  .feed__top { position: absolute; top: 0; right: 0; left: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: calc(0.75rem + env(safe-area-inset-top)) 0.75rem 0.75rem 1.25rem; background: linear-gradient(rgb(0 0 0 / 0.45), transparent); pointer-events: none; }
+  .feed__brand { font-size: 1.375rem; font-weight: 900; letter-spacing: -0.02em; text-shadow: 0 1px 4px rgb(0 0 0 / 0.4); }
+  .feed__icon { display: grid; width: 3rem; height: 3rem; place-items: center; border-radius: var(--shape-full); background: rgb(0 0 0 / 0.35); color: var(--md-on-fill); pointer-events: auto; }
+  .feed__icon:hover { background: rgb(0 0 0 / 0.5); color: var(--md-on-fill); }
+
+  /* Smoothness: each slide is its own paint and layout island (contain), slides far off screen are not rendered at all
+     (content-visibility), and nothing in a slide uses backdrop-filter, which repaints on every scrolled frame. */
+  .feed-slide { position: relative; height: 100%; overflow: hidden; contain: strict; content-visibility: auto; contain-intrinsic-size: auto 100vw auto 100dvh; scroll-snap-align: start; scroll-snap-stop: always; }
+  .feed-slide__fill { object-fit: cover; filter: blur(12px) brightness(0.55); scale: 1.2; }
+  /* The photo fades in once decoded instead of popping in line by line. */
+  .feed-slide__photo { object-fit: contain; opacity: 0; transition: opacity 0.35s var(--ease-emphasized); touch-action: manipulation; user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
+  .feed-slide__photo.is-loaded { opacity: 1; }
+  /* Shade at the bottom so the white text reads on any photo. */
+  .feed-slide::after { content: ""; position: absolute; right: 0; bottom: 0; left: 0; height: 45%; background: linear-gradient(transparent, rgb(0 0 0 / 0.7)); pointer-events: none; }
+  .feed-slide__info { position: absolute; right: 5.5rem; bottom: 1.25rem; left: 1.25rem; z-index: 1; transition: opacity 0.4s var(--ease-emphasized), translate 0.5s var(--ease-emphasized); }
+  /* The text eases up as its slide settles; the next one waits a little lower. */
+  .feed-slide[data-active="false"] .feed-slide__info { opacity: 0.4; translate: 0 0.75rem; }
+  .feed-slide__title { margin: 0; font-size: 1.4rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.2; text-shadow: 0 1px 6px rgb(0 0 0 / 0.4); }
+  .feed-slide__meta { margin: 0.25rem 0 0; font-size: 0.9rem; font-weight: 700; opacity: 0.9; }
+  .feed-slide__desc { display: -webkit-box; margin-top: 0.5rem; padding: 0; overflow: hidden; border: 0; background: none; color: inherit; font: inherit; font-size: 0.95rem; line-height: 1.45; text-align: left; cursor: pointer; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .feed-slide__desc.is-open { -webkit-line-clamp: 8; }
+
+  /* Voting, on the right where a thumb reaches it. */
+  .feed-slide__rail { position: absolute; right: 0.75rem; bottom: 1.25rem; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+  .feed-vote { display: grid; width: 3.25rem; height: 3.25rem; place-items: center; border: 0; border-radius: var(--shape-full); background: rgb(0 0 0 / 0.38); color: var(--md-on-fill); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 0.15s, border-radius var(--spring-fast-ms) var(--spring-fast), scale var(--spring-fast-ms) var(--spring-fast); }
+  .feed-vote:active { scale: 0.9; border-radius: var(--shape-lg); }
+  .feed-vote[aria-pressed="true"] { background: var(--md-brand); color: var(--md-on-brand); }
+  .feed-vote--down[aria-pressed="true"] { background: var(--md-navy); color: var(--md-on-fill); }
+  /* The score pops when it changes (the element is re-keyed on every new value). */
+  .feed-score { font-size: 1.1rem; font-weight: 900; font-variant-numeric: tabular-nums; text-shadow: 0 1px 4px rgb(0 0 0 / 0.5); animation: feed-score-pop var(--spring-fast-ms) var(--spring-fast); }
+  @keyframes feed-score-pop { from { scale: 1.35; } }
+
+  /* Double tap: an arrow pops up in the middle of the photo. */
+  .feed-slide__burst { position: absolute; top: 50%; left: 50%; z-index: 1; display: grid; width: 6rem; height: 6rem; place-items: center; border-radius: var(--shape-full); background: var(--md-brand); color: var(--md-on-brand); translate: -50% -50%; pointer-events: none; animation: feed-burst 0.7s var(--ease-emphasized) forwards; }
+  .feed-slide__burst svg { width: 3rem; height: 3rem; }
+  @keyframes feed-burst { 0% { opacity: 0; scale: 0.4; } 25% { opacity: 1; scale: 1.1; } 60% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1; translate: -50% -90%; } }
+  @media (prefers-reduced-motion: reduce) {
+    .feed-slide__burst, .feed-score { animation-duration: 0.01ms; }
+    .feed-slide__info { transition: none; }
+    .feed-slide[data-active="false"] .feed-slide__info { opacity: 1; translate: none; }
+  }
+
+  .feed-slide--empty, .feed-slide--end { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; padding: 2rem; text-align: center; }
+  .feed-slide--end::after, .feed-slide--empty::after { display: none; }
+  .feed-end__title { margin: 0; font-size: 1.4rem; font-weight: 900; }
+  .feed-end__link { margin-top: 0.75rem; padding: 0.7rem 1.4rem; border-radius: var(--shape-full); background: var(--md-brand); color: var(--md-on-brand); font-weight: 800; }
+  .feed-end__link:hover { color: var(--md-on-brand); }
+
+  /* Submit: an M3 FAB (56px, 16px corners) above the voting rail. */
+  .feed__fab { position: absolute; top: calc(4.5rem + env(safe-area-inset-top)); right: 0.75rem; z-index: 2; }
+  .feed-fab { display: grid; width: 3.25rem; height: 3.25rem; place-items: center; border: 0; border-radius: var(--shape-lg); background: var(--md-primary-container); color: var(--md-on-primary-container); box-shadow: var(--elevation-2); cursor: pointer; transition: border-radius var(--spring-fast-ms) var(--spring-fast); }
+  .feed-fab:active { border-radius: var(--shape-xl); }
+
+  .masts-toolbar__actions { display: flex; align-items: center; gap: 0.5rem; }
+  .masts-feed-link { gap: 0.35rem; color: var(--md-on-surface-variant); }
+}

@@ -6,9 +6,10 @@ import { MASTS_CHANGED_EVENT } from "@/lib/events";
 
 /**
  * The submit button and its form, in the shared dialog (a centred card on wide screens, a bottom sheet on phones; see
- * dialog.modal in globals.css). `compact`: a small tonal button for the Masts page toolbar instead of the card button.
+ * dialog.modal in globals.css). The button: "card" is the full-width one in the homepage card, "compact" the Masts page
+ * toolbar button (an extended FAB in the app), "fab" the round + over the masts feed.
  */
-export default function SubmitModal({ compact = false }: { compact?: boolean } = {}) {
+export default function SubmitModal({ variant = "card" }: { variant?: "card" | "compact" | "fab" } = {}) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   // A fresh form every time the dialog opens.
@@ -36,7 +37,13 @@ export default function SubmitModal({ compact = false }: { compact?: boolean } =
 
   return (
     <>
-      {compact ? (
+      {variant === "fab" ? (
+        <button type="button" onClick={open} className="feed-fab" aria-haspopup="dialog" aria-label="Submit a mast">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </button>
+      ) : variant === "compact" ? (
         <button type="button" onClick={open} className="masts-submit" aria-haspopup="dialog">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
             <path d="M12 5v14M5 12h14" />
