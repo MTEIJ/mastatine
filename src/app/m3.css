@@ -167,7 +167,7 @@
   /* ── Installed app only: the expressive motion. Corners pull in while pressed and grow on hover; the website keeps
      colour changes and a slight press, nothing that changes shape. ── */
   @media (display-mode: standalone) {
-    .dash:not(.dash--admin) .dash-back:active, .dash:not(.dash--admin) .dash-nav a:active { border-radius: var(--shape-md); }
+    .dash:not(.dash--admin) .dash-back:active { border-radius: var(--shape-md); }
   }
 
   @media (prefers-reduced-motion: reduce) {

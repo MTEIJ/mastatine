@@ -33,14 +33,21 @@
     display: none;
   }
 
-  /* No orange website backdrop and no floating white panels: the page is the app's surface. */
+  /* No orange website backdrop and no floating white panels: the page is the app's surface. No rubber-band stretch or
+     bounce at the ends of a scroll either: a native app's screen stays put (the page and an app's own scroller). */
+  html, body { overscroll-behavior: none; }
+  .dash-main { overscroll-behavior: none; }
   body { background-color: var(--md-surface); }
+
+  /* One header: the status bar (theme-color, layout.tsx), the top app bar and an app's page tabs share one surface, so
+     they read as a single bar; a hairline under the tabs separates it from the page. */
+  .dash .dash-bar { padding-top: 0; border-top: 0; background: var(--md-surface); box-shadow: none; }
   .page-panel { margin-bottom: 0; border-radius: 0; background: transparent; }
   #lp-posts, #towers { background-color: transparent; }
   #container.two-columns-left .main { margin-top: 0; }
 
   /* Room under the content for the bottom navigation bar (it is fixed outside a full-screen app). */
-  body:has(.tabbar) #site-wrapper { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+  body:has(.tabbar) #site-wrapper { padding-bottom: calc(4rem + env(safe-area-inset-bottom)); }
 
   /* One way up: the top bar's back arrow. The tools' own back button and title go. Their page tabs stay, but only
      while one of them is the current page: on a detail page (an activity, a meeting) the strip would be noise. */
@@ -50,10 +57,18 @@
     display: none;
   }
 
-  /* Website pages opened inside the app: the top bar names the section, so the page title is a compact one. */
-  .page-header { padding-top: 1.25rem; padding-bottom: 1rem; }
+  /* Website pages opened inside the app: the top bar names the section, so the page's own big title would only repeat
+     it. It stays for screen readers; the intro leads the page. Status pages (.page-header--keep) show a compact title. */
+  .page-header { padding-top: 0.5rem; padding-bottom: 1rem; }
+  .page-header:not(.page-header--keep) h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .page-header:not(.page-header--keep) .page-header__intro { margin-top: 0; font-size: 1rem; }
   .page-header h1 { font-size: 1.75rem; }
   .page-header__bar { display: none; }
+
+  /* Masts: submitting is the screen's main action, so it is an extended FAB (M3) bottom right, above the navigation bar. */
+  .masts-submit { position: fixed; right: 1rem; bottom: calc(5rem + env(safe-area-inset-bottom)); z-index: 30; min-height: 3.5rem; padding: 0 1.25rem 0 1rem; border-radius: var(--shape-lg); background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: 1rem; box-shadow: var(--elevation-2); }
+  .masts-submit:hover { background: color-mix(in srgb, var(--md-primary-container) 92%, var(--md-on-primary-container)); }
+  .masts-page { padding-bottom: 6rem; }
 }
 
 /* ── Long forms in a dialog (the board application) need more width than an ordinary dialog ── */

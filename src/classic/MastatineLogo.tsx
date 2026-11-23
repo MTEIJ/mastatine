@@ -11,7 +11,8 @@ export default function MastatineLogo({ size = 64, className = "", mono = false 
   const rOuter = 78;
   const rInner = 52;
   const rDot = 11;
-  const stroke = mono ? "currentColor" : "#1a1a1a";
+  // The ink token: near-black on light, near-white in the dark scheme (var() works in SVG presentation attributes).
+  const stroke = mono ? "currentColor" : "var(--ink, #1a1a1a)";
   const orange = mono ? "currentColor" : "#f57f20";
 
   // 7 electrons evenly spaced on the outer ring, starting at top (−90°)

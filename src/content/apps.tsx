@@ -105,9 +105,10 @@ export function getApps(isAdmin = false): MastApp[] {
       shape: "cookie9",
       tone: "primary",
       nav: [
-        { label: "Activities", href: "/mastapps/activities", icon: <ListIcon /> },
-        { label: "New activity", href: "/mastapps/activities/new", icon: <PlusIcon />, needsLogin: true },
-        { label: "Your activities", href: "/mastapps/activities/mine", icon: <CheckIcon />, needsLogin: true },
+        // Short labels: the app bar above already says "Activities", so the tabs need not repeat it.
+        { label: "All", href: "/mastapps/activities", icon: <ListIcon /> },
+        { label: "Mine", href: "/mastapps/activities/mine", icon: <CheckIcon />, needsLogin: true },
+        { label: "New", href: "/mastapps/activities/new", icon: <PlusIcon />, needsLogin: true },
       ],
     },
     {
