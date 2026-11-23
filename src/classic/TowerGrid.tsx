@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import TowerCard from "./TowerCard";
 import TowerDetailModal from "./TowerDetailModal";
 import { Tower } from "@/lib/types";
@@ -224,7 +225,16 @@ export default function TowerGrid({ initialPage, initialQuery, children, variant
             </button>
           ))}
         </div>
-        {toolbarAction}
+        <div className="masts-toolbar__actions">
+          {/* In the app the Masts tab opens the feed; this is the way back to it from the grid. */}
+          <Link href="/masts/feed" className="chip masts-feed-link only-app">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden>
+              <rect x="6" y="3" width="12" height="18" rx="2" />
+            </svg>
+            Feed
+          </Link>
+          {toolbarAction}
+        </div>
       </div>
     </div>
   );

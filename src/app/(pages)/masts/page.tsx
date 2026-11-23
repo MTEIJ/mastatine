@@ -29,7 +29,7 @@ export default async function MastsPage(props: { searchParams?: Promise<{ [key: 
     <div className="masts-page">
       <h1 className="sr-only">Masts</h1>
       <div id="towers" />
-      <TowerGrid initialPage={firstPage} initialQuery={q} variant="page" toolbarAction={<SubmitModal compact />} />
+      <TowerGrid initialPage={firstPage} initialQuery={q} variant="page" toolbarAction={<SubmitModal variant="compact" />} />
     </div>
   );
 }

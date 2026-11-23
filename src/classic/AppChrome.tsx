@@ -47,7 +47,7 @@ interface Tab {
 const TABS: Tab[] = [
   { label: "Today", href: TODAY_HREF, icon: TodayIcon, isCurrent: (p) => p === "/" || p === "/app" },
   { label: "Activities", href: "/mastapps/activities", icon: Icons.activities, isCurrent: (p) => under(p, "/mastapps/activities") },
-  { label: "Masts", href: "/masts", icon: MastsIcon, isCurrent: (p) => under(p, "/masts") },
+  { label: "Masts", href: "/masts/feed", icon: MastsIcon, isCurrent: (p) => under(p, "/masts") },
   { label: "Apps", href: "/mastapps", icon: Icons.dashboard, isCurrent: (p) => (under(p, "/mastapps") && !under(p, "/mastapps/activities")) || under(p, "/admin") },
   { label: "You", href: "/account", icon: YouIcon, isCurrent: (p) => under(p, "/account") },
 ];
@@ -59,7 +59,7 @@ const SECTION_TITLES: [string, string][] = [
   ["/terms", "Site rules"], ["/newsletter", "Newsletter"], ["/login", "Sign in"], ["/welcome", "Welcome"],
 ];
 
-const ROOTS = new Set(["/", "/app", "/masts", "/mastapps", "/mastapps/activities", "/account"]);
+const ROOTS = new Set(["/", "/app", "/masts", "/masts/feed", "/mastapps", "/mastapps/activities", "/account"]);
 
 /** The section the current page belongs to: the name in the top bar. Signed out, Today is just the way in. */
 function titleFor(pathname: string, signedIn: boolean): string {

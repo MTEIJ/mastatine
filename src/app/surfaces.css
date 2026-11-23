@@ -69,6 +69,13 @@
   .masts-submit { position: fixed; right: 1rem; bottom: calc(5rem + env(safe-area-inset-bottom)); z-index: 30; min-height: 3.5rem; padding: 0 1.25rem 0 1rem; border-radius: var(--shape-lg); background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: 1rem; box-shadow: var(--elevation-2); }
   .masts-submit:hover { background: color-mix(in srgb, var(--md-primary-container) 92%, var(--md-on-primary-container)); }
   .masts-page { padding-bottom: 6rem; }
+
+  /* The masts feed fills the screen down to the navigation bar; its own top row replaces the app bar. */
+  /* In px, not rem: the navigation bar is 64px, and a rem value here made Chrome re-snap the feed to its last slide
+     while the page loaded. MastFeed also keeps the current slide in place whenever the feed changes size. */
+  .feed { bottom: calc(64px + env(safe-area-inset-bottom)); }
+  body:has(.feed) .appbar { display: none; }
+  body:has(.feed) { overflow: hidden; }
 }
 
 /* ── Long forms in a dialog (the board application) need more width than an ordinary dialog ── */
