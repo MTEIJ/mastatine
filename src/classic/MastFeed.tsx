@@ -44,26 +44,67 @@ interface SlideProps {
   index: number;
   vote: VoteDirection | null;
   onVote: (direction: VoteDirection) => void;
-  /** Only the first couple of photos load eagerly; the rest load as they come near. */
-  eager: boolean;
+  /** The slide on screen: its text eases in. */
+  active: boolean;
+  /** The first photo is preloaded; the next couple load ahead of the swipe so they are ready when they arrive. */
+  priority: "preload" | "eager" | "lazy";
 }
 
-function Slide({ tower, index, vote, onVote, eager }: SlideProps) {
+/** Two taps within this many ms (and close together) count as a double tap. */
+const DOUBLE_TAP_MS = 300;
+
+/** A short tick on phones that support it (Android), so a vote is felt as well as seen. */
+function haptic() {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(8);
+}
+
+function Slide({ tower, index, vote, onVote, active, priority }: SlideProps) {
   const [expanded, setExpanded] = useState(false);
   const [burst, setBurst] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const lastTap = useRef<{ time: number; x: number; y: number } | null>(null);
   const hasHeight = tower.height != null && tower.height > 0;
 
-  // Double tap the photo to upvote, the way people like a post (it never takes an upvote back).
-  function doubleTap() {
-    if (vote !== "up") onVote("up");
-    setBurst((n) => n + 1);
+  function vote_(direction: VoteDirection) {
+    haptic();
+    onVote(direction);
+  }
+
+  // Double tap the photo to upvote, the way people like a post (it never takes an upvote back). Detected from pointer
+  // events rather than dblclick, which iOS does not send for touches and which waits for the browser's own delay.
+  function tap(event: React.PointerEvent) {
+    const now = event.timeStamp;
+    const prev = lastTap.current;
+    if (prev && now - prev.time < DOUBLE_TAP_MS && Math.hypot(event.clientX - prev.x, event.clientY - prev.y) < 40) {
+      lastTap.current = null;
+      if (vote !== "up") vote_("up");
+      else haptic();
+      setBurst((n) => n + 1);
+      return;
+    }
+    lastTap.current = { time: now, x: event.clientX, y: event.clientY };
   }
 
   return (
-    <article className="feed-slide" aria-roledescription="slide" aria-label={`${tower.title}, mast ${index + 1}`} data-index={index}>
-      {/* The photo twice: blurred to fill the screen, and whole on top, so landscape photos have no black bars. */}
-      <Image src={tower.image_url} alt="" fill sizes="100vw" quality={30} className="feed-slide__fill" preload={eager} />
-      <Image src={tower.image_url} alt={tower.title} fill sizes="100vw" quality={75} className="feed-slide__photo" preload={eager} onDoubleClick={doubleTap} />
+    <article className="feed-slide" aria-roledescription="slide" aria-label={`${tower.title}, mast ${index + 1}`} data-index={index} data-active={active}>
+      {/*
+        The photo twice: a tiny copy, scaled up and softened, fills the screen behind the whole photo, so landscape
+        photos have no black bars. Tiny on purpose: a full-size photo under a large blur is what makes feeds stutter.
+      */}
+      <Image src={tower.image_url} alt="" fill sizes="64px" quality={60} className="feed-slide__fill" loading={priority === "lazy" ? "lazy" : "eager"} preload={priority === "preload"} />
+      <Image
+        src={tower.image_url}
+        alt={tower.title}
+        fill
+        sizes="100vw"
+        quality={75}
+        className={`feed-slide__photo${loaded ? " is-loaded" : ""}`}
+        loading={priority === "lazy" ? "lazy" : "eager"}
+        preload={priority === "preload"}
+        onLoad={() => setLoaded(true)}
+        onPointerUp={tap}
+        draggable={false}
+      />
       {burst > 0 && (
         <span key={burst} className="feed-slide__burst" aria-hidden>
           <ArrowUp />
@@ -89,11 +130,11 @@ function Slide({ tower, index, vote, onVote, eager }: SlideProps) {
       </div>
 
       <div className="feed-slide__rail" role="group" aria-label={`Vote on ${tower.title}`}>
-        <button type="button" className="feed-vote" aria-pressed={vote === "up"} aria-label="Upvote" onClick={() => onVote("up")}>
+        <button type="button" className="feed-vote" aria-pressed={vote === "up"} aria-label="Upvote" onClick={() => vote_("up")}>
           <ArrowUp />
         </button>
-        <output className="feed-score" title={`${tower.total_votes} ${tower.total_votes === 1 ? "vote" : "votes"} cast`}>{tower.vote_count}</output>
-        <button type="button" className="feed-vote feed-vote--down" aria-pressed={vote === "down"} aria-label="Downvote" onClick={() => onVote("down")}>
+        <output key={tower.vote_count} className="feed-score" title={`${tower.total_votes} ${tower.total_votes === 1 ? "vote" : "votes"} cast`}>{tower.vote_count}</output>
+        <button type="button" className="feed-vote feed-vote--down" aria-pressed={vote === "down"} aria-label="Downvote" onClick={() => vote_("down")}>
           <ArrowDown />
         </button>
       </div>
@@ -203,7 +244,15 @@ export default function MastFeed({ initialPage }: { initialPage: TowerPage }) {
 
       <div ref={scroller} className="feed__scroller" tabIndex={0} aria-label="Masts, newest first">
         {towers.map((tower, i) => (
-          <Slide key={tower.id} tower={tower} index={i} vote={votes.get(tower.id) ?? null} onVote={(d) => void vote(tower.id, d)} eager={i < 2} />
+          <Slide
+            key={tower.id}
+            tower={tower}
+            index={i}
+            vote={votes.get(tower.id) ?? null}
+            onVote={(d) => void vote(tower.id, d)}
+            active={i === current}
+            priority={i === 0 ? "preload" : i <= current + 2 ? "eager" : "lazy"}
+          />
         ))}
         {towers.length === 0 && (
           <div className="feed-slide feed-slide--empty">
