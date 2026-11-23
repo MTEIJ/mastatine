@@ -47,7 +47,7 @@
   #container.two-columns-left .main { margin-top: 0; }
 
   /* Room under the content for the bottom navigation bar (it is fixed outside a full-screen app). */
-  body:has(.tabbar) #site-wrapper { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+  body:has(.tabbar) #site-wrapper { padding-bottom: calc(4rem + env(safe-area-inset-bottom)); }
 
   /* One way up: the top bar's back arrow. The tools' own back button and title go. Their page tabs stay, but only
      while one of them is the current page: on a detail page (an activity, a meeting) the strip would be noise. */
@@ -64,6 +64,11 @@
   .page-header:not(.page-header--keep) .page-header__intro { margin-top: 0; font-size: 1rem; }
   .page-header h1 { font-size: 1.75rem; }
   .page-header__bar { display: none; }
+
+  /* Masts: submitting is the screen's main action, so it is an extended FAB (M3) bottom right, above the navigation bar. */
+  .masts-submit { position: fixed; right: 1rem; bottom: calc(5rem + env(safe-area-inset-bottom)); z-index: 30; min-height: 3.5rem; padding: 0 1.25rem 0 1rem; border-radius: var(--shape-lg); background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: 1rem; box-shadow: var(--elevation-2); }
+  .masts-submit:hover { background: color-mix(in srgb, var(--md-primary-container) 92%, var(--md-on-primary-container)); }
+  .masts-page { padding-bottom: 6rem; }
 }
 
 /* ── Long forms in a dialog (the board application) need more width than an ordinary dialog ── */
