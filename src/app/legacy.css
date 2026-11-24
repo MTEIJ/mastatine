@@ -20,7 +20,7 @@ html {
 body {
   font-size: 1em;
   color: var(--text);
-  background-color: var(--orange);
+  background-color: var(--backdrop);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -405,11 +405,11 @@ button.continue-reading-link:disabled {
   display: block;
   float: none;
   clear: both;
-  background-color: var(--orange);
+  background-color: var(--backdrop);
   margin-bottom: 0; /* flows directly into #towers */
 }
 #towers {
-  background-color: var(--orange);
+  background-color: var(--backdrop);
 }
 .lp-posts-inside {
   max-width: 1460px;

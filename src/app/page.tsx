@@ -147,7 +147,7 @@ export default async function HomePage(
               </div>
               <header className="entry-header" style={{ marginBottom: "0.4em" }}>
                 <h2 className="entry-title" itemProp="headline" style={{ fontSize: "1.15rem", fontWeight: "bold", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: "0.2em" }}>
-                  <Link href={`/news/${latest.slug}`} itemProp="mainEntityOfPage" rel="bookmark" style={{ color: "var(--navy)" }}>
+                  <Link href={`/news/${latest.slug}`} itemProp="mainEntityOfPage" rel="bookmark" style={{ color: "var(--navy-ink)" }}>
                     {latest.title}
                   </Link>
                 </h2>
