@@ -68,6 +68,7 @@
   --m3-shape-flower: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50.0 0.0L53.2 0.8L56.2 2.9L58.8 5.8L61.0 8.9L63.1 11.4L65.3 13.0L68.0 13.4L71.3 13.1L75.0 12.5L78.9 12.3L82.5 12.9L85.4 14.6L87.1 17.5L87.7 21.1L87.5 25.0L86.9 28.7L86.6 32.0L87.0 34.7L88.6 36.9L91.1 39.0L94.2 41.2L97.1 43.8L99.2 46.8L100.0 50.0L99.2 53.2L97.1 56.2L94.2 58.8L91.1 61.0L88.6 63.1L87.0 65.3L86.6 68.0L86.9 71.3L87.5 75.0L87.7 78.9L87.1 82.5L85.4 85.4L82.5 87.1L78.9 87.7L75.0 87.5L71.3 86.9L68.0 86.6L65.3 87.0L63.1 88.6L61.0 91.1L58.8 94.2L56.2 97.1L53.2 99.2L50.0 100.0L46.8 99.2L43.8 97.1L41.2 94.2L39.0 91.1L36.9 88.6L34.7 87.0L32.0 86.6L28.7 86.9L25.0 87.5L21.1 87.7L17.5 87.1L14.6 85.4L12.9 82.5L12.3 78.9L12.5 75.0L13.1 71.3L13.4 68.0L13.0 65.3L11.4 63.1L8.9 61.0L5.8 58.8L2.9 56.2L0.8 53.2L0.0 50.0L0.8 46.8L2.9 43.8L5.8 41.2L8.9 39.0L11.4 36.9L13.0 34.7L13.4 32.0L13.1 28.7L12.5 25.0L12.3 21.1L12.9 17.5L14.6 14.6L17.5 12.9L21.1 12.3L25.0 12.5L28.7 13.1L32.0 13.4L34.7 13.0L36.9 11.4L39.0 8.9L41.2 5.8L43.8 2.9L46.8 0.8Z'/%3E%3C/svg%3E");
   /* ── Extra roles the site needs beyond the generated M3 scheme ── */
   --md-brand-hover: #d96810;
+  --md-backdrop: #f57f20; /* the page behind the floating panels on wide screens: the brand orange in light, near-black in dark */
   --md-brand-bright: #ff9a3c; /* the far end of the announcement bar's gradient */
   --md-on-brand: #2a1000; /* text on the brand orange: white on it is only 2.6:1 */
   --md-secondary-fixed: #e3d0c5;
@@ -122,6 +123,7 @@
   --text-light: var(--md-outline);
   --bg: var(--md-surface-container-lowest);
   --bg-light: var(--md-surface-bright);
+  --backdrop: var(--md-backdrop);
   --border: var(--md-surface-container-low);
 }
 
@@ -143,6 +145,7 @@
     --md-tertiary-container: #2f427a;
     --md-on-tertiary-container: #dbe1ff;
     --md-brand-hover: #ff9443;
+    --md-backdrop: #131417;
     --md-on-brand: #2a1000;
     --md-surface: #131417;
     --md-surface-container-lowest: #1c1e22;
