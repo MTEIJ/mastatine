@@ -1,6 +1,7 @@
 import MastatineLogo from "./MastatineLogo";
 import Link from "next/link";
 import { siteUrl } from "@/lib/env";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Colophon() {
   return (
@@ -42,6 +43,7 @@ export default function Colophon() {
             <p style={{ fontSize: "0.7em", color: "var(--text-mid)", opacity: 0.75, marginTop: "0.4em" }}>
               <Link href="/about#disclaimer" style={{ color: "inherit" }}>Independent initiative, not affiliated with Universiteit Maastricht or S.A. Astatine.</Link>
             </p>
+            <ThemeToggle />
           </div>
         </section>
 

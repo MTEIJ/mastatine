@@ -96,23 +96,26 @@ dialog.modal--viewer .modal__panel { height: 100%; }
  * announcement bar, a brown newsletter band, a heavy outline on the news card), and in dark it read as a patchwork.
  * Here it takes the app's surface roles instead. Light mode keeps the orange website look.
  */
-@media (prefers-color-scheme: dark) {
-  .announce { border-bottom: 1px solid var(--md-outline-variant); background: var(--md-surface-container-high); color: var(--md-on-surface); box-shadow: none; }
-  .announce__tag { background: var(--md-primary-container); color: var(--md-on-primary-container); }
-  .announce__summary { color: var(--md-on-surface-variant); }
-  .announce__more { color: var(--md-primary); }
-  .announce__close { background: transparent; color: var(--md-on-surface-variant); }
-  .announce__close:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
+[data-theme="dark"] .announce { border-bottom: 1px solid var(--md-outline-variant); background: var(--md-surface-container-high); color: var(--md-on-surface); box-shadow: none; }
+[data-theme="dark"] .announce__tag { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+[data-theme="dark"] .announce__summary { color: var(--md-on-surface-variant); }
+[data-theme="dark"] .announce__more { color: var(--md-primary); }
+[data-theme="dark"] .announce__close { background: transparent; color: var(--md-on-surface-variant); }
+[data-theme="dark"] .announce__close:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
 
-  .loop-band { border-top: 1px solid var(--md-outline-variant); background: var(--md-surface-container-low); }
-  .loop-band__icon { background: var(--md-primary-container); color: var(--md-on-primary-container); box-shadow: none; }
-  .loop-band__text { color: var(--md-on-surface-variant); }
+[data-theme="dark"] .loop-band { border-top: 1px solid var(--md-outline-variant); background: var(--md-surface-container-low); }
+[data-theme="dark"] .loop-band__icon { background: var(--md-primary-container); color: var(--md-on-primary-container); box-shadow: none; }
+[data-theme="dark"] .loop-band__text { color: var(--md-on-surface-variant); }
 
-  /* Cards sit on the surface like the app's: tone, not outline or shadow, separates them. */
-  #sidebar,
-  .verbosa-magazine-two .content-masonry article.hentry,
-  .news-card { box-shadow: none; }
-  .verbosa-magazine-two #content-masonry article.hentry.news-card,
-  article.hentry.news-card { border: 0; }
-  #colophon { border-top: 1px solid var(--md-outline-variant); }
-}
+/* Cards sit on the surface like the app's: tone, not outline or shadow, separates them. */
+[data-theme="dark"] #sidebar,
+[data-theme="dark"] .verbosa-magazine-two .content-masonry article.hentry,
+[data-theme="dark"] .news-card { box-shadow: none; }
+[data-theme="dark"] .verbosa-magazine-two #content-masonry article.hentry.news-card,
+[data-theme="dark"] article.hentry.news-card { border: 0; }
+[data-theme="dark"] #colophon { border-top: 1px solid var(--md-outline-variant); }
+
+/* ── Footer light/dark switch (website only: the app follows the device setting) ── */
+#colophon .theme-toggle { display: inline-flex; align-items: center; gap: 0.45rem; margin-top: 0.9rem; padding: 0.35rem 0.95rem; border: 1px solid var(--md-outline-variant); border-radius: var(--shape-full); background: transparent; color: var(--md-on-surface-variant); font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: background-color 0.15s, color 0.15s; }
+#colophon .theme-toggle:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); color: var(--md-on-surface); }
+#colophon .theme-toggle svg { width: 16px; height: 16px; flex: none; }

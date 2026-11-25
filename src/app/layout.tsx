@@ -19,6 +19,7 @@ import { getFinanceAccess } from "@/lib/finance-access";
 import { getAnnouncement } from "@/lib/announcement";
 import { siteUrl } from "@/lib/env";
 import { getSession } from "@/lib/session";
+import { THEME_SCRIPT } from "@/lib/theme";
 
 const lato = Lato({
   subsets: ["latin"],
@@ -51,14 +52,12 @@ export const metadata: Metadata = {
 /**
  * The browser's own bar: brand orange in a browser tab, but in the installed app the status bar takes the app bar's
  * surface colour, so the top of the screen reads as one bar (an orange strip above a grey bar looked like two headers).
- * In a dark browser tab the bar matches the dark page backdrop instead of the orange.
- * The colours are the --md-surface and --md-backdrop tokens in tokens.css, light and dark.
+ * The colours are the --md-surface tokens in tokens.css, light and dark.
  */
 export const viewport: Viewport = {
   themeColor: [
     { media: "(display-mode: standalone) and (prefers-color-scheme: dark)", color: "#131417" },
     { media: "(display-mode: standalone)", color: "#f3f4f6" },
-    { media: "(prefers-color-scheme: dark)", color: "#131417" },
     { color: "#f57f20" },
   ],
   colorScheme: "light dark",
@@ -102,6 +101,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const account = await readAccountState();
   return (
     <html lang="en" className={lato.className} suppressHydrationWarning>
+      <head>
+        {/* Before first paint, so a dark page never flashes light (or the other way round). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="verbosa-landing-page verbosa-magazine-two verbosa-magazine-layout verbosa-no-sidebar-back">
         <a
           href="#main"

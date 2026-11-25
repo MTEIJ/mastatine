@@ -128,48 +128,49 @@
 }
 
 /*
- * ── Dark scheme (the same seed, M3 dark roles) ── Follows the device setting. Cards are a step lighter than the page
- * (in the light scheme they are white on grey), so "lowest" is the card colour here too, not the darkest surface.
+ * ── Dark scheme (the same seed, M3 dark roles) ── On when <html data-theme="dark">. The theme script in layout.tsx sets
+ * it: the installed app follows the device setting, the website is light unless the visitor picks dark in the footer.
+ * Cards are a step lighter than the page (in the light scheme they are white on grey), so "lowest" is the card colour
+ * here too, not the darkest surface.
  */
-:root { color-scheme: light dark; }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --md-primary: #ffb68b;
-    --md-on-primary: #522300;
-    --md-primary-container: #5c2a06;
-    --md-on-primary-container: #ffdcc8;
-    --md-secondary: #e7bfa9;
-    --md-secondary-container: #383d47;
-    --md-on-secondary-container: #dfe3ec;
-    --md-tertiary: #b3c5ff;
-    --md-tertiary-container: #2f427a;
-    --md-on-tertiary-container: #dbe1ff;
-    --md-brand-hover: #ff9443;
-    --md-backdrop: #131417;
-    --md-on-brand: #2a1000;
-    --md-surface: #131417;
-    --md-surface-container-lowest: #1c1e22;
-    --md-surface-container-low: #212328;
-    --md-surface-container: #26292e;
-    --md-surface-container-high: #2c2f35;
-    --md-surface-container-highest: #34373e;
-    --md-surface-bright: #23262b;
-    --md-on-surface: #e4e5e9;
-    --md-on-surface-variant: #b8bec9;
-    --md-outline: #8c929d;
-    --md-outline-variant: #3f444c;
-    --md-outline-subtle: #33373e;
-    --md-error: #ff8a80;
-    --md-warning: #f3a95e;
-    --md-success: #6bd492;
-    --md-navy: #2a4590;
-    --md-navy-ink: #b3c5ff;
-    --md-link-hover: #b3c5ff;
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px -8px rgb(0 0 0 / 0.5);
-    --shadow-md: 0 2px 4px rgb(0 0 0 / 0.3), 0 16px 32px -12px rgb(0 0 0 / 0.6);
-    --elevation-1: 0 1px 2px rgb(0 0 0 / 0.4);
-    --elevation-2: 0 2px 6px 2px rgb(0 0 0 / 0.3), 0 1px 2px rgb(0 0 0 / 0.4);
-  }
+:root { color-scheme: light; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --md-primary: #ffb68b;
+  --md-on-primary: #522300;
+  --md-primary-container: #5c2a06;
+  --md-on-primary-container: #ffdcc8;
+  --md-secondary: #e7bfa9;
+  --md-secondary-container: #383d47;
+  --md-on-secondary-container: #dfe3ec;
+  --md-tertiary: #b3c5ff;
+  --md-tertiary-container: #2f427a;
+  --md-on-tertiary-container: #dbe1ff;
+  --md-brand-hover: #ff9443;
+  --md-backdrop: #131417;
+  --md-on-brand: #2a1000;
+  --md-surface: #131417;
+  --md-surface-container-lowest: #1c1e22;
+  --md-surface-container-low: #212328;
+  --md-surface-container: #26292e;
+  --md-surface-container-high: #2c2f35;
+  --md-surface-container-highest: #34373e;
+  --md-surface-bright: #23262b;
+  --md-on-surface: #e4e5e9;
+  --md-on-surface-variant: #b8bec9;
+  --md-outline: #8c929d;
+  --md-outline-variant: #3f444c;
+  --md-outline-subtle: #33373e;
+  --md-error: #ff8a80;
+  --md-warning: #f3a95e;
+  --md-success: #6bd492;
+  --md-navy: #2a4590;
+  --md-navy-ink: #b3c5ff;
+  --md-link-hover: #b3c5ff;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px -8px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.3), 0 16px 32px -12px rgb(0 0 0 / 0.6);
+  --elevation-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --elevation-2: 0 2px 6px 2px rgb(0 0 0 / 0.3), 0 1px 2px rgb(0 0 0 / 0.4);
 }
 
 /* Switch off Tailwind's own palette and corner scale; only the tokens below exist as utilities. */

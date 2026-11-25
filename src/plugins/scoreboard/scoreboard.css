@@ -44,22 +44,21 @@
   --sb-silver: #64748b;
   --sb-bronze: #9a5b2b;
 }
-@media (prefers-color-scheme: dark) {
-  .sb-page[data-sb-theme="clean"],
-  .sb-page[data-sb-theme="clean"] .sb-board {
-    --sb-page-bg: #0e121a;
-    --sb-ink: #eef1f7;
-    --sb-muted: #9aa5b8;
-    --sb-panel: #161b26;
-    --sb-line: #262d3b;
-    --sb-accent: #7aa2ff;
-    --sb-accent-fg: #0b1220;
-    --sb-track: #232a38;
-    --sb-bar: linear-gradient(90deg, #4f78e0, #7aa2ff);
-    --sb-gold: #fbbf24;
-    --sb-silver: #cbd5e1;
-    --sb-bronze: #e0a070;
-  }
+/* Dark when the site is dark (<html data-theme>, see src/lib/theme.ts). */
+[data-theme="dark"] .sb-page[data-sb-theme="clean"],
+[data-theme="dark"] .sb-page[data-sb-theme="clean"] .sb-board {
+  --sb-page-bg: #0e121a;
+  --sb-ink: #eef1f7;
+  --sb-muted: #9aa5b8;
+  --sb-panel: #161b26;
+  --sb-line: #262d3b;
+  --sb-accent: #7aa2ff;
+  --sb-accent-fg: #0b1220;
+  --sb-track: #232a38;
+  --sb-bar: linear-gradient(90deg, #4f78e0, #7aa2ff);
+  --sb-gold: #fbbf24;
+  --sb-silver: #cbd5e1;
+  --sb-bronze: #e0a070;
 }
 
 /* Theme: Advent. A winter night with snow and gold. */
