@@ -89,3 +89,30 @@ dialog.modal--viewer .modal__panel { height: 100%; }
 @media (max-width: 639px) {
   dialog.modal--viewer { height: 94dvh; max-height: 94dvh; }
 }
+
+/*
+ * ── The website in dark mode: the app's look ── The app's dark scheme is calm: one near-black surface, cards a step
+ * lighter, orange only on actions. The website's own chrome was drawn for the orange light scheme (a bright orange
+ * announcement bar, a brown newsletter band, a heavy outline on the news card), and in dark it read as a patchwork.
+ * Here it takes the app's surface roles instead. Light mode keeps the orange website look.
+ */
+@media (prefers-color-scheme: dark) {
+  .announce { border-bottom: 1px solid var(--md-outline-variant); background: var(--md-surface-container-high); color: var(--md-on-surface); box-shadow: none; }
+  .announce__tag { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+  .announce__summary { color: var(--md-on-surface-variant); }
+  .announce__more { color: var(--md-primary); }
+  .announce__close { background: transparent; color: var(--md-on-surface-variant); }
+  .announce__close:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
+
+  .loop-band { border-top: 1px solid var(--md-outline-variant); background: var(--md-surface-container-low); }
+  .loop-band__icon { background: var(--md-primary-container); color: var(--md-on-primary-container); box-shadow: none; }
+  .loop-band__text { color: var(--md-on-surface-variant); }
+
+  /* Cards sit on the surface like the app's: tone, not outline or shadow, separates them. */
+  #sidebar,
+  .verbosa-magazine-two .content-masonry article.hentry,
+  .news-card { box-shadow: none; }
+  .verbosa-magazine-two #content-masonry article.hentry.news-card,
+  article.hentry.news-card { border: 0; }
+  #colophon { border-top: 1px solid var(--md-outline-variant); }
+}
