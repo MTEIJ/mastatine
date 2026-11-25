@@ -179,6 +179,12 @@ export default function MastFeed({ initialPage }: { initialPage: TowerPage }) {
     };
   }, []);
 
+  // On a computer the keyboard swipes: arrow keys, Page Up/Down and space move the focused scroller a slide at a time
+  // (scroll snapping does the rest), so start with the focus on it.
+  useEffect(() => {
+    scroller.current?.focus({ preventScroll: true });
+  }, []);
+
   // Which slide is on screen; near the end, fetch the next page.
   useEffect(() => {
     const root = scroller.current;

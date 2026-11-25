@@ -133,10 +133,11 @@
 /*
  * ── Masts feed (src/classic/MastFeed.tsx): full screen, one mast per screen, swiped vertically ──
  * A fixed layer over the page with its own snapping scroller. In the installed app it stops above the navigation bar
- * (64px + the safe area) and the top app bar is hidden; in a browser tab it covers the whole window.
+ * (64px + the safe area) and the top app bar is hidden; in a browser tab it covers the whole window, above the website
+ * chrome (the footer headings sit at z-index 99).
  */
 @layer components {
-  .feed { position: fixed; inset: 0; z-index: 36; background: var(--md-inverse-surface); color: var(--md-on-fill); }
+  .feed { position: fixed; inset: 0; z-index: 100; background: var(--md-inverse-surface); color: var(--md-on-fill); }
   .feed__scroller { height: 100%; overflow-y: auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; scrollbar-width: none; }
   .feed__scroller::-webkit-scrollbar { display: none; }
   .feed__scroller:focus-visible { outline: none; }

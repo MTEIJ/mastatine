@@ -201,6 +201,14 @@ export default function TowerGrid({ initialPage, initialQuery, children, variant
             </svg>
             <input type="search" placeholder="Search masts" value={searchValue} maxLength={100} onChange={(e) => changeSearch(e.target.value)} />
           </label>
+
+          {/* A quiet way into the full-screen feed; the grid stays the main view on the website. */}
+          <Link href="/masts/feed" className="grid-feed-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden>
+              <rect x="6" y="3" width="12" height="18" rx="2" />
+            </svg>
+            Feed
+          </Link>
         </div>
       </div>
   );
@@ -226,8 +234,8 @@ export default function TowerGrid({ initialPage, initialQuery, children, variant
           ))}
         </div>
         <div className="masts-toolbar__actions">
-          {/* In the app the Masts tab opens the feed; this is the way back to it from the grid. */}
-          <Link href="/masts/feed" className="chip masts-feed-link only-app">
+          {/* The masts one at a time, full screen. In the app the Masts tab opens it; this is the way back from the grid. */}
+          <Link href="/masts/feed" className="chip masts-feed-link">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden>
               <rect x="6" y="3" width="12" height="18" rx="2" />
             </svg>

@@ -74,11 +74,13 @@
   /* In px, not rem: the navigation bar is 64px, and a rem value here made Chrome re-snap the feed to its last slide
      while the page loaded. MastFeed also keeps the current slide in place whenever the feed changes size. */
   .feed { bottom: calc(64px + env(safe-area-inset-bottom)); }
-  /* `data-feed` is set by MastFeed while it is shown. Not `body:has(.feed)`: a page left behind stays in the document
-     (hidden), so that matched on every page after a visit to the feed and no page could scroll any more. */
   html[data-feed] .appbar { display: none; }
-  html[data-feed] body { overflow: hidden; }
 }
+
+/* `data-feed` is set by MastFeed while it is shown. Not `body:has(.feed)`: a page left behind stays in the document
+   (hidden), so that matched on every page after a visit to the feed and no page could scroll any more. In a browser
+   tab too: the feed covers the window, and the website behind it must not scroll when the wheel reaches its end. */
+html[data-feed] body { overflow: hidden; }
 
 /* ── Long forms in a dialog (the board application) need more width than an ordinary dialog ── */
 @media (min-width: 640px) {
