@@ -168,6 +168,17 @@ export default function MastFeed({ initialPage }: { initialPage: TowerPage }) {
     }
   }, []);
 
+  // While the feed is on screen it is the whole app: the page behind it stays put and the app bar goes (surfaces.css).
+  // A flag set by an effect, not `body:has(.feed)`: Next.js keeps a visited page in the document (hidden) after
+  // navigating away, so the feed's markup outlived it and froze scrolling on every other page. Effects do clean up.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.feed = "";
+    return () => {
+      delete root.dataset.feed;
+    };
+  }, []);
+
   // Which slide is on screen; near the end, fetch the next page.
   useEffect(() => {
     const root = scroller.current;
