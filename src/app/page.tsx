@@ -10,7 +10,6 @@ import TowerGrid from "@/classic/TowerGrid";
 import SubmitModal from "@/classic/SubmitModal";
 import Markdown from "@/components/Markdown";
 import { formatDate, getLatestNews } from "@/lib/news";
-import MinecraftBar from "@/components/MinecraftBar";
 import HomeHub from "@/components/HomeHub";
 import { getSession } from "@/lib/session";
 
@@ -117,11 +116,7 @@ export default async function HomePage(
       {/* ── lp-slider: image carousel ── */}
       <section className="lp-slider-overlay" id="home">
         <div className="lp-dynamic-slider">
-          <HeroCarousel masts={mastsOfMonth} overlay={
-              <Suspense fallback={null}>
-                <MinecraftBar />
-              </Suspense>
-            } />
+          <HeroCarousel masts={mastsOfMonth} />
         </div>
       </section>
 

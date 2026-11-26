@@ -79,7 +79,7 @@
   --md-error: #b91c1c;
   --md-warning: #b45309; /* nearly over a limit */
   --md-success: #15803d;
-  --md-online: #3ddc84; /* the Minecraft server's "online" dot */
+  --md-online: #3ddc84; /* the announcement bar's live pulse */
   --md-navy: #0f2254; /* the association's second colour, from the original site; a fill (badges, the mast grid button) */
   --md-navy-ink: #0f2254; /* navy as a text colour: the same in light, a light blue in dark */
   --md-on-fill: #ffffff; /* text on the navy and orange fills (badges, the announcement bar), white in both schemes */
