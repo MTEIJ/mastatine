@@ -7,7 +7,7 @@ import { MASTS_CHANGED_EVENT } from "@/lib/events";
 /**
  * The submit button and its form, in the shared dialog (a centred card on wide screens, a bottom sheet on phones; see
  * dialog.modal in globals.css). The button: "card" is the full-width one in the homepage card, "compact" the Masts page
- * toolbar button (an extended FAB in the app), "fab" the round + over the masts feed.
+ * toolbar button, "fab" the small round + in the masts feed's top row.
  */
 export default function SubmitModal({ variant = "card" }: { variant?: "card" | "compact" | "fab" } = {}) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -38,8 +38,8 @@ export default function SubmitModal({ variant = "card" }: { variant?: "card" | "
   return (
     <>
       {variant === "fab" ? (
-        <button type="button" onClick={open} className="feed-fab" aria-haspopup="dialog" aria-label="Submit a mast">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+        <button type="button" onClick={open} className="feed__icon" aria-haspopup="dialog" aria-label="Submit a mast">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
             <path d="M12 5v14M5 12h14" />
           </svg>
         </button>

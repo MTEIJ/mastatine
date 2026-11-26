@@ -144,7 +144,7 @@ function Slide({ tower, index, vote, onVote, active, priority }: SlideProps) {
 
 /**
  * The masts one at a time, full screen, swiped vertically like Reels: the photo, who found it and how tall it is, with
- * voting on the right. Double tap upvotes. The grid button goes to the page with all masts; + submits one.
+ * voting on the right. Double tap upvotes. In the top row, + submits a mast and the grid button goes to the page with all masts.
  */
 export default function MastFeed({ initialPage }: { initialPage: TowerPage }) {
   const [towers, setTowers] = useState<Tower[]>(initialPage.towers);
@@ -254,9 +254,12 @@ export default function MastFeed({ initialPage }: { initialPage: TowerPage }) {
       <h1 className="sr-only">Masts</h1>
       <div className="feed__top">
         <span className="feed__brand" aria-hidden>Masts</span>
-        <Link href="/masts" className="feed__icon" aria-label="All masts, as a grid">
-          <GridIcon />
-        </Link>
+        <div className="feed__actions">
+          <SubmitModal variant="fab" />
+          <Link href="/masts" className="feed__icon" aria-label="All masts, as a grid">
+            <GridIcon />
+          </Link>
+        </div>
       </div>
 
       <div ref={scroller} className="feed__scroller" tabIndex={0} aria-label="Masts, newest first">
@@ -283,10 +286,6 @@ export default function MastFeed({ initialPage }: { initialPage: TowerPage }) {
             <Link href="/masts" className="feed-end__link">Browse them all</Link>
           </div>
         )}
-      </div>
-
-      <div className="feed__fab">
-        <SubmitModal variant="fab" />
       </div>
     </div>
   );
