@@ -158,6 +158,12 @@
   .searchbox input { width: 16rem; padding: 0.55rem 1rem 0.55rem 2.5rem; border: 0; border-radius: var(--shape-full); background: rgb(255 255 255 / 0.22); color: var(--md-on-fill); font-size: 0.95rem; transition: background-color 0.15s, box-shadow 0.15s; }
   .searchbox input::placeholder { color: rgb(255 255 255 / 0.85); }
   .searchbox input:focus { background: rgb(255 255 255 / 0.32); box-shadow: 0 0 0 3px rgb(255 255 255 / 0.4); }
+  /* The way into the full-screen masts feed: deliberately quiet, a small text link beside the search. */
+  .grid-feed-link { display: inline-flex; align-items: center; gap: 0.35rem; margin-left: -0.5rem; padding: 0.4rem 0.6rem; border-radius: var(--shape-full); color: rgb(255 255 255 / 0.85); font-size: 0.9rem; font-weight: 700; text-decoration: none; transition: background-color 0.15s, color 0.15s; }
+  .grid-feed-link:hover, .grid-feed-link:focus-visible { background: rgb(255 255 255 / 0.18); color: var(--md-on-fill); }
+  @media (min-width: 651px) {
+    .grid-controls .searchbox { margin-left: auto; }
+  }
   /* Desktop: the panel is transparent to layout and the floating button is not needed. */
   .grid-fab { display: none; }
   .grid-panel { display: contents; }
@@ -172,6 +178,7 @@
     .seg { display: flex; }
     .seg button { flex: 1; padding: 0.5rem 0.25rem; font-size: 0.85rem; }
     .searchbox input { width: 100%; font-size: 1rem; }
+    .grid-feed-link { justify-content: center; margin-left: 0; }
     /* The hero's server chip owns the top-right; the badge drops below it instead of colliding. */
     .hero-carousel__badge { top: 3.6rem !important; }
     /* Intro: just the one-line identity, no extra tagline. */
